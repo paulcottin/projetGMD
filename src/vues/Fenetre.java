@@ -5,8 +5,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
-import modele.ResultsList;
 import modele.Search;
 
 public class Fenetre extends JFrame implements Observer{
@@ -35,8 +35,8 @@ public class Fenetre extends JFrame implements Observer{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setLayout(new BorderLayout());
-		selection = new Selection(search);
-		resultsList = new ResultsList(search);
+		this.selection = new Selection(search);
+		this.resultsList = new ResultsList(search);
 	}
 	
 	private void creerFen(){
@@ -46,10 +46,9 @@ public class Fenetre extends JFrame implements Observer{
 	}
 
 	public void update(Observable arg0, Object arg1) {
-		System.out.println("update");
+		this.remove(resultsList);
 		resultsList = new ResultsList(search);
-		resultsList.revalidate();
-		creerFen();
+		this.add(resultsList, BorderLayout.CENTER);
 		this.revalidate();
 	}
 

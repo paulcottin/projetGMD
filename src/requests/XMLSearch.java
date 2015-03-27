@@ -1,22 +1,23 @@
 package requests;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import modele.Disease;
 import modele.Element;
 import modele.Medic;
 import modele.Merger;
 
-import org.omg.CORBA.portable.IndirectionException;
-
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import exceptions.NotFoundException;
 /**
@@ -27,6 +28,8 @@ import exceptions.NotFoundException;
  */
 public class XMLSearch {
 	
+	private Document dom;
+	private ArrayList<Element> list;
 	private String path = "";
 	private String Msearch = "";
 	private String Dsearch = "";
@@ -37,214 +40,155 @@ public class XMLSearch {
 		this.Dsearch = Dsearch;
 		this.path = path;
 		this.merger = new Merger();
+		this.list = new ArrayList<Element>();
 	}
 	
 	public ArrayList<Element> getInfos() throws NotFoundException{
+		parseXmlFile();
+		parseDocument();
+		return list;
+	}
+	
+	private void parseXmlFile(){
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		
+		try {
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			dom = db.parse(path);
+		}catch(ParserConfigurationException pce) {
+			pce.printStackTrace();
+		}catch(SAXException se) {
+			se.printStackTrace();
+		}catch(IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
+	
+	private void parseDocument() throws NotFoundException{
+		org.w3c.dom.Element docEle = dom.getDocumentElement();
 		ArrayList<Medic> med_res = new ArrayList<Medic>();
 		ArrayList<Disease> dis_res = new ArrayList<Disease>();
-		File file = new File(path);
 		try {
 			if (!Dsearch.equals("")) {
-				System.out.println("dsearch");
-				dis_res = parserByDisease(file);
+				dis_res = searchByDisease(docEle);
 				writerD(dis_res);
 			}
 			if (!Msearch.equals("")) {
-				System.out.println("msearch");
-				med_res = parserByMedic(file);
+				med_res = searchByMedic(docEle);
 				writerM(med_res);
 			}
 			if (dis_res.size() == 0 && med_res.size() == 0) {
 				NotFoundException e = new NotFoundException();
 				throw e;
 			}
-			ArrayList<Element> list = merger.mergeFile("_byM.txt", "_byD.txt"); 
+			list = merger.mergeFile("_byM.txt", "_byD.txt"); 
 			deleteTempFile();
-			return list;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 	
-	public ArrayList<Disease> parserByDisease(File f) throws IOException{
-		ArrayList<Disease> list = new ArrayList<Disease>();
-		BufferedReader br = new BufferedReader(new FileReader(f));
-		
-		String nameLine = "";
-		String treatmentMedicsLine = "";
-		String causeMedicsLine = "";
-		String symptomsLine = "";
-		
-		String ligne = "";
-		while((ligne = br.readLine()) != null){
-			if (ligne != null && ligne.contains("<name")) {
-				String content = "";
-				content += ligne;
-				while(ligne != null && !ligne.contains("</name>")){
-					ligne = br.readLine();
-					content += ligne;
-				}
-				nameLine = content;
-			}
-			if (ligne != null && ligne.contains("<indication")) {
-				String content = "";
-				content += ligne;
-				while(ligne != null && !ligne.contains("</indication>")){
-					ligne = br.readLine();
-					content += ligne;
-				}
-				treatmentMedicsLine = getOutChars(content);
-				int begin = content.indexOf("treatment of")-1;
-				int end;
-				if (treatmentMedicsLine.contains(" in ")) {
-					end = (treatmentMedicsLine.indexOf(" in ") > begin) ? treatmentMedicsLine.indexOf(" in ") : treatmentMedicsLine.length();
-				}else{
-					end = treatmentMedicsLine.length();
-				}
-				treatmentMedicsLine = treatmentMedicsLine.substring(begin, end);
-
-			}
-			if (ligne != null && ligne.contains("<pharmacodynamics")) {
-				String content = "";
-				content += ligne;
-				while(ligne != null && !ligne.contains("</pharmacodynamics>")){
-					ligne = br.readLine();
-					content += ligne;
-				}
-				symptomsLine = getOutChars(content);
-				
-				if (symptomsLine.contains("characterized by")) {
-					
-					int begin = content.indexOf("characterized by");
-					int end;
-					if (symptomsLine.contains(".")) {
-						end = (symptomsLine.indexOf(".") > begin) ? symptomsLine.indexOf(".") : symptomsLine.length();
-					}else{
-						end = symptomsLine.length();
-					}
-					symptomsLine = symptomsLine.substring(begin, end);
-				}else
-					symptomsLine = "";
-			}
-			if (treatmentMedicsLine.contains(Dsearch)) {
-				while(ligne != null && !ligne.contains("</drug>") && !ligne.contains("</indication")) {
-					if (ligne != null && ligne.contains("<toxicity") && !ligne.contains("toxicity/>")) {
-						String content = "";
-						content += ligne;
-						while(ligne != null && !ligne.contains("</toxicity>")){
-							ligne = br.readLine();
-							content += ligne;
-						}
-						causeMedicsLine= getOutChars(content);
-						if (causeMedicsLine.contains("adverse effects include ")) {
-							int begin = causeMedicsLine.indexOf("adverse effects include ") + "adverse effects include ".length();
-							int end = causeMedicsLine.substring(begin).indexOf(".") + begin;
-							causeMedicsLine = causeMedicsLine.substring(begin, end);
-						}else
-							causeMedicsLine = "";
-							
-					}
-					ligne = br.readLine();
-					if (ligne != null && ligne.contains("</drug>")) {
-						list.add(new Disease(treatmentMedicsLine, getOutChars(nameLine), causeMedicsLine, symptomsLine));
-						treatmentMedicsLine = "";
-					}
-				}
-			}
-		}	
-		br.close();
-		return list;
-	}
-	
-	public ArrayList<Medic> parserByMedic(File f) throws IOException{
+	private ArrayList<Medic> searchByMedic(org.w3c.dom.Element doc){
 		ArrayList<Medic> list = new ArrayList<Medic>();
-		BufferedReader br = new BufferedReader(new FileReader(f));
-		
-		String nameLine = "";
-		String treatmentMedicsLine = "";
-		String causeMedicsLine = "";
-		String synonymsLine = "";
-		ArrayList<String> syns = new ArrayList<String>();
-		
-		String ligne = "";
-		while((ligne = br.readLine()) != null){
-			if (ligne != null && ligne.contains("<name")) {
-				String content = "";
-				content += ligne;
-				while(ligne != null && !ligne.contains("</name>")){
-					ligne = br.readLine();
-					content += ligne;
-				}
-				nameLine = content;
-			}
-			if (getOutChars(nameLine).equals(Msearch)) {
-				while(ligne != null && !ligne.contains("</drug>")) {
-					if (ligne != null && ligne.contains("<indication") && !ligne.contains("indication/>")) {
-						String content = "";
-						content += ligne;
-						while(ligne != null && !ligne.contains("</indication>")){
-							ligne = br.readLine();
-							content += ligne;
-						}
-						treatmentMedicsLine = content;
-					}
-					if (ligne != null && ligne.contains("<toxicity") && !ligne.contains("toxicity/>")) {
-						String content = "";
-						content += ligne;
-						while(ligne != null && !ligne.contains("</toxicity>")){
-							ligne = br.readLine();
-							content += ligne;
-						}
-						causeMedicsLine= getOutChars(content);
-						if (causeMedicsLine.contains("adverse effects include ")) {
-							int begin = causeMedicsLine.indexOf("adverse effects include ") + "adverse effects include ".length();
-							int end = causeMedicsLine.substring(begin).indexOf(".") + begin;
-							causeMedicsLine = causeMedicsLine.substring(begin, end);
-						}else
-							causeMedicsLine = "";
-							
-					}
-					if (ligne != null && ligne.contains("<synonyms")) {
-						while(ligne != null && !ligne.contains("</synonyms>")){
-							ligne = br.readLine();
-							if (!ligne.contains("</synonyms")) {
-								synonymsLine = ligne;
-								syns.add(getOutChars(synonymsLine));
+		String name = "", treat = "", cause = "";
+		ArrayList<String> synonyms = new ArrayList<String>();
+		NodeList general = doc.getChildNodes();
+		NodeList node;
+		NodeList find;
+		NodeList syn;
+		if(general != null && general.getLength() > 0) {
+			for(int i = 0 ; i < general.getLength();i++) {
+				if (general.item(i).getNodeName().equals("drug")) {
+					node = general.item(i).getChildNodes();
+					if (node != null && node.getLength() > 0) {
+						for (int j = 0; j < node.getLength(); j++) {
+							if (node.item(j).getNodeName().equals("name")) {
+								if (node.item(j).getFirstChild().getNodeValue().equals(Msearch)) {
+									find = node;
+									name = find.item(j).getFirstChild().getNodeValue();
+									for (int k = 0; k < find.getLength(); k++) {
+										if (find.item(k).getNodeName().equals("indication")) {
+											treat = getTreatment(find.item(k).getFirstChild().getNodeValue());
+										}
+										if (find.item(k).getNodeName().equals("toxicity")) {
+											cause = getCause(find.item(k).getFirstChild().getNodeValue());
+										}
+										if (find.item(k).getNodeName().equals("synonyms")) {
+											syn = find.item(k).getChildNodes();
+											for (int h = 0; h < syn.getLength(); h++) {
+												if (syn.item(h).getNodeName().equals("synonym")) {
+													synonyms.add(syn.item(h).getFirstChild().getNodeValue());
+												}
+											}
+										}
+									}
+								}
 							}
 						}
 					}
-					ligne = br.readLine();
-					if (ligne != null && ligne.contains("</drug>")) {
-						list.add(new Medic(getOutChars(nameLine), getOutChars(treatmentMedicsLine), getOutChars(causeMedicsLine), syns));
-						nameLine = "";
-						syns = new ArrayList<String>();
-					}
 				}
+				list.add(new Medic(name, treat, cause, synonyms));
 			}
-		}	
-		br.close();
+		}
 		return list;
 	}
 	
-	private String getOutChars(String line){
-		if(line.contains("<")){
-			if(line.contains(" ")){
-				int baliseClosed_temp1 = line.indexOf(">");
-				int baliseClosed_temp2 = line.substring(line.indexOf("<")).indexOf(" ");
-				int baliseClosed;
-				if (baliseClosed_temp2 < baliseClosed_temp1 && baliseClosed_temp2 != -1) 
-					baliseClosed = baliseClosed_temp2;
-				else
-					baliseClosed = baliseClosed_temp1;
-				
-				String baliseName = line.substring(line.indexOf("<")+1, baliseClosed);
-				int endBalise = line.indexOf("</"+baliseName);
-			return line.substring(baliseClosed_temp1+1, endBalise);
-			}else
-				return "";
-		}else
-			return line;
+	private ArrayList<Disease> searchByDisease(org.w3c.dom.Element doc){
+		ArrayList<Disease> list = new ArrayList<Disease>();
+		String name = "", treat = "", cause = "", symptom = "";
+		NodeList general = doc.getChildNodes();
+		NodeList node;
+		NodeList find;
+		if(general != null && general.getLength() > 0) {
+			for(int i = 0 ; i < general.getLength();i++) {
+				if (general.item(i).getNodeName().equals("drug")) {
+					node = general.item(i).getChildNodes();
+					if (node != null && node.getLength() > 0) {
+						for (int j = 0; j < node.getLength(); j++) {
+							if (node.item(j).getNodeName().equals("pharmacodynamics")) {
+								if (node.item(j).getFirstChild().getNodeValue().contains(Dsearch)) {
+									find = node;
+									symptom = find.item(j).getFirstChild().getNodeValue();
+									for (int k = 0; k < find.getLength(); k++) {
+										if (find.item(k).getNodeName().equals("name")) {
+											name = getTreatment(find.item(k).getFirstChild().getNodeValue());
+										}
+										if (find.item(k).getNodeName().equals("indication")) {
+											treat = getTreatment(find.item(k).getFirstChild().getNodeValue());
+										}
+										if (find.item(k).getNodeName().equals("toxicity")) {
+											cause = getCause(find.item(k).getFirstChild().getNodeValue());
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				list.add(new Disease(name, treat, cause, symptom));
+			}
+		}
+		return list;
+	}
+	
+	private String getTreatment(String s){
+		int begin = s.indexOf("treatment of") + "treatment of".length()+1;
+		int end;
+		if (s.contains(" in ")) {
+			end = (s.indexOf(" in ") > begin) ? s.indexOf(" in ") : s.length();
+		}else{
+			end = s.length();
+		}
+		return s.substring(begin, end);
+	}
+	
+	private String getCause(String s){
+		int begin = 0, end = 0;
+		if (s.contains("adverse effects include ")) {
+			begin = s.indexOf("adverse effects include ") + "adverse effects include ".length();
+			end = s.substring(begin).indexOf(".") + begin;
+		}
+		return s.substring(begin, end);
 	}
 	
 	private void writerM(ArrayList<Medic> list) throws IOException{

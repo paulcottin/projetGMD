@@ -1,5 +1,4 @@
 package modele;
-import requests.XMLSearch;
 import vues.Fenetre;
 
 /**
@@ -12,6 +11,7 @@ import vues.Fenetre;
  */
 
 public class Main {
+	@SuppressWarnings("unused")
 	public static void main(String args[]){
 		Search search = new Search();
 		Fenetre fen = new Fenetre(search);
