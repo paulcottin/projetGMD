@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -11,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import exceptions.NotFoundException;
 
+import requests.SQLSearch;
 import requests.XMLSearch;
 
 public class Search extends Observable{
@@ -18,13 +20,14 @@ public class Search extends Observable{
 	private String medic, disease, xmlPath, txtPath, outPath;
 	private boolean xml_b, txt_b, couch_b, sql_b;
 	private XMLSearch xml;
+	private SQLSearch sql;
 	private Merger merger;
 	private ArrayList<Element> el;
 	
 	public Search() {
 		init();
 		this.xml = new XMLSearch(medic, disease, xmlPath);
-		
+		this.sql = new SQLSearch();
 	}
 	
 	public Search(String medic, String disease){
