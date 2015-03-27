@@ -1,5 +1,7 @@
 package exceptions;
 
+import javax.swing.JOptionPane;
+
 public class NotFoundException extends Exception{
 
 	/**
@@ -13,6 +15,10 @@ public class NotFoundException extends Exception{
 	
 	public String getMessage(){
 		return "No medic found !"+this.getStackTrace();
+	}
+	
+	public void execute(){
+		JOptionPane.showMessageDialog(null, "Aucun résutat trouvé", "Information", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 }

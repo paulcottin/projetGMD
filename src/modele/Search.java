@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import javax.swing.JOptionPane;
+
 import exceptions.NotFoundException;
 
 import requests.XMLSearch;
@@ -14,28 +16,34 @@ import requests.XMLSearch;
 public class Search extends Observable{
 	
 	private String medic, disease, xmlPath, txtPath, outPath;
+	private boolean xml_b, txt_b, couch_b, sql_b;
 	private XMLSearch xml;
 	private Merger merger;
 	private ArrayList<Element> el;
 	
 	public Search() {
-		this.disease = "";
-		this.medic = "";
-		this.xmlPath = "drugbankTest.xml";
-		this.txtPath = "";
-		this.outPath = "out.txt";
+		init();
 		this.xml = new XMLSearch(medic, disease, xmlPath);
-		this.el = new ArrayList<Element>();
-		this.merger = new Merger();
+		
 	}
 	
 	public Search(String medic, String disease){
-		this.xmlPath = "drugbankTest.xml";
-		this.txtPath = "";
-		this.outPath = "out.txt";
+		init();
 		this.medic = medic;
 		this.disease = disease;
 		this.xml = new XMLSearch(medic, disease, xmlPath);
+	}
+	
+	private void init(){
+		this.disease = "";
+		this.medic = "";
+		this.couch_b = true;
+		this.txt_b = true;
+		this.sql_b = true;
+		this.xml_b = true;
+		this.xmlPath = "drugbankTest.xml";
+		this.txtPath = "";
+		this.outPath = "out.txt";
 		this.el = new ArrayList<Element>();
 		this.merger = new Merger();
 	}
@@ -44,18 +52,24 @@ public class Search extends Observable{
 		el = new ArrayList<Element>();
 		xml.setDSearch(disease);
 		xml.setMSearch(medic);
-		System.out.println(medic+", "+ disease);
-		try {
-			for (Element e : xml.getInfos()) {
-				el.add(e);
+		if (xml_b) {
+			try {
+				for (Element e : xml.getInfos()) {
+					el.add(e);
+				}
+			} catch (NotFoundException e) {
+				e.execute();
 			}
-		} catch (NotFoundException e) {
-			/**
-			 * Gérer avec une fenetre le fait qu'il n'y ai aucun résultat.
-			 */
-			System.out.println(e.getMessage());
 		}
-		//exécution des différentes requêtes sur les sources txt, SQL, CouchDB
+		if (couch_b) {
+			//ajout des résultats de couchDB
+		}
+		if (sql_b) {
+			//Ajout des résultats de SQL
+		}
+		if (txt_b) {
+			//Ajout des résultats du texte
+		}
 		//Merge des résultats
 		try {
 			this.writer(el, outPath);
@@ -124,6 +138,38 @@ public class Search extends Observable{
 
 	public void setDisease(String disease) {
 		this.disease = disease;
+	}
+
+	public boolean isXml_b() {
+		return xml_b;
+	}
+
+	public void setXml_b(boolean xml_b) {
+		this.xml_b = xml_b;
+	}
+
+	public boolean isTxt_b() {
+		return txt_b;
+	}
+
+	public void setTxt_b(boolean txt_b) {
+		this.txt_b = txt_b;
+	}
+
+	public boolean isCouch_b() {
+		return couch_b;
+	}
+
+	public void setCouch_b(boolean couch_b) {
+		this.couch_b = couch_b;
+	}
+
+	public boolean isSql_b() {
+		return sql_b;
+	}
+
+	public void setSql_b(boolean sql_b) {
+		this.sql_b = sql_b;
 	}
 
 }
