@@ -3,18 +3,18 @@ package modele;
 import java.util.ArrayList;
 
 public class Medic {
-	String name, treat, cause, symptoms;
-	ArrayList<String> synonyms;
+	String name;
+	ArrayList<String> synonyms, treat, cause, symptoms;
 	
 	public Medic() {
 		name = "";
-		treat = "";
-		cause = "";
-		symptoms = "";
+		treat = new ArrayList<String>();
+		cause = new ArrayList<String>();
+		symptoms = new ArrayList<String>();
 		synonyms = new ArrayList<String>();
 	}
 	
-	public Medic(String name, String treat, String cause, ArrayList<String> synonyms){
+	public Medic(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> synonyms){
 		this.name = name;
 		this.treat = treat;
 		this.cause = cause;
@@ -29,6 +29,14 @@ public class Medic {
 		return "name : "+name+"\n\ttreat: "+treat+"\n\tcause : "+cause+"\n"+syn;
 	}
 
+	public ArrayList<String> getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(ArrayList<String> synonyms) {
+		this.synonyms = synonyms;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -37,35 +45,27 @@ public class Medic {
 		this.name = name;
 	}
 
-	public String getTreat() {
+	public ArrayList<String> getTreat() {
 		return treat;
 	}
 
-	public void setTreat(String treat) {
-		this.treat= treat;
+	public void setTreat(ArrayList<String> treat) {
+		this.treat = treat;
 	}
 
-	public String getCause() {
+	public ArrayList<String> getCause() {
 		return cause;
 	}
 
-	public void setCause(String cause) {
+	public void setCause(ArrayList<String> cause) {
 		this.cause = cause;
 	}
 
-	public String getSymptoms() {
+	public ArrayList<String> getSymptoms() {
 		return symptoms;
 	}
 
-	public void setSymptoms(String symptoms) {
+	public void setSymptoms(ArrayList<String> symptoms) {
 		this.symptoms = symptoms;
-	}
-
-	public ArrayList<String> getSynonyms() {
-		return synonyms;
-	}
-
-	public void setSynonyms(ArrayList<String> synonyms) {
-		this.synonyms = synonyms;
 	}
 }

@@ -50,9 +50,9 @@ public class ResultsList extends JScrollPane{
 			v = new Vector<String>();
 			synonyms = "";
 			v.addElement(search.getEl().get(i).getName());
-			v.addElement(search.getEl().get(i).getTreat());
-			v.addElement(search.getEl().get(i).getCause());
-			v.addElement(search.getEl().get(i).getSymptoms());
+			v.addElement(search.getEl().get(i).getTreat().get(0));
+			v.addElement(search.getEl().get(i).getCause().get(0));
+			v.addElement(search.getEl().get(i).getSymptoms().get(0));
 			for (String string : search.getEl().get(i).getSynonyms()) {
 				synonyms += string+"\n";
 			}

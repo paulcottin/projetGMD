@@ -1,17 +1,20 @@
 package modele;
 
+import java.util.ArrayList;
+
 public class Disease {
 	
-	String name, treatment, cause, symptoms;
+	String name;
+	ArrayList<String> treatment, cause, symptoms;
 	
 	public Disease() {
 		name = "";
-		treatment = "";
-		cause = "";
-		symptoms = "";
+		treatment = new ArrayList<String>();
+		cause = new ArrayList<String>();
+		symptoms = new ArrayList<String>();
 	}
 	
-	public Disease(String name, String treatment, String cause, String symptoms){
+	public Disease(String name, ArrayList<String> treatment, ArrayList<String> cause, ArrayList<String> symptoms){
 		this.name = name;
 		this.treatment = treatment;
 		this.cause = cause;
@@ -30,27 +33,27 @@ public class Disease {
 		this.name = name;
 	}
 
-	public String getTreatment() {
+	public ArrayList<String> getTreatment() {
 		return treatment;
 	}
 
-	public void setTreatment(String treatment) {
+	public void setTreatment(ArrayList<String> treatment) {
 		this.treatment = treatment;
 	}
 
-	public String getCause() {
+	public ArrayList<String> getCause() {
 		return cause;
 	}
 
-	public void setCause(String cause) {
+	public void setCause(ArrayList<String> cause) {
 		this.cause = cause;
 	}
 
-	public String getSymptoms() {
+	public ArrayList<String> getSymptoms() {
 		return symptoms;
 	}
 
-	public void setSymptoms(String symptoms) {
+	public void setSymptoms(ArrayList<String> symptoms) {
 		this.symptoms = symptoms;
 	}
 

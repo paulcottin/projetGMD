@@ -27,7 +27,7 @@ public class Search extends Observable{
 	public Search() {
 		init();
 		this.xml = new XMLSearch(medic, disease, xmlPath);
-		this.sql = new SQLSearch();
+//		this.sql = new SQLSearch();
 	}
 	
 	public Search(String medic, String disease){
@@ -149,6 +149,8 @@ public class Search extends Observable{
 
 	public void setXml_b(boolean xml_b) {
 		this.xml_b = xml_b;
+		setChanged();
+		notifyObservers();
 	}
 
 	public boolean isTxt_b() {
@@ -157,6 +159,8 @@ public class Search extends Observable{
 
 	public void setTxt_b(boolean txt_b) {
 		this.txt_b = txt_b;
+		setChanged();
+		notifyObservers();
 	}
 
 	public boolean isCouch_b() {
@@ -165,6 +169,8 @@ public class Search extends Observable{
 
 	public void setCouch_b(boolean couch_b) {
 		this.couch_b = couch_b;
+		setChanged();
+		notifyObservers();
 	}
 
 	public boolean isSql_b() {
@@ -173,6 +179,8 @@ public class Search extends Observable{
 
 	public void setSql_b(boolean sql_b) {
 		this.sql_b = sql_b;
+		setChanged();
+		notifyObservers();
 	}
 
 }

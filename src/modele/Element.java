@@ -13,18 +13,18 @@ import java.util.ArrayList;
 
 public class Element {
 
-	String name, treat, cause, symptoms;
-	ArrayList<String> synonyms;
+	String name;
+	ArrayList<String> synonyms, treat, cause, symptoms;
 	
 	public Element() {
 		name = "";
-		treat = "";
-		cause = "";
-		symptoms = "";
+		treat = new ArrayList<String>();
+		cause = new ArrayList<String>();
+		symptoms = new ArrayList<String>();
 		synonyms = new ArrayList<String>();
 	}
 	
-	public Element(String name, String treat, String cause, String symptoms, ArrayList<String> synonyms){
+	public Element(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms){
 		this.name = name;
 		this.treat = treat;
 		this.cause = cause;
@@ -48,36 +48,36 @@ public class Element {
 		this.name = name;
 	}
 
-	public String getTreat() {
-		return treat;
-	}
-
-	public void setTreat(String treat) {
-		this.treat = treat;
-	}
-
-	public String getCause() {
-		return cause;
-	}
-
-	public void setCause(String cause) {
-		this.cause = cause;
-	}
-
-	public String getSymptoms() {
-		return symptoms;
-	}
-
-	public void setSymptoms(String symptoms) {
-		this.symptoms = symptoms;
-	}
-
 	public ArrayList<String> getSynonyms() {
 		return synonyms;
 	}
 
 	public void setSynonyms(ArrayList<String> synonyms) {
 		this.synonyms = synonyms;
+	}
+
+	public ArrayList<String> getTreat() {
+		return treat;
+	}
+
+	public void setTreat(ArrayList<String> treat) {
+		this.treat = treat;
+	}
+
+	public ArrayList<String> getCause() {
+		return cause;
+	}
+
+	public void setCause(ArrayList<String> cause) {
+		this.cause = cause;
+	}
+
+	public ArrayList<String> getSymptoms() {
+		return symptoms;
+	}
+
+	public void setSymptoms(ArrayList<String> symptoms) {
+		this.symptoms = symptoms;
 	}
 	
 	

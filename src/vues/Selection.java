@@ -24,7 +24,7 @@ public class Selection extends JPanel{
 		this.setBackground(Color.gray);
 		this.setLayout(new GridLayout(1,2));
 		
-		options = new Options();
+		options = new Options(this.search);
 		recherche = new Recherche(this.search);
 		
 		this.add(options);

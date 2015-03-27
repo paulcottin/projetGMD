@@ -68,23 +68,21 @@ public class XMLSearch {
 		org.w3c.dom.Element docEle = dom.getDocumentElement();
 		ArrayList<Medic> med_res = new ArrayList<Medic>();
 		ArrayList<Disease> dis_res = new ArrayList<Disease>();
-		try {
-			if (!Dsearch.equals("")) {
-				dis_res = searchByDisease(docEle);
-				writerD(dis_res);
-			}
-			if (!Msearch.equals("")) {
-				med_res = searchByMedic(docEle);
-				writerM(med_res);
-			}
-			if (dis_res.size() == 0 && med_res.size() == 0) {
-				NotFoundException e = new NotFoundException();
-				throw e;
-			}
-			list = merger.mergeFile("_byM.txt", "_byD.txt"); 
-			deleteTempFile();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!Dsearch.equals("")) {
+			dis_res = searchByDisease(docEle);
+//				writerD(dis_res);
+		}
+		if (!Msearch.equals("")) {
+			med_res = searchByMedic(docEle);
+//				writerM(med_res);
+		}
+		if (dis_res.size() == 0 && med_res.size() == 0) {
+			NotFoundException e = new NotFoundException();
+			throw e;
+		}else {
+//				list = merger.mergeFile("_byM.txt", "_byD.txt"); 
+//				deleteTempFile();
+			list = merger.testMerge(med_res, dis_res);
 		}
 	}
 	
@@ -122,7 +120,11 @@ public class XMLSearch {
 											}
 										}
 									}
-									list.add(new Medic(name, treat, cause, synonyms));
+									ArrayList<String> c = new ArrayList<String>();
+									c.add(cause);
+									ArrayList<String> t = new ArrayList<String>();
+									t.add(treat);
+									list.add(new Medic(name, t, c, synonyms));
 								}
 							}
 						}
@@ -160,7 +162,13 @@ public class XMLSearch {
 											cause = getCause(find.item(k).getFirstChild().getNodeValue());
 										}
 									}
-									list.add(new Disease(name, treat, cause, symptom));
+									ArrayList<String> c = new ArrayList<String>();
+									c.add(cause);
+									ArrayList<String> t = new ArrayList<String>();
+									t.add(treat);
+									ArrayList<String> s = new ArrayList<String>();
+									c.add(symptom);
+									list.add(new Disease(name, t, c, s));
 								}
 							}
 						}
@@ -202,7 +210,6 @@ public class XMLSearch {
 			}
 			bw.write("--");
 		}
-		System.out.println("m write");
 		bw.close();
 	}
 	
@@ -216,7 +223,6 @@ public class XMLSearch {
 			bw.write("--");
 		}
 		bw.close();
-		System.out.println("d write");
 	}
 	
 	private void deleteTempFile(){

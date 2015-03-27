@@ -9,6 +9,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import modele.Search;
+
+import controller.SelectSourceController;
+
 public class Options extends JPanel{
 
 	/**
@@ -16,11 +20,13 @@ public class Options extends JPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private Search search;
 	private JLabel selectSources;
 	private JCheckBox sql_case, xml_case, txt_case, couch_case;
 	
-	public Options() {
+	public Options(Search s) {
 		super();
+		this.search = s;
 		this.setLayout(new BorderLayout());
 		initOptions();
 		creerOptions();
@@ -34,6 +40,12 @@ public class Options extends JPanel{
 		xml_case = new JCheckBox("XML");
 		txt_case = new JCheckBox("TXT");
 		couch_case = new JCheckBox("CouchDB");
+		
+		//Listeners
+		sql_case.addActionListener(new SelectSourceController(search, "sql"));
+		xml_case.addActionListener(new SelectSourceController(search, "xml"));
+		txt_case.addActionListener(new SelectSourceController(search, "txt"));
+		couch_case.addActionListener(new SelectSourceController(search, "couchDB"));
 		
 		//Sélection par défaut
 		sql_case.setSelected(true);
