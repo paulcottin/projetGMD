@@ -122,12 +122,12 @@ public class XMLSearch {
 											}
 										}
 									}
+									list.add(new Medic(name, treat, cause, synonyms));
 								}
 							}
 						}
 					}
 				}
-				list.add(new Medic(name, treat, cause, synonyms));
 			}
 		}
 		return list;
@@ -160,12 +160,12 @@ public class XMLSearch {
 											cause = getCause(find.item(k).getFirstChild().getNodeValue());
 										}
 									}
+									list.add(new Disease(name, treat, cause, symptom));
 								}
 							}
 						}
 					}
 				}
-				list.add(new Disease(name, treat, cause, symptom));
 			}
 		}
 		return list;
@@ -197,7 +197,6 @@ public class XMLSearch {
 			bw.write("^"+medic.getName()+"\n");
 			bw.write("&"+medic.getTreat()+"\n");
 			bw.write("£"+medic.getCause()+"\n");
-			bw.write("£"+medic.getSymptoms()+"\n");
 			for (String s : medic.getSynonyms()) {
 				bw.write("\\"+s+"\n");
 			}
@@ -213,7 +212,7 @@ public class XMLSearch {
 			bw.write("&"+dis.getName()+"\n");
 			bw.write("^"+dis.getTreatment()+"\n");
 			bw.write("£"+dis.getCause()+"\n");
-			bw.write("£"+dis.getSymptoms()+"\n");
+			bw.write("$"+dis.getSymptoms()+"\n");
 			bw.write("--");
 		}
 		bw.close();
