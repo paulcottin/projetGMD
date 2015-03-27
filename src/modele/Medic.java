@@ -11,7 +11,7 @@ public class Medic {
 		treat = "";
 		cause = "";
 		symptoms = "";
-		synonyms = new ArrayList<>();
+		synonyms = new ArrayList<String>();
 	}
 	
 	public Medic(String name, String treat, String cause, ArrayList<String> synonyms){

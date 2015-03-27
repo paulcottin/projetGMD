@@ -21,7 +21,7 @@ public class Element {
 		treat = "";
 		cause = "";
 		symptoms = "";
-		synonyms = new ArrayList<>();
+		synonyms = new ArrayList<String>();
 	}
 	
 	public Element(String name, String treat, String cause, String symptoms, ArrayList<String> synonyms){

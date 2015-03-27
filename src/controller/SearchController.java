@@ -17,7 +17,6 @@ public class SearchController implements ActionListener{
 		this.r = r;
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		s.setMedic(r.getName());
 		s.setDisease(r.getDisease());
