@@ -15,86 +15,92 @@ public class Merger {
 	}
 
 	public ArrayList<Element> mergeFile(String path1, String path2) throws IOException{
-		BufferedReader bw1 = new BufferedReader(new FileReader(new File(path1)));
-		BufferedReader bw2 = new BufferedReader(new FileReader(new File(path2)));
+		File f1 = new File(path1);
+		File f2 = new File(path2);
 		ArrayList<Element> list = new ArrayList<Element>();
 		String line = "";
 		Element e = new Element();
-
-		while((line = bw1.readLine()) != null){
-			switch (line.substring(0, 1)) {
-			case "^":
-				if (line.substring(1) != null)
-					e.setName((e.getName() == "") ? line.substring(1) : e.getName()+"\n"+line.substring(1));
-				else
-					e.setName("");
-				break;
-			case "$":
-				if (line.substring(1) != null)
-					e.setCause((e.getCause()== "") ? line.substring(1) : e.getCause()+"\n"+line.substring(1));
-				else
-					e.setCause("");
-				break;
-			case "&":
-				if (line.substring(1) != null)
-					e.setTreat((e.getTreat() == "") ? line.substring(1) : e.getTreat()+"\n"+line.substring(1));
-				else
-					e.setTreat("");
-				break;
-			case "£":
-				if (line.substring(1) != null)
-					e.setSymptoms((e.getSymptoms() == "") ? line.substring(1) : e.getSymptoms()+"\n"+line.substring(1));
-				else
-					e.setSymptoms("");
-				break;
-			case "\\":
-				if (line.substring(1) != null)
-					e.getSynonyms().add(line.substring(1));
-				break;
+		
+		if (f1.exists()) {
+			BufferedReader bw1 = new BufferedReader(new FileReader(f1));
+			while((line = bw1.readLine()) != null){
+				switch (line.substring(0, 1)) {
+				case "^":
+					if (line.substring(1) != null)
+						e.setName((e.getName() == "") ? line.substring(1) : e.getName()+"\n"+line.substring(1));
+					else
+						e.setName("");
+					break;
+				case "$":
+					if (line.substring(1) != null)
+						e.setCause((e.getCause()== "") ? line.substring(1) : e.getCause()+"\n"+line.substring(1));
+					else
+						e.setCause("");
+					break;
+				case "&":
+					if (line.substring(1) != null)
+						e.setTreat((e.getTreat() == "") ? line.substring(1) : e.getTreat()+"\n"+line.substring(1));
+					else
+						e.setTreat("");
+					break;
+				case "£":
+					if (line.substring(1) != null)
+						e.setSymptoms((e.getSymptoms() == "") ? line.substring(1) : e.getSymptoms()+"\n"+line.substring(1));
+					else
+						e.setSymptoms("");
+					break;
+				case "\\":
+					if (line.substring(1) != null)
+						e.getSynonyms().add(line.substring(1));
+					break;
+				}
+				if (line.equals("--")) {
+					merge(e, list);
+					e = new Element();
+				}
 			}
-			if (line.equals("--")) {
-				merge(e, list);
-				e = new Element();
-			}
+			bw1.close();
 		}
-		bw1.close();
-		while((line = bw2.readLine()) != null){
-			switch (line.substring(0, 1)) {
-			case "^":
-				if (line.substring(1) != null)
-					e.setName((e.getName() == "") ? line.substring(1) : e.getName()+"\n"+line.substring(1));
-				else
-					e.setName("");
-				break;
-			case "$":
-				if (line.substring(1) != null)
-					e.setCause((e.getCause()== "") ? line.substring(1) : e.getCause()+"\n"+line.substring(1));
-				else
-					e.setCause("");
-				break;
-			case "&":
-				if (line.substring(1) != null)
-					e.setTreat((e.getTreat() == "") ? line.substring(1) : e.getTreat()+"\n"+line.substring(1));
-				else
-					e.setTreat("");
-				break;
-			case "£":
-				if (line.substring(1) != null)
-					e.setSymptoms((e.getSymptoms() == "") ? line.substring(1) : e.getSymptoms()+"\n"+line.substring(1));
-				else
-					e.setSymptoms("");
-				break;
-			case "\\":
-				if (line.substring(1) != null)
-					e.getSynonyms().add(line.substring(1));
-				break;
+		if (f2.exists()) {
+			BufferedReader bw2 = new BufferedReader(new FileReader(f2));
+			while((line = bw2.readLine()) != null){
+				switch (line.substring(0, 1)) {
+				case "^":
+					if (line.substring(1) != null)
+						e.setName((e.getName() == "") ? line.substring(1) : e.getName()+"\n"+line.substring(1));
+					else
+						e.setName("");
+					break;
+				case "$":
+					if (line.substring(1) != null)
+						e.setCause((e.getCause()== "") ? line.substring(1) : e.getCause()+"\n"+line.substring(1));
+					else
+						e.setCause("");
+					break;
+				case "&":
+					if (line.substring(1) != null)
+						e.setTreat((e.getTreat() == "") ? line.substring(1) : e.getTreat()+"\n"+line.substring(1));
+					else
+						e.setTreat("");
+					break;
+				case "£":
+					if (line.substring(1) != null)
+						e.setSymptoms((e.getSymptoms() == "") ? line.substring(1) : e.getSymptoms()+"\n"+line.substring(1));
+					else
+						e.setSymptoms("");
+					break;
+				case "\\":
+					if (line.substring(1) != null)
+						e.getSynonyms().add(line.substring(1));
+					break;
+				}
+				if (line.equals("--")) {
+					merge(e, list);
+					e = new Element();
+				}
 			}
-			if (line.equals("--")) {
-				merge(e, list);
-				e = new Element();
-			}
+			bw2.close();
 		}
-		bw2.close();
 		for (Element element : list) {
 			System.out.println(element.toString());
 		}

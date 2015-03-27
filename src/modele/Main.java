@@ -1,5 +1,6 @@
 package modele;
 import requests.XMLSearch;
+import vues.Fenetre;
 
 /**
  * Reste à voir 
@@ -12,9 +13,8 @@ import requests.XMLSearch;
 
 public class Main {
 	public static void main(String args[]){
-		String medic = "Dornase alfa";
-		String disease = "cystic fibrosis";
-		Search search = new Search(medic, disease);
+		Search search = new Search();
+		Fenetre fen = new Fenetre(search);
 	}
 
 }

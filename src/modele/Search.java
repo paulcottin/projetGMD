@@ -5,10 +5,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Observable;
+
+import exceptions.NotFoundException;
 
 import requests.XMLSearch;
 
-public class Search {
+public class Search extends Observable{
 	
 	private String medic, disease, xmlPath, txtPath, outPath;
 	private XMLSearch xml;
@@ -24,8 +27,6 @@ public class Search {
 		this.xml = new XMLSearch(medic, disease, xmlPath);
 		this.el = new ArrayList<Element>();
 		this.merger = new Merger();
-		
-		this.search();
 	}
 	
 	public Search(String medic, String disease){
@@ -37,14 +38,22 @@ public class Search {
 		this.xml = new XMLSearch(medic, disease, xmlPath);
 		this.el = new ArrayList<Element>();
 		this.merger = new Merger();
-		
-		
-		this.search();
 	}
 	
 	public void search(){
-		for (Element e : xml.getInfos()) {
-			el.add(e);
+		el = new ArrayList<Element>();
+		xml.setDSearch(disease);
+		xml.setMSearch(medic);
+		System.out.println(medic+", "+ disease);
+		try {
+			for (Element e : xml.getInfos()) {
+				el.add(e);
+			}
+		} catch (NotFoundException e) {
+			/**
+			 * Gérer avec une fenetre le fait qu'il n'y ai aucun résultat.
+			 */
+			System.out.println(e.getMessage());
 		}
 		//exécution des différentes requêtes sur les sources txt, SQL, CouchDB
 		//Merge des résultats
@@ -53,6 +62,8 @@ public class Search {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		setChanged();
+		notifyObservers();
 	}
 	
 	private void writer(ArrayList<Element> list, String path) throws IOException{
@@ -89,6 +100,30 @@ public class Search {
 
 	public void setOutPath(String outPath) {
 		this.outPath = outPath;
+	}
+
+	public ArrayList<Element> getEl() {
+		return el;
+	}
+
+	public void setEl(ArrayList<Element> el) {
+		this.el = el;
+	}
+
+	public String getMedic() {
+		return medic;
+	}
+
+	public void setMedic(String medic) {
+		this.medic = medic;
+	}
+
+	public String getDisease() {
+		return disease;
+	}
+
+	public void setDisease(String disease) {
+		this.disease = disease;
 	}
 
 }

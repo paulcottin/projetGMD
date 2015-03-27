@@ -17,6 +17,8 @@ import modele.Merger;
 import org.omg.CORBA.portable.IndirectionException;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
+
+import exceptions.NotFoundException;
 /**
  * Reste à gérer : 
  * 	plusieurs maladies traitées par un médicament
@@ -37,18 +39,24 @@ public class XMLSearch {
 		this.merger = new Merger();
 	}
 	
-	public ArrayList<Element> getInfos(){
+	public ArrayList<Element> getInfos() throws NotFoundException{
 		ArrayList<Medic> med_res = new ArrayList<Medic>();
 		ArrayList<Disease> dis_res = new ArrayList<Disease>();
 		File file = new File(path);
 		try {
 			if (!Dsearch.equals("")) {
+				System.out.println("dsearch");
 				dis_res = parserByDisease(file);
 				writerD(dis_res);
 			}
 			if (!Msearch.equals("")) {
+				System.out.println("msearch");
 				med_res = parserByMedic(file);
 				writerM(med_res);
+			}
+			if (dis_res.size() == 0 && med_res.size() == 0) {
+				NotFoundException e = new NotFoundException();
+				throw e;
 			}
 			ArrayList<Element> list = merger.mergeFile("_byM.txt", "_byD.txt"); 
 			deleteTempFile();
@@ -251,6 +259,7 @@ public class XMLSearch {
 			}
 			bw.write("--");
 		}
+		System.out.println("m write");
 		bw.close();
 	}
 	
@@ -264,6 +273,7 @@ public class XMLSearch {
 			bw.write("--");
 		}
 		bw.close();
+		System.out.println("d write");
 	}
 	
 	private void deleteTempFile(){

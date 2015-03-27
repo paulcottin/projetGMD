@@ -1,6 +1,15 @@
 package modele;
 
 import java.util.ArrayList;
+/**
+ * Name : Name of medic
+ * Treat : Name of disease
+ * Cause : 
+ * Symptoms : Symptoms of the disease
+ * Synonyms : Synonyms of the medic
+ * @author paul
+ *
+ */
 
 public class Element {
 
