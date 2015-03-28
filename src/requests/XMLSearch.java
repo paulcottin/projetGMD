@@ -167,7 +167,7 @@ public class XMLSearch {
 									ArrayList<String> t = new ArrayList<String>();
 									t.add(treat);
 									ArrayList<String> s = new ArrayList<String>();
-									c.add(symptom);
+									s.add(symptom);
 									list.add(new Disease(name, t, c, s));
 								}
 							}

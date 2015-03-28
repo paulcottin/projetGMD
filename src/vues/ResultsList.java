@@ -39,23 +39,35 @@ public class ResultsList extends JScrollPane{
 		Vector<String> columnNames = new Vector<String>();
 		columnNames.addElement(("Medic name"));
 		columnNames.addElement(("Disease name"));
-		columnNames.addElement(("Cause"));
 		columnNames.addElement(("Symptoms"));
+		columnNames.addElement(("Cause"));
 		columnNames.addElement(("Synonyms"));
 		
 		vec = new Vector<Vector<String>>();
 		Vector<String> v;
-		String synonyms = "";
+		String synonyms = "", treats = "", causes = "", symptoms = "";
 		for (int i = 0; i < nbResults; i++) {
 			v = new Vector<String>();
+			treats = "";
+			causes = "";
+			symptoms = "";
 			synonyms = "";
-			v.addElement(search.getEl().get(i).getName());
-			v.addElement(search.getEl().get(i).getTreat().get(0));
-			v.addElement(search.getEl().get(i).getCause().get(0));
-			v.addElement(search.getEl().get(i).getSymptoms().get(0));
+			for (String string : search.getEl().get(i).getCause()) {
+				causes += string+"\n";
+			}
+			for (String string : search.getEl().get(i).getTreat()) {
+				treats += string+"\n";
+			}
+			for (String string : search.getEl().get(i).getSymptoms()) {
+				symptoms += string+"\n";
+			}
 			for (String string : search.getEl().get(i).getSynonyms()) {
 				synonyms += string+"\n";
 			}
+			v.addElement(search.getEl().get(i).getName());
+			v.addElement(treats);
+			v.addElement(causes);
+			v.addElement(symptoms);
 			v.addElement(synonyms);
 			vec.addElement(v);
 		}

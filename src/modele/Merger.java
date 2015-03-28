@@ -33,8 +33,16 @@ public class Merger {
 	
 	private ArrayList<Element> DiseaseToElement(ArrayList<Disease> d){
 		ArrayList<Element> e = new ArrayList<Element>();
+		ArrayList<String> treat;
+		String name;
 		for (Disease di : d) {
-			e.add(new Element(di.getName(), di.getTreatment(), di.getCause(), di.getSymptoms(), new ArrayList<String>()));
+			name = "";
+			treat = new ArrayList<String>();
+			treat.add(di.getName());
+			for (String s: di.getTreatment()) {
+				name += s+"\n";
+			}
+			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), new ArrayList<String>()));
 		}
 		return e;
 	}
