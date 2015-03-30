@@ -11,6 +11,8 @@ import java.util.List;
 
 import com.googlecode.jcsv.reader.CSVReader;
 import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
+import com.sun.org.apache.xml.internal.utils.SuballocatedByteVector;
 
 import modele.Disease;
 import modele.Element;
@@ -24,7 +26,7 @@ import modele.Merger;
 
 public class TextSearch {
 	
-	private String path, Dsearch;
+	private String path, Dsearch, name;
 	private Merger merger;
 	private ArrayList<Element> list;
 	private ArrayList<Disease> dList;
@@ -39,7 +41,7 @@ public class TextSearch {
 	
 	public ArrayList<Element> getInfos(){
 		try {
-//			parseCSV();
+			parseCSV();
 			parseTxt();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -51,7 +53,7 @@ public class TextSearch {
 		BufferedReader br;
 		
 		br = new BufferedReader(new FileReader(new File(path)));
-		String line = "", medicName = "", synonyms = "", nom = "";
+		String line = "", nom = "", medicName  ="";
 		ArrayList<String> syns = new ArrayList<String>();
 		String[] tab;
 		while((line = br.readLine()) != null){
@@ -116,12 +118,75 @@ public class TextSearch {
 	
 	private void parseTxt() throws IOException{
 		BufferedReader br;
-		String line = "";
+		String line = "", name = "";
+		boolean moved = false;
+		ArrayList<String> symptoms = new ArrayList<String>();
 		
 		br = new BufferedReader(new FileReader(new File(path)));
 		while((line = br.readLine()) != null){
-			
+			if (line.equals("*FIELD* TI")) {
+				line = br.readLine();
+				String item = line.substring(0, 1);
+				if (item.equals("*")) {
+					int end = line.length();
+					if (line.contains(",")) {
+						end = line.indexOf(",");
+					}
+					if (line.contains(";")) {
+						end = ((end < line.indexOf(";") ? end : line.indexOf(";")));
+					}
+					name = line.substring(line.indexOf(" ")+1, end);
+				}
+				else if (item.matches("[0-9]")) {
+					name = line.substring(line.indexOf(" ")+1, line.length());
+				}
+				else if (item.equals("#")) {
+					int end = line.length();
+					if (line.contains(";")) {
+						end = line.indexOf(";");
+					}
+					if (line.substring(line.indexOf(",")+1).contains(",")) {
+						end = line.substring(line.indexOf(",")+1).indexOf(",")+line.indexOf(",")+1;
+					}
+					name = line.substring(line.indexOf(" ")+1, end);
+					if (name.contains(",")) {
+						String[] tab = name.split(",");
+						name = tab[1]+" "+tab[0];
+					}
+				}
+				else if (item.equals("%")) {
+					name = line.substring(line.indexOf(" ")+1, line.length());
+				}
+				else if (item.equals("+")) {
+					if (line.contains(";"))
+						name = line.substring(line.indexOf(" ")+1, line.indexOf(";"));
+					else
+						name = line.substring(line.indexOf(" ")+1, line.length());
+				}
+				else if (item.equals("^")) {
+					moved = true;
+				}
+			}
+			if (name.equals(Dsearch)) {
+				this.name = name;
+				if (line.contains("*FIELD* CS") && !moved) {
+					while(!(line = br.readLine()).contains("*FIELD*")){
+						if (!(line.contains(":") || line.contains("[")) && !line.equals("")) {
+							String temp = line.replaceAll("\\t", "");
+							int end;
+							if (temp.contains(";"))
+								end = temp.indexOf(";");
+							else
+								end = temp.length();
+							symptoms.add(temp.substring(0, end).replaceAll("   ", ""));
+						}
+					}
+				}
+			}
+			moved = false;
 		}
+		dList.add(new Disease(this.name, new ArrayList<String>(), new ArrayList<String>(), symptoms));
+		br.close();
 	}
 	
 	public String getPath() {
