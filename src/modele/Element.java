@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class Element {
 
 	String name;
-	ArrayList<String> synonyms, treat, cause, symptoms;
+	ArrayList<String> synonyms, treat, cause, symptoms, diseaseSynonyms;
 	
 	public Element() {
 		name = "";
@@ -22,14 +22,16 @@ public class Element {
 		cause = new ArrayList<String>();
 		symptoms = new ArrayList<String>();
 		synonyms = new ArrayList<String>();
+		diseaseSynonyms = new ArrayList<String>();
 	}
 	
-	public Element(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms){
+	public Element(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms, ArrayList<String> diseaseSynonyms){
 		this.name = name;
 		this.treat = treat;
 		this.cause = cause;
 		this.symptoms = symptoms;
 		this.synonyms = synonyms;
+		this.diseaseSynonyms = diseaseSynonyms;
 	}
 	
 	public String toString(){
@@ -78,6 +80,14 @@ public class Element {
 
 	public void setSymptoms(ArrayList<String> symptoms) {
 		this.symptoms = symptoms;
+	}
+
+	public ArrayList<String> getDiseaseSynonyms() {
+		return diseaseSynonyms;
+	}
+
+	public void setDiseaseSynonyms(ArrayList<String> diseaseSynonyms) {
+		this.diseaseSynonyms = diseaseSynonyms;
 	}
 	
 	

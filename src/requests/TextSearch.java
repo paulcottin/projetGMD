@@ -71,7 +71,7 @@ public class TextSearch {
 					syns = getSynonyms(tab[1], tab[2]);
 				else
 					syns = new ArrayList<String>();
-				dList.add(new Disease(nom, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>()));
+				dList.add(new Disease(nom, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), syns));
 			}
 		}
 		br.close();
@@ -185,7 +185,7 @@ public class TextSearch {
 			}
 			moved = false;
 		}
-		dList.add(new Disease(this.name, new ArrayList<String>(), new ArrayList<String>(), symptoms));
+		dList.add(new Disease(this.name, new ArrayList<String>(), new ArrayList<String>(), symptoms, new ArrayList<String>()));
 		br.close();
 	}
 	

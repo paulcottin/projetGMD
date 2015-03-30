@@ -2,23 +2,27 @@ package modele;
 
 import java.util.ArrayList;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
+
 public class Disease {
 	
 	String name;
-	ArrayList<String> treatment, cause, symptoms;
+	ArrayList<String> treatment, cause, symptoms, synonyms;
 	
 	public Disease() {
 		name = "";
 		treatment = new ArrayList<String>();
 		cause = new ArrayList<String>();
 		symptoms = new ArrayList<String>();
+		synonyms = new ArrayList<String>();
 	}
 	
-	public Disease(String name, ArrayList<String> treatment, ArrayList<String> cause, ArrayList<String> symptoms){
+	public Disease(String name, ArrayList<String> treatment, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms){
 		this.name = name;
 		this.treatment = treatment;
 		this.cause = cause;
 		this.symptoms = symptoms;
+		this.synonyms = synonyms;
 	}
 	
 	public String toString(){
@@ -55,6 +59,14 @@ public class Disease {
 
 	public void setSymptoms(ArrayList<String> symptoms) {
 		this.symptoms = symptoms;
+	}
+
+	public ArrayList<String> getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(ArrayList<String> synonyms) {
+		this.synonyms = synonyms;
 	}
 
 }

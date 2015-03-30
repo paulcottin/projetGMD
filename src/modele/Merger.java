@@ -42,7 +42,7 @@ public class Merger {
 			for (String s: di.getTreatment()) {
 				name += s+"\n";
 			}
-			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), new ArrayList<String>()));
+			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), new ArrayList<String>(), di.getSynonyms()));
 		}
 		return e;
 	}
@@ -50,7 +50,7 @@ public class Merger {
 	private ArrayList<Element> MedicToElement(ArrayList<Medic> medic){
 		ArrayList<Element> e = new ArrayList<Element>();
 		for (Medic m : medic) {
-			e.add(new Element(m.getName(), m.getTreat(), m.getCause(), new ArrayList<String>(), m.getSynonyms()));
+			e.add(new Element(m.getName(), m.getTreat(), m.getCause(), new ArrayList<String>(), m.getSynonyms(), new ArrayList<String>()));
 		}
 		return e;
 	}
