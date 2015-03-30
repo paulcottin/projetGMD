@@ -44,7 +44,7 @@ public class Search extends Observable{
 		this.txt_b = true;
 		this.sql_b = true;
 		this.xml_b = true;
-		this.xmlPath = "drugbankTest.xml";
+		this.xmlPath = "drugbank.xml";
 		this.txtPath = "";
 		this.outPath = "out.txt";
 		this.el = new ArrayList<Element>();
