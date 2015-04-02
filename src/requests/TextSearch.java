@@ -18,11 +18,6 @@ import modele.Disease;
 import modele.Element;
 import modele.Merger;
 
-/**
- * Il faut ajouter une variable ArrayList<String> synonyms pour les maladies. et donc un champ supplémentaire dans Element
- * @author paul
- *
- */
 
 public class TextSearch {
 	
@@ -41,8 +36,9 @@ public class TextSearch {
 	
 	public ArrayList<Element> getInfos(){
 		try {
-			parseCSV();
+//			parseCSV();
 			parseTxt();
+			System.out.println(dList.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

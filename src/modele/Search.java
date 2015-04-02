@@ -17,7 +17,7 @@ import requests.XMLSearch;
 
 public class Search extends Observable{
 	
-	private String medic, disease, xmlPath, txtPath, outPath;
+	private String medic, disease, xmlPath, txtPath, csvPath, outPath;
 	private boolean xml_b, txt_b, couch_b, sql_b;
 	private XMLSearch xml;
 	private SQLSearch sql;
@@ -181,6 +181,14 @@ public class Search extends Observable{
 		this.sql_b = sql_b;
 		setChanged();
 		notifyObservers();
+	}
+
+	public String getCsvPath() {
+		return csvPath;
+	}
+
+	public void setCsvPath(String csvPath) {
+		this.csvPath = csvPath;
 	}
 
 }
