@@ -73,7 +73,8 @@ public class SQLSearch {
 		}
 	}
 	
-	public Medic searchByDrug(){
+	public ArrayList<Medic> searchByDrug(){
+		ArrayList<Medic> list = new ArrayList<Medic>();
 		System.out.println("coucou");
 		try {
 			Class.forName(DRIVER);
@@ -109,7 +110,8 @@ public class SQLSearch {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return medic;
+		list.add(medic);
+		return list;
 	}
 
 	public ArrayList<Disease> searchByDisease(){
@@ -135,7 +137,7 @@ public class SQLSearch {
 					disease.setName(res1.getString("drug_name2"));
 					}else {
 					disease.setName(res1.getString("drug_name1"));
-					disease.getSynonym().add(res1.getString("drug_name2"));
+					disease.getSynonyms().add(res1.getString("drug_name2"));
 					}
 				drug.add(disease);
 				System.out.println(res1.getString("i_name"));
@@ -146,8 +148,8 @@ public class SQLSearch {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		return disease;
+		drug.add(disease);
+		return drug;
 	}
 
 
