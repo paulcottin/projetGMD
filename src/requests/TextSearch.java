@@ -16,19 +16,21 @@ import com.sun.org.apache.xml.internal.utils.SuballocatedByteVector;
 
 import modele.Disease;
 import modele.Element;
+import modele.Medic;
 import modele.Merger;
 
 
 public class TextSearch {
 	
-	private String path, Dsearch, name;
+	private String CSVpath, TXTpath, Dsearch, name;
 	private Merger merger;
 	private ArrayList<Element> list;
 	private ArrayList<Disease> dList;
 	
-	public TextSearch(String Dsearch, String path) {
+	public TextSearch(String Dsearch, String TXTpath, String CSVpath) {
 		this.Dsearch = Dsearch;
-		this.path = path;
+		this.CSVpath= CSVpath;
+		this.TXTpath = TXTpath;
 		this.list = new ArrayList<Element>();
 		this.dList = new ArrayList<Disease>();
 		this.merger = new Merger();
@@ -36,9 +38,10 @@ public class TextSearch {
 	
 	public ArrayList<Element> getInfos(){
 		try {
-//			parseCSV();
+			parseCSV();
 			parseTxt();
-			System.out.println(dList.toString());
+			list = merger.testMerge(new ArrayList<Medic>(), dList);
+			System.out.println(list.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -48,7 +51,7 @@ public class TextSearch {
 	private void parseCSV() throws IOException{
 		BufferedReader br;
 		
-		br = new BufferedReader(new FileReader(new File(path)));
+		br = new BufferedReader(new FileReader(new File(CSVpath)));
 		String line = "", nom = "", medicName  ="";
 		ArrayList<String> syns = new ArrayList<String>();
 		String[] tab;
@@ -118,7 +121,7 @@ public class TextSearch {
 		boolean moved = false;
 		ArrayList<String> symptoms = new ArrayList<String>();
 		
-		br = new BufferedReader(new FileReader(new File(path)));
+		br = new BufferedReader(new FileReader(new File(TXTpath)));
 		while((line = br.readLine()) != null){
 			if (line.equals("*FIELD* TI")) {
 				line = br.readLine();
@@ -184,14 +187,6 @@ public class TextSearch {
 		dList.add(new Disease(this.name, new ArrayList<String>(), new ArrayList<String>(), symptoms, new ArrayList<String>()));
 		br.close();
 	}
-	
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
 
 	public String getDsearch() {
 		return Dsearch;
@@ -207,6 +202,22 @@ public class TextSearch {
 
 	public void setList(ArrayList<Element> list) {
 		this.list = list;
+	}
+
+	public String getCSVpath() {
+		return CSVpath;
+	}
+
+	public void setCSVpath(String cSVpath) {
+		CSVpath = cSVpath;
+	}
+
+	public String getTXTpath() {
+		return TXTpath;
+	}
+
+	public void setTXTpath(String tXTpath) {
+		TXTpath = tXTpath;
 	}
 
 }

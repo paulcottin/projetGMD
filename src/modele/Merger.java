@@ -18,7 +18,7 @@ public class Merger {
 	public ArrayList<Element> testMerge(ArrayList<Medic> medics, ArrayList<Disease> diseases){
 		ArrayList<Element> m = MedicToElement(medics);
 		ArrayList<Element> d = DiseaseToElement(diseases);
-		if (medics.size() < diseases.size()) {
+		if (medics.size() < diseases.size() && medics.size() != 0 && diseases.size() != 0) {
 			for (Element element : d) {
 				merge(element, m);
 			}
@@ -31,7 +31,7 @@ public class Merger {
 		}
 	}
 	
-	private ArrayList<Element> DiseaseToElement(ArrayList<Disease> d){
+	public ArrayList<Element> DiseaseToElement(ArrayList<Disease> d){
 		ArrayList<Element> e = new ArrayList<Element>();
 		ArrayList<String> treat;
 		String name;
@@ -47,7 +47,7 @@ public class Merger {
 		return e;
 	}
 	
-	private ArrayList<Element> MedicToElement(ArrayList<Medic> medic){
+	public ArrayList<Element> MedicToElement(ArrayList<Medic> medic){
 		ArrayList<Element> e = new ArrayList<Element>();
 		for (Medic m : medic) {
 			e.add(new Element(m.getName(), m.getTreat(), m.getCause(), new ArrayList<String>(), m.getSynonyms(), new ArrayList<String>()));

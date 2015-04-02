@@ -13,10 +13,8 @@ import vues.Fenetre;
 
 public class Main {
 	public static void main(String args[]){
-//		Search search = new Search();
-//		Fenetre fen = new Fenetre(search);
-		TextSearch ts = new TextSearch("ACETYL-CoA ACETYLTRANSFERASE 2", "_text.txt");
-		ts.getInfos();  
+		Search search = new Search();
+		Fenetre fen = new Fenetre(search);  
 	}
 
 }

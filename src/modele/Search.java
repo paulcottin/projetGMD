@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import exceptions.NotFoundException;
 
 import requests.SQLSearch;
+import requests.TextSearch;
 import requests.XMLSearch;
 
 public class Search extends Observable{
@@ -21,12 +22,14 @@ public class Search extends Observable{
 	private boolean xml_b, txt_b, couch_b, sql_b;
 	private XMLSearch xml;
 	private SQLSearch sql;
+	private TextSearch txt;
 	private Merger merger;
 	private ArrayList<Element> el;
 	
 	public Search() {
 		init();
 		this.xml = new XMLSearch(medic, disease, xmlPath);
+		this.txt = new TextSearch(disease, txtPath, csvPath);
 //		this.sql = new SQLSearch();
 	}
 	
@@ -35,6 +38,7 @@ public class Search extends Observable{
 		this.medic = medic;
 		this.disease = disease;
 		this.xml = new XMLSearch(medic, disease, xmlPath);
+		this.txt = new TextSearch(disease, txtPath, csvPath);
 	}
 	
 	private void init(){
@@ -45,7 +49,8 @@ public class Search extends Observable{
 		this.sql_b = true;
 		this.xml_b = true;
 		this.xmlPath = "drugbank.xml";
-		this.txtPath = "";
+		this.txtPath = "_text.txt";
+		this.csvPath = "omim_onto.csv";
 		this.outPath = "out.txt";
 		this.el = new ArrayList<Element>();
 		this.merger = new Merger();
@@ -71,7 +76,9 @@ public class Search extends Observable{
 			//Ajout des résultats de SQL
 		}
 		if (txt_b) {
-			//Ajout des résultats du texte
+			for (Element e : txt.getInfos()) {
+				el.add(e);
+			}
 		}
 		//Merge des résultats
 		try {
