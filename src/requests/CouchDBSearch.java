@@ -14,6 +14,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+
+import modele.Disease;
+import modele.Search;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,15 +30,34 @@ public class CouchDBSearch {
 	static String USER_NAME = "benhouss1u";
 	static String USER_PSWD = "CouchDB2A";
 
+	private String dSearch;
+	private ArrayList<Disease> dList;
+
 	public CouchDBSearch() { 
+		init();
+	}
+
+	public CouchDBSearch(String dSearch){
+		init();
+		this.dSearch = dSearch;
+	}
+
+	private void init(){
+		this.dSearch = "";
+		this.dList = new ArrayList<Disease>();
+	}
+
+	public void search(){
 		int nbLines = getNbLines();
-		for (int i = 5; i < nbLines; i++) {
+		for (int i = 5; i < nbLines-2; i++) {
 			try {
+				System.out.println(i);
 				getInfos(getRep(i));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println(dList.toString());
 	}
 
 
@@ -56,7 +79,7 @@ public class CouchDBSearch {
 			ligne = "";
 
 			while((ligne = rd.readLine()) != null){
-				System.out.println(ligne);
+				//				System.out.println(ligne);
 				res+=ligne;
 			}
 		} catch (IOException e) {
@@ -67,34 +90,50 @@ public class CouchDBSearch {
 
 
 
-	public void getInfos(String rep) throws JSONException{
+	private void getInfos(String rep) throws JSONException{
 		try {
 			JSONObject jsonObject = new JSONObject(rep);
-			JSONArray rows = (JSONArray) (jsonObject).get("rows");
-			JSONObject row = (JSONObject) rows.get(0);
-			JSONObject val = (JSONObject) row.get("value");
-			JSONObject name = (JSONObject) val.get("Name");
-			String text_name =  String.valueOf(name.get("text"));
-			JSONObject synlist = (JSONObject) val.get("SynonymList");
-			String count_syn =  String.valueOf(synlist.get("count"));
+			JSONArray rows = jsonObject.getJSONArray("rows");
 
-			if (count_syn.equals("1")) {
-				JSONObject syns = (JSONObject) synlist.get("Synonym");
-				String text =  String.valueOf(syns.get("text"));
-				System.out.println("Le Synonyme est : " + text + " et le Nom est : " + text_name);
-			}else{
-				JSONArray syns = (JSONArray) synlist.getJSONArray("Synonym");
-				for(int i=0; i<Integer.parseInt(count_syn); i++){
-					JSONObject syn = (JSONObject) syns.getJSONObject(i);
-					String text =  String.valueOf(syn.get("text"));
-					System.out.println("Le Synonyme est : " + text + " et le Nom est : " + text_name);
+			if (!rows.isNull(0)) {
+				JSONObject row = rows.getJSONObject(0);
+				JSONObject val = row.getJSONObject("value");
+				JSONObject name = val.getJSONObject("Name");
+				String text_name =  name.getString("text");
+				if (text_name.equals(dSearch)) {
+					Disease d = new Disease();
+					d.setName(text_name);
+					ArrayList<String> synonyms = new ArrayList<String>();
+					JSONObject synlist = val.getJSONObject("SynonymList");
+					String count_syn =  synlist.getString("count");
+
+					if (count_syn.equals("0")) {
+						//Ne rien faire 
+					}
+					else if (count_syn.equals("1")) {
+						JSONObject syns = (JSONObject) synlist.get("Synonym");
+						String text =  syns.getString("text");
+						//				System.out.println("Le Synonyme est : " + text + " et le Nom est : " + text_name);
+						synonyms.add(text);
+					}
+					else{
+						JSONArray syns = synlist.getJSONArray("Synonym");
+						for(int i=0; i<Integer.parseInt(count_syn); i++){
+							JSONObject syn = syns.getJSONObject(i);
+							String text =  syn.getString("text");
+							//											System.out.println("Le Synonyme est : " + text + " et le Nom est : " + text_name);
+							synonyms.add(text);
+						}
+					}
+					d.setSynonyms(synonyms);
+					dList.add(d);
 				}
 			}
 		} catch (NullPointerException ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private int getNbLines(){
 		URL url = null;
 		try {
@@ -116,5 +155,13 @@ public class CouchDBSearch {
 			e.printStackTrace();
 		}
 		return cpt;
+	}
+
+	public String getdSearch() {
+		return dSearch;
+	}
+
+	public void setdSearch(String dSearch) {
+		this.dSearch = dSearch;
 	}
 }

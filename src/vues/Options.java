@@ -48,10 +48,10 @@ public class Options extends JPanel{
 		couch_case.addActionListener(new SelectSourceController(search, "couchDB"));
 		
 		//Sélection par défaut
-		sql_case.setSelected(true);
-		xml_case.setSelected(true);
+//		sql_case.setSelected(true);
+//		xml_case.setSelected(true);
 		txt_case.setSelected(true);
-		couch_case.setSelected(true);
+//		couch_case.setSelected(true);
 	}
 	
 	public void creerOptions(){

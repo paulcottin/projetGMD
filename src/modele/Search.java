@@ -44,10 +44,10 @@ public class Search extends Observable{
 	private void init(){
 		this.disease = "";
 		this.medic = "";
-		this.couch_b = true;
+		this.couch_b = false;
 		this.txt_b = true;
-		this.sql_b = true;
-		this.xml_b = true;
+		this.sql_b = false;
+		this.xml_b = false;
 		this.xmlPath = "drugbank.xml";
 		this.txtPath = "_text.txt";
 		this.csvPath = "omim_onto.csv";
@@ -75,6 +75,7 @@ public class Search extends Observable{
 		if (sql_b) {
 			//Ajout des résultats de SQL
 		}
+		txt.setDsearch(disease);
 		if (txt_b) {
 			for (Element e : txt.getInfos()) {
 				el.add(e);

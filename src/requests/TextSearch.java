@@ -41,10 +41,10 @@ public class TextSearch {
 			parseCSV();
 			parseTxt();
 			list = merger.testMerge(new ArrayList<Medic>(), dList);
-			System.out.println(list.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		return list;
 	}
 	
