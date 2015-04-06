@@ -32,6 +32,7 @@ public class CouchDBSearch {
 
 	private String dSearch;
 	private ArrayList<Disease> dList;
+	private String clinicalSigns, disease;
 
 	public CouchDBSearch() { 
 		init();
@@ -45,27 +46,33 @@ public class CouchDBSearch {
 	private void init(){
 		this.dSearch = "";
 		this.dList = new ArrayList<Disease>();
+		this.clinicalSigns = "";
+		this.disease = "";
+		
 	}
 
 	public void search(){
-		int nbLines = getNbLines();
-		for (int i = 5; i < nbLines-2; i++) {
-			try {
-				System.out.println(i);
-				getInfos(getRep(i));
-			} catch (JSONException e) {
-				e.printStackTrace();
+		this.disease = getDiseases();
+		this.clinicalSigns = getClinicalSigns();
+		try {
+			JSONObject docDiseases = new JSONObject(getDiseases());
+			int nbLignesDisease = docDiseases.getInt("total_rows");
+			
+			JSONArray rows = docDiseases.getJSONArray("rows");
+			for (int i = 5; i < nbLignesDisease; i++) {
+				getDiseaseInfos(rows.getJSONObject(i));
 			}
+			getClinicalInfo(clinicalSigns);
+		} catch (JSONException e1) {
+			e1.printStackTrace();
 		}
-		System.out.println(dList.toString());
 	}
 
-
-	private String getRep(int i){
+	private String getDiseases(){
 		String ligne = "";
 		URL url = null;
 		try {
-			url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseases?key="+i);
+			url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseases");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -88,16 +95,11 @@ public class CouchDBSearch {
 		return res;
 	}
 
-
-
-	private void getInfos(String rep) throws JSONException{
+	private void getDiseaseInfos(JSONObject rep) throws JSONException{
 		try {
-			JSONObject jsonObject = new JSONObject(rep);
-			JSONArray rows = jsonObject.getJSONArray("rows");
 
-			if (!rows.isNull(0)) {
-				JSONObject row = rows.getJSONObject(0);
-				JSONObject val = row.getJSONObject("value");
+			if (!rep.isNull("value")) {
+				JSONObject val = rep.getJSONObject("value");
 				JSONObject name = val.getJSONObject("Name");
 				String text_name =  name.getString("text");
 				if (text_name.equals(dSearch)) {
@@ -134,27 +136,65 @@ public class CouchDBSearch {
 		}
 	}
 
-	private int getNbLines(){
+	public String getClinicalSigns(){
+		String ligne = "";
 		URL url = null;
+
 		try {
-			url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseases");
+			url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/clinicalsigns/_view/GetDiseaseClinicalSignsNoLang");
 		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		int cpt = 0;
+		String res="";
+
 		try {
 			HttpURLConnection connexion = (HttpURLConnection) url.openConnection();
 			connexion.setDoOutput(true);
 			BufferedReader rd = new BufferedReader(new InputStreamReader(connexion.getInputStream()));
+			ligne = "";
 
-			while(rd.readLine() != null){
-				cpt++;
+			while((ligne = rd.readLine()) != null){
+				// System.out.println(ligne);
+				res+=ligne;
 			}
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return cpt;
+		return res;
+	}
+
+	public void getClinicalInfo(String rep) throws JSONException{
+		try {
+			JSONObject jsonObject = new JSONObject(rep);
+			JSONArray rows = (JSONArray) (jsonObject).get("rows");
+			int size = rows.length();
+			for(int i=0; i<size; i++){
+				JSONObject row = (JSONObject) rows.get(i);
+
+				JSONObject val = (JSONObject) row.get("value");
+
+				JSONObject disease = (JSONObject) val.get("disease");
+				JSONObject name = (JSONObject) disease.get("Name");
+				String text_name =  String.valueOf(name.get("text"));
+				
+				if (text_name.equals(dSearch)) {
+					Disease d = new Disease();
+					d.setName(text_name);
+					JSONObject cl_sign = (JSONObject) val.get("clinicalSign");
+					JSONObject name_cl = (JSONObject) cl_sign.get("Name");
+					String text_cl =  String.valueOf(name_cl.get("text"));
+					d.getCause().add(text_cl);
+					
+					dList.add(d);
+					System.out.println("Le Nom est : " + text_name + " et le symptome est : " + text_cl);
+				}
+			}
+		} catch (NullPointerException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public String getdSearch() {

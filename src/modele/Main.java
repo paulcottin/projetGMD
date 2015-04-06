@@ -1,4 +1,5 @@
 package modele;
+import requests.CouchDBSearch;
 import requests.TextSearch;
 import vues.Fenetre;
 
@@ -13,8 +14,11 @@ import vues.Fenetre;
 
 public class Main {
 	public static void main(String args[]){
-		Search search = new Search();
-		Fenetre fen = new Fenetre(search);  
+//		Search search = new Search();
+//		Fenetre fen = new Fenetre(search);
+		CouchDBSearch cs = new CouchDBSearch("Glutaric acidemia type 1");
+		cs.search();
+		
 	}
 
 }
