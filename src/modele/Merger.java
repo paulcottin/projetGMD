@@ -56,21 +56,24 @@ public class Merger {
 	}
 
 	public void merge(Element e, ArrayList<Element> list){
-		Iterator<Element> iter = list.iterator();
-		Element element;
-		if (list.size() == 0) {
-			list.add(e);
-		}
-		else{
-			while(iter.hasNext()) {
-				element = iter.next();
-				//Si même nom
-				if (true) {
-					
-				}else
-					list.add(e);
-			}
-		}
+//		Iterator<Element> iter = list.iterator();
+//		Element element;
+//		if (list.size() == 0) {
+//			list.add(e);
+//		}
+//		else{
+//			while(iter.hasNext()) {
+//				element = iter.next();
+//				//Si même nom
+//				if (!element.getName().equals("") && !e.getName().equals("")) {
+//					if (element.getName().equals(e.getName())) {
+//						
+//					}
+//				}else
+//					list.add(e);
+//			}
+//		}
+		list.add(e);
 	}
 
 }

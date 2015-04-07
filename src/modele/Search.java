@@ -33,7 +33,7 @@ public class Search extends Observable{
 		this.xml = new XMLSearch(medic, disease, xmlPath);
 		this.txt = new TextSearch(disease, txtPath, csvPath);
 		this.couchDB = new CouchDBSearch(disease);
-//		this.sql = new SQLSearch();
+		this.sql = new SQLSearch(medic, disease);
 	}
 	
 	public Search(String medic, String disease){
@@ -43,6 +43,7 @@ public class Search extends Observable{
 		this.xml = new XMLSearch(medic, disease, xmlPath);
 		this.txt = new TextSearch(disease, txtPath, csvPath);
 		this.couchDB = new CouchDBSearch(disease);
+		this.sql = new SQLSearch(medic, disease);
 	}
 	
 	private void init(){
@@ -70,6 +71,8 @@ public class Search extends Observable{
 		xml.setMSearch(medic);
 		txt.setDsearch(disease);
 		couchDB.setdSearch(disease);
+		sql.setMsearch(medic);
+		sql.setDsearch(disease);
 		if (xml_b) {
 			try {
 				for (Element e : xml.getInfos()) {
@@ -85,7 +88,10 @@ public class Search extends Observable{
 			}
 		}
 		if (sql_b) {
-			//Ajout des résultats de SQL
+			System.out.println("coucou");
+			for (Element element : sql.search()) {
+				sql_array.add(element);
+			}
 		}
 		txt.setDsearch(disease);
 		if (txt_b) {

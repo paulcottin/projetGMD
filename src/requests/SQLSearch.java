@@ -36,10 +36,9 @@ public class SQLSearch {
 	private String Indications = "";
 	private String Adverse_effects = "";
 	private Merger merger;
-	
+
 
 	public SQLSearch(String Msearch, String Dsearch) {
-
 		this.setMsearch(Msearch);
 		this.setDsearch(Dsearch);
 		this.setPath(path);
@@ -51,34 +50,25 @@ public class SQLSearch {
 		disease.setName(Dsearch);
 	}
 
-//	private void parseDocument() throws NotFoundException{
-//		org.w3c.dom.Element docEle = dom.getDocumentElement();
-//		ArrayList<Medic> med_res = new ArrayList<Medic>();
-//		ArrayList<Disease> dis_res = new ArrayList<Disease>();
-//		if (!Dsearch.equals("")) {
-//			dis_res = searchByDisease();
-////				writerD(dis_res);
-//		}
-//		if (!Msearch.equals("")) {
-//			med_res = searchByDrug();
-////				writerM(med_res);
-//		}
-//		if (dis_res.size() == 0 && med_res.size() == 0) {
-//			NotFoundException e = new NotFoundException();
-//			throw e;
-//		}else {
-////				list = merger.mergeFile("_byM.txt", "_byD.txt"); 
-////				deleteTempFile();
-//			list = merger.testMerge(med_res, dis_res);
-//		}
-//	}
-//	
-	public ArrayList<Medic> searchByDrug(){
+	public ArrayList<Element> search(){
+		if (!Dsearch.equals("")) {
+			for (Element element : merger.DiseaseToElement(searchByDisease())) {
+				list.add(element);
+			}
+		}
+		if (!Msearch.equals("")) {
+			for (Element element : merger.MedicToElement(searchByDrug())) {
+				list.add(element);
+			}
+		}
+		return list;
+	}
+
+	private ArrayList<Medic> searchByDrug(){
 		ArrayList<Medic> list = new ArrayList<Medic>();
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -91,39 +81,39 @@ public class SQLSearch {
 		try {
 			Connection con = DriverManager.getConnection(DB_SERVER+DB, USER_NAME, USER_PSWD);
 			Statement st = con.createStatement();
-			
+
 			ResultSet res1 = st.executeQuery(myQuery1);
-			
+
 			while(res1.next()){
 				medic.getCause().add(res1.getString("se_name"));
 			}
-			
+			res1.close();
 			ResultSet res2 = st.executeQuery(myQuery2);
 
 			while(res2.next()){
 				medic.getTreat().add(res2.getString("i_name"));
 			}			
+			res2.close();
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		list.add(medic);
+		System.out.println("by medic ok");
 		return list;
 	}
 
-	public ArrayList<Disease> searchByDisease(){
+	private ArrayList<Disease> searchByDisease(){
 		ArrayList<Disease> drug = new ArrayList<Disease>() ;
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		ArrayList<String> List1 = new ArrayList<String>();		
-		String myQuery1 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, indications_raw i WHERE i.label = l.label AND i.i_name = \"" + Dsearch + "\";";
-		
+		String myQuery1 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, indications_raw i WHERE i.label = l.label AND i.i_name = \"" + Dsearch + "\" ORDER BY l.drug_name1;";
+
 		try {
 			Connection con = DriverManager.getConnection(DB_SERVER+DB, USER_NAME, USER_PSWD);
 			Statement st = con.createStatement();
@@ -133,57 +123,20 @@ public class SQLSearch {
 				disease = new Disease();
 				if (res1.getString("drug_name1").equals("")) {
 					disease.getTreatment().add(res1.getString("drug_name2"));
-					}else {
+				}else {
 					disease.getTreatment().add(res1.getString("drug_name1"));
-					}
+				}
+				disease.setName(Dsearch);
 				drug.add(disease);
 				System.out.println(res1.getString("i_name"));
 			}
-
-
+			res1.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("disease ok");
 		return drug;
 	}
-
-
-
-		//	public SQLSearch(){
-		//		
-		//		File file = new File("drug.csv");
-		////		FileWriter fw;
-		//		
-		//		
-		//		try {
-		////			fw = new FileWriter(file);
-		//			
-		//			Class.forName(DRIVER);
-		//			Connection con = DriverManager.getConnection(DB_SERVER+DB, USER_NAME, USER_PSWD);
-		//			
-		//			String myQuery = "SELECT * FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label;";
-		//			Statement st = con.createStatement();
-		//			ResultSet res = st.executeQuery(myQuery);
-		//			
-		//			while(res.next()){
-		////				int id = res.getInt("id");
-		////				String nom2 = res.getString("drug_name2");
-		//				String se_cui = res.getString("a.se_cui");
-		//				String i_cui = res.getString("i.i_cui");
-		//				String label = res.getString("l.label");
-		////				int age = res.getInt("age");
-		////				String ville = res.getString("ville");
-		//				
-		//				fw.write(label+","/*+nom+","+prenom+","+age+","+tel+","+ville+","+email+*/"\n");
-		//				System.out.println(label+ ", " +i_cui+ ", " +se_cui);
-		//
-		//			}
-		//			//fw.close();
-		//		} catch (Exception e) {
-		//			// TODO: handle exception
-		//			e.printStackTrace();
-		//		}
 
 	public String getPath() {
 		return path;
@@ -208,7 +161,4 @@ public class SQLSearch {
 	public void setDsearch(String dsearch) {
 		Dsearch = dsearch;
 	}
-
-
-
 }
