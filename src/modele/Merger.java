@@ -1,9 +1,5 @@
 package modele;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -56,24 +52,26 @@ public class Merger {
 	}
 
 	public void merge(Element e, ArrayList<Element> list){
-//		Iterator<Element> iter = list.iterator();
-//		Element element;
-//		if (list.size() == 0) {
-//			list.add(e);
-//		}
-//		else{
-//			while(iter.hasNext()) {
-//				element = iter.next();
-//				//Si même nom
-//				if (!element.getName().equals("") && !e.getName().equals("")) {
-//					if (element.getName().equals(e.getName())) {
-//						
-//					}
-//				}else
-//					list.add(e);
-//			}
-//		}
-		list.add(e);
+		Element element;
+		if (list.size() == 0) {
+			list.add(e);
+		}
+		else{
+			Iterator<Element> iter = list.iterator();
+			while(iter.hasNext()) {
+				element = iter.next();
+				//Si même nom
+				if (!element.getName().equals("") && !e.getName().equals("")) {
+					if (element.getName().equals(e.getName())) {
+						//pour l'instant ne rien faire
+					}
+					else if (element.getTreat().equals(e.getTreat())) {
+						//pour l'instant ne rien faire non plus
+					}
+					else
+						list.add(e);
+				}
+			}
+		}
 	}
-
 }

@@ -49,10 +49,10 @@ public class Search extends Observable{
 	private void init(){
 		this.disease = "";
 		this.medic = "";
-		this.couch_b = false;
+		this.couch_b = true;
 		this.txt_b = true;
-		this.sql_b = false;
-		this.xml_b = false;
+		this.sql_b = true;
+		this.xml_b = true;
 		this.xmlPath = "drugbank.xml";
 		this.txtPath = "_text.txt";
 		this.csvPath = "omim_onto.csv";
