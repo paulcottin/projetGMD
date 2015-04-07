@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import exceptions.NotFoundException;
 
+import requests.CouchDBSearch;
 import requests.SQLSearch;
 import requests.TextSearch;
 import requests.XMLSearch;
@@ -23,6 +24,7 @@ public class Search extends Observable{
 	private XMLSearch xml;
 	private SQLSearch sql;
 	private TextSearch txt;
+	private CouchDBSearch couchDB;
 	private Merger merger;
 	private ArrayList<Element> el;
 	
@@ -30,6 +32,7 @@ public class Search extends Observable{
 		init();
 		this.xml = new XMLSearch(medic, disease, xmlPath);
 		this.txt = new TextSearch(disease, txtPath, csvPath);
+		this.couchDB = new CouchDBSearch(disease);
 //		this.sql = new SQLSearch();
 	}
 	
@@ -39,6 +42,7 @@ public class Search extends Observable{
 		this.disease = disease;
 		this.xml = new XMLSearch(medic, disease, xmlPath);
 		this.txt = new TextSearch(disease, txtPath, csvPath);
+		this.couchDB = new CouchDBSearch(disease);
 	}
 	
 	private void init(){
@@ -58,19 +62,27 @@ public class Search extends Observable{
 	
 	public void search(){
 		el = new ArrayList<Element>();
+		ArrayList<Element> xml_array = new ArrayList<Element>();
+		ArrayList<Element> txt_array = new ArrayList<Element>();
+		ArrayList<Element> couchDB_array = new ArrayList<Element>();
+		ArrayList<Element> sql_array = new ArrayList<Element>();
 		xml.setDSearch(disease);
 		xml.setMSearch(medic);
+		txt.setDsearch(disease);
+		couchDB.setdSearch(disease);
 		if (xml_b) {
 			try {
 				for (Element e : xml.getInfos()) {
-					el.add(e);
+					xml_array.add(e);
 				}
 			} catch (NotFoundException e) {
 				e.execute();
 			}
 		}
 		if (couch_b) {
-			//ajout des résultats de couchDB
+			for (Element e : couchDB.search()) {
+				couchDB_array.add(e);
+			}
 		}
 		if (sql_b) {
 			//Ajout des résultats de SQL
@@ -78,10 +90,22 @@ public class Search extends Observable{
 		txt.setDsearch(disease);
 		if (txt_b) {
 			for (Element e : txt.getInfos()) {
-				el.add(e);
+				txt_array.add(e);
 			}
 		}
 		//Merge des résultats
+		for (Element element : xml_array) {
+			merger.merge(element, el);
+		}
+		for (Element element : couchDB_array) {
+			merger.merge(element, el);
+		}
+		for (Element element : txt_array) {
+			merger.merge(element, el);
+		}
+		for (Element element : sql_array) {
+			merger.merge(element, el);
+		}
 		try {
 			this.writer(el, outPath);
 		} catch (IOException e1) {

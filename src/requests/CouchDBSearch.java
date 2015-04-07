@@ -17,6 +17,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import modele.Disease;
+import modele.Element;
+import modele.Merger;
 import modele.Search;
 
 import org.json.JSONArray;
@@ -33,6 +35,7 @@ public class CouchDBSearch {
 	private String dSearch;
 	private ArrayList<Disease> dList;
 	private String clinicalSigns, disease;
+	private Merger merger;
 
 	public CouchDBSearch() { 
 		init();
@@ -48,32 +51,32 @@ public class CouchDBSearch {
 		this.dList = new ArrayList<Disease>();
 		this.clinicalSigns = "";
 		this.disease = "";
-		
+		this.merger = new Merger();
+
 	}
 
-	public void search(){
-		this.disease = getDiseases();
-		this.clinicalSigns = getClinicalSigns();
+	public ArrayList<Element> search(){
+		this.disease = getDisease();
+//		this.clinicalSigns = getClinicalSigns();
 		try {
-			JSONObject docDiseases = new JSONObject(getDiseases());
-			int nbLignesDisease = docDiseases.getInt("total_rows");
-			
-			JSONArray rows = docDiseases.getJSONArray("rows");
-			for (int i = 5; i < nbLignesDisease; i++) {
-				getDiseaseInfos(rows.getJSONObject(i));
-			}
-			getClinicalInfo(clinicalSigns);
+			getDiseaseInfos(this.disease);
+//			getClinicalInfo(this.clinicalSigns);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
+//		System.out.println("dlist results : "+dList.toString());
+		return merger.DiseaseToElement(dList);
 	}
 
-	private String getDiseases(){
+	private String getDisease(){
 		String ligne = "";
 		URL url = null;
+		String cle_bis = dSearch.replace(" ","%20");
+
 		try {
-			url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseases");
+			url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseasesByName?key=\""+cle_bis+"\"");
 		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -86,54 +89,54 @@ public class CouchDBSearch {
 			ligne = "";
 
 			while((ligne = rd.readLine()) != null){
-				//				System.out.println(ligne);
+				//	System.out.println(ligne);
 				res+=ligne;
 			}
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return res;
 	}
 
-	private void getDiseaseInfos(JSONObject rep) throws JSONException{
+	public void getDiseaseInfos(String rep) throws JSONException{
+		Disease d = new Disease();
 		try {
-
-			if (!rep.isNull("value")) {
-				JSONObject val = rep.getJSONObject("value");
-				JSONObject name = val.getJSONObject("Name");
-				String text_name =  name.getString("text");
-				if (text_name.equals(dSearch)) {
-					Disease d = new Disease();
-					d.setName(text_name);
-					ArrayList<String> synonyms = new ArrayList<String>();
-					JSONObject synlist = val.getJSONObject("SynonymList");
-					String count_syn =  synlist.getString("count");
-
-					if (count_syn.equals("0")) {
-						//Ne rien faire 
+			JSONObject jsonObject = new JSONObject(rep);
+			JSONArray rows = (JSONArray) (jsonObject).get("rows");
+			int size = rows.length();
+			for(int k=0; k<size; k++){
+				JSONObject row = (JSONObject) rows.get(k);
+				JSONObject val = (JSONObject) row.get("value");
+				JSONObject name = (JSONObject) val.get("Name");
+				String text_name =  String.valueOf(name.get("text"));
+				JSONObject synlist = (JSONObject) val.get("SynonymList");
+				String count_syn =  String.valueOf(synlist.get("count"));
+				d.setName(text_name);
+				if (count_syn.equals("0")) {
+//					System.out.println("Le Nom est : " + text_name + "\nEt il n'a pas de Synonymes");		
+				} else if (count_syn.equals("1")) {
+					JSONObject syns = (JSONObject) synlist.get("Synonym");
+					String text =  String.valueOf(syns.get("text"));
+					d.getSynonyms().add(text);
+//					System.out.println("Le Nom est : " + text_name + "\nEt le Synonyme est : " + text );
+				}else{
+					JSONArray syns = (JSONArray) synlist.getJSONArray("Synonym");
+					String liste="";
+					for(int i=0; i<Integer.parseInt(count_syn); i++){
+						JSONObject syn = (JSONObject) syns.getJSONObject(i);
+						String text =  String.valueOf(syn.get("text"));
+						d.getSynonyms().add(text);
+						liste+="\n\t"+text;
 					}
-					else if (count_syn.equals("1")) {
-						JSONObject syns = (JSONObject) synlist.get("Synonym");
-						String text =  syns.getString("text");
-						//				System.out.println("Le Synonyme est : " + text + " et le Nom est : " + text_name);
-						synonyms.add(text);
-					}
-					else{
-						JSONArray syns = synlist.getJSONArray("Synonym");
-						for(int i=0; i<Integer.parseInt(count_syn); i++){
-							JSONObject syn = syns.getJSONObject(i);
-							String text =  syn.getString("text");
-							//											System.out.println("Le Synonyme est : " + text + " et le Nom est : " + text_name);
-							synonyms.add(text);
-						}
-					}
-					d.setSynonyms(synonyms);
-					dList.add(d);
+//					System.out.println("Le Nom est : " + text_name + "\nEt les Synonymes sont : " + liste);
 				}
+				dList.add(d);
 			}
 		} catch (NullPointerException ex) {
 			ex.printStackTrace();
 		}
+//		System.out.println("ajout dlist : "+d.toString());
 	}
 
 	public String getClinicalSigns(){
@@ -179,7 +182,7 @@ public class CouchDBSearch {
 				JSONObject disease = (JSONObject) val.get("disease");
 				JSONObject name = (JSONObject) disease.get("Name");
 				String text_name =  String.valueOf(name.get("text"));
-				
+
 				if (text_name.equals(dSearch)) {
 					Disease d = new Disease();
 					d.setName(text_name);
@@ -187,7 +190,7 @@ public class CouchDBSearch {
 					JSONObject name_cl = (JSONObject) cl_sign.get("Name");
 					String text_cl =  String.valueOf(name_cl.get("text"));
 					d.getCause().add(text_cl);
-					
+
 					dList.add(d);
 					System.out.println("Le Nom est : " + text_name + " et le symptome est : " + text_cl);
 				}

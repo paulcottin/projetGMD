@@ -4,9 +4,10 @@ import java.util.ArrayList;
 /**
  * Name : Name of medic
  * Treat : Name of disease
- * Cause : 
+ * Cause : Secondary Effect of the medic
  * Symptoms : Symptoms of the disease
  * Synonyms : Synonyms of the medic
+ * diseaseSynonysms : Synonyms of the disease
  * @author paul
  *
  */
@@ -36,10 +37,23 @@ public class Element {
 	
 	public String toString(){
 		String syn = "\tsynonyms : \n";
+		String treat = "\ttreatment : \n";
+		String cause = "\tcause : \n";
+		String symptoms = "\tsymptoms : \n";
+		String diseaseSynonyms = "\tdisease synonyms : \n";
 		for (String s : synonyms) {
 			syn += "\t\t"+s+"\n";
 		}
-		return "name : "+name+"\n\ttreat: "+treat+"\n\tcause : "+cause+"\n\tsymptoms : "+symptoms+"\n"+syn;
+		for (String s : this.cause) {
+			treat += "\t\t"+s+"\n";
+		}
+		for (String s : this.symptoms) {
+			symptoms += "\t\t"+s+"\n";
+		}
+		for (String s : this.diseaseSynonyms) {
+			diseaseSynonyms += "\t\t"+s+"\n";
+		}
+		return "name : "+name+"\n\ttreat: "+treat+"\n\tcause : "+cause+"\n\tsymptoms : "+symptoms+"\n\t"+syn+"\n\t"+diseaseSynonyms;
 	}
 
 	public String getName() {
