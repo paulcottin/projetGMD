@@ -51,31 +51,30 @@ public class SQLSearch {
 		disease.setName(Dsearch);
 	}
 
-	private void parseDocument() throws NotFoundException{
-		org.w3c.dom.Element docEle = dom.getDocumentElement();
-		ArrayList<Medic> med_res = new ArrayList<Medic>();
-		ArrayList<Disease> dis_res = new ArrayList<Disease>();
-		if (!Dsearch.equals("")) {
-			dis_res = searchByDisease();
-//				writerD(dis_res);
-		}
-		if (!Msearch.equals("")) {
-			med_res = searchByDrug();
-//				writerM(med_res);
-		}
-		if (dis_res.size() == 0 && med_res.size() == 0) {
-			NotFoundException e = new NotFoundException();
-			throw e;
-		}else {
-//				list = merger.mergeFile("_byM.txt", "_byD.txt"); 
-//				deleteTempFile();
-			list = merger.testMerge(med_res, dis_res);
-		}
-	}
-	
+//	private void parseDocument() throws NotFoundException{
+//		org.w3c.dom.Element docEle = dom.getDocumentElement();
+//		ArrayList<Medic> med_res = new ArrayList<Medic>();
+//		ArrayList<Disease> dis_res = new ArrayList<Disease>();
+//		if (!Dsearch.equals("")) {
+//			dis_res = searchByDisease();
+////				writerD(dis_res);
+//		}
+//		if (!Msearch.equals("")) {
+//			med_res = searchByDrug();
+////				writerM(med_res);
+//		}
+//		if (dis_res.size() == 0 && med_res.size() == 0) {
+//			NotFoundException e = new NotFoundException();
+//			throw e;
+//		}else {
+////				list = merger.mergeFile("_byM.txt", "_byD.txt"); 
+////				deleteTempFile();
+//			list = merger.testMerge(med_res, dis_res);
+//		}
+//	}
+//	
 	public ArrayList<Medic> searchByDrug(){
 		ArrayList<Medic> list = new ArrayList<Medic>();
-		System.out.println("coucou");
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
@@ -84,26 +83,25 @@ public class SQLSearch {
 		}
 
 		ArrayList<String> List1 = new ArrayList<String>();
-		String myQuery1 = "SELECT DISTINCT a.se_name FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 = " + Msearch + " OR i.label = l.label AND i.label = a.label AND l.drug_name2 = " + Msearch + " ;";
+		String myQuery1 = "SELECT DISTINCT a.se_name, l.drug_name1, l.drug_name2 FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 = \"" + Msearch + "\" OR i.label = l.label AND i.label = a.label AND l.drug_name2 = \"" + Msearch + "\" ;";
 
 		ArrayList<String> List2 = new ArrayList<String>();
-		String myQuery2 = "SELECT DISTINCT i.i_name FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 = " + Msearch + " OR i.label = l.label AND i.label = a.label AND l.drug_name2 = " + Msearch + " ;";
+		String myQuery2 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 = \"" + Msearch + "\" OR i.label = l.label AND i.label = a.label AND l.drug_name2 = \"" + Msearch + "\" ;";
 
 		try {
 			Connection con = DriverManager.getConnection(DB_SERVER+DB, USER_NAME, USER_PSWD);
 			Statement st = con.createStatement();
+			
 			ResultSet res1 = st.executeQuery(myQuery1);
-			ResultSet res2 = st.executeQuery(myQuery2);
 			
 			while(res1.next()){
 				medic.getCause().add(res1.getString("se_name"));
-				System.out.println(res1.getString("se_name"));
 			}
+			
+			ResultSet res2 = st.executeQuery(myQuery2);
 
 			while(res2.next()){
 				medic.getTreat().add(res2.getString("i_name"));
-				System.out.println(res2.getString("i_name"));
-
 			}			
 
 		} catch (SQLException e) {
@@ -124,8 +122,8 @@ public class SQLSearch {
 		}
 
 		ArrayList<String> List1 = new ArrayList<String>();		
-		String myQuery1 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2, a.se_name FROM label_mapping l, indications_raw i WHERE i.label = l.label AND i.i_name = " + Dsearch + ";";
-
+		String myQuery1 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, indications_raw i WHERE i.label = l.label AND i.i_name = \"" + Dsearch + "\";";
+		
 		try {
 			Connection con = DriverManager.getConnection(DB_SERVER+DB, USER_NAME, USER_PSWD);
 			Statement st = con.createStatement();
@@ -134,10 +132,9 @@ public class SQLSearch {
 			while(res1.next()){
 				disease = new Disease();
 				if (res1.getString("drug_name1").equals("")) {
-					disease.setName(res1.getString("drug_name2"));
+					disease.getTreatment().add(res1.getString("drug_name2"));
 					}else {
-					disease.setName(res1.getString("drug_name1"));
-					disease.getSynonyms().add(res1.getString("drug_name2"));
+					disease.getTreatment().add(res1.getString("drug_name1"));
 					}
 				drug.add(disease);
 				System.out.println(res1.getString("i_name"));
@@ -148,7 +145,6 @@ public class SQLSearch {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		drug.add(disease);
 		return drug;
 	}
 
