@@ -3,6 +3,8 @@ package modele;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.print.attribute.standard.Sides;
+
 public class Merger {
 
 	ArrayList<Element> list;
@@ -52,26 +54,67 @@ public class Merger {
 	}
 
 	public void merge(Element e, ArrayList<Element> list){
+		boolean sameDisease = false, sameMedic = false;
+		ArrayList<Element> l = new ArrayList<Element>();
 		Element element;
 		if (list.size() == 0) {
-			list.add(e);
+			l.add(e);
 		}
 		else{
+			System.out.println("size : "+list.size());
 			Iterator<Element> iter = list.iterator();
 			while(iter.hasNext()) {
 				element = iter.next();
-				//Si même nom
 				if (!element.getName().equals("") && !e.getName().equals("")) {
+					//Si même nom
 					if (element.getName().equals(e.getName())) {
-						//pour l'instant ne rien faire
+						sameMedic = true;
+						System.out.println("mm nom");
+						if (!element.getTreat().equals(e.getTreat())) {
+							element.setTreat(e.getTreat());
+						}
+						if (!element.getSymptoms().equals(e.getSymptoms())) {
+							element.setSymptoms(e.getSymptoms());
+						}
+						if (!element.getSynonyms().equals(e.getSynonyms())) {
+							element.setSynonyms(e.getSynonyms());
+						}
+						if (!element.getCause().equals(e.getCause())) {
+							element.setCause(e.getCause());
+						}
 					}
-					else if (element.getTreat().equals(e.getTreat())) {
-						//pour l'instant ne rien faire non plus
-					}
-					else
-						list.add(e);
 				}
+				else if (!element.getTreat().equals("") && !element.getTreat().equals("")) {
+					//Si même maladie
+					if (element.getTreat().equals(e.getTreat())) {
+						sameDisease = true;
+						System.out.println("mm maladie");
+						if (!element.getName().equals(e.getName())) {
+							element.setName(e.getName());
+						}
+						if (!element.getSymptoms().equals(e.getSymptoms())) {
+							element.setSymptoms(e.getSymptoms());
+						}
+						if (!element.getSynonyms().equals(e.getSynonyms())) {
+							element.setSynonyms(e.getSynonyms());
+						}
+						if (!element.getCause().equals(e.getCause())) {
+							element.setCause(e.getCause());
+						}
+					}
+					if (!element.getName().equals(e.getName()) && !element.getTreat().equals(e.getTreat())) {
+						System.out.println("pas meme");
+						l.add(e);
+					}
+				}
+				else{
+					System.out.println("ajout");
+					l.add(e);
+				}
+				sameDisease = false; 
+				sameMedic = false;
 			}
 		}
+		list.addAll(l);
 	}
 }

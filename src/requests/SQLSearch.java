@@ -99,7 +99,6 @@ public class SQLSearch {
 			e.printStackTrace();
 		}
 		list.add(medic);
-		System.out.println("by medic ok");
 		return list;
 	}
 
@@ -128,13 +127,12 @@ public class SQLSearch {
 				}
 				disease.setName(Dsearch);
 				drug.add(disease);
-				System.out.println(res1.getString("i_name"));
+//				System.out.println(res1.getString("i_name"));
 			}
 			res1.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("disease ok");
 		return drug;
 	}
 

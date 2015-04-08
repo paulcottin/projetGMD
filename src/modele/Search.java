@@ -79,26 +79,29 @@ public class Search extends Observable{
 					xml_array.add(e);
 				}
 			} catch (NotFoundException e) {
-				e.execute();
+//				e.execute();
 			}
 		}
+		System.out.println("XML ok, "+xml_array.size()+" result(s)");
 		if (couch_b) {
 			for (Element e : couchDB.search()) {
 				couchDB_array.add(e);
 			}
 		}
+		System.out.println("CouchDB ok, "+couchDB_array.size()+" result(s)");
 		if (sql_b) {
-			System.out.println("coucou");
 			for (Element element : sql.search()) {
 				sql_array.add(element);
 			}
 		}
+		System.out.println("SQL ok, "+sql_array.size()+" result(s)");
 		txt.setDsearch(disease);
 		if (txt_b) {
 			for (Element e : txt.getInfos()) {
 				txt_array.add(e);
 			}
 		}
+		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
 		//Merge des résultats
 		for (Element element : xml_array) {
 			merger.merge(element, el);
