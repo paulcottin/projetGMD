@@ -49,7 +49,7 @@ public class Options extends JPanel{
 		
 		//Sélection par défaut
 		sql_case.setSelected(true);
-		xml_case.setSelected(true);
+//		xml_case.setSelected(true);
 		txt_case.setSelected(true);
 		couch_case.setSelected(true);
 	}

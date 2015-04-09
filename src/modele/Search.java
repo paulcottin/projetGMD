@@ -52,7 +52,7 @@ public class Search extends Observable{
 		this.couch_b = true;
 		this.txt_b = true;
 		this.sql_b = true;
-		this.xml_b = true;
+		this.xml_b = false;
 		this.xmlPath = "drugbank.xml";
 		this.txtPath = "_text.txt";
 		this.csvPath = "omim_onto.csv";
@@ -102,24 +102,43 @@ public class Search extends Observable{
 			}
 		}
 		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
-		el.addAll(couchDB_array);
-		el.addAll(sql_array);
-		el.addAll(txt_array);
-		el.addAll(xml_array);
+//		System.out.println("***\n"+txt_array.toString()+"\n***");
+//		el.addAll(couchDB_array);
+//		el.addAll(sql_array);
+//		el.addAll(txt_array);
+//		el.addAll(xml_array);
 		//Merge des résultats
-//		for (Element element : xml_array) {
-//			merger.merge(element, el);
-//		}
-//		for (Element element : couchDB_array) {
-//			merger.merge(element, el);
-//		}
-//		for (Element element : txt_array) {
-//			merger.merge(element, el);
-//		}
-//		for (Element element : sql_array) {
-//			merger.merge(element, el);
-//		}
+		ArrayList<Element> t = new ArrayList<Element>();
+		for (Element element : xml_array) {
+			t.addAll(merger.merge(element, el));
+		}
+		System.out.println("t.size : "+t.size());
+		el.addAll(t);
+		System.out.println("xml merge : "+el.size());
+		t = new ArrayList<Element>();
+		for (Element element : couchDB_array) {
+			t.addAll(merger.merge(element, el));
+		}
+		System.out.println("t.size : "+t.size());
+		el.addAll(t);
+		System.out.println("couchDB merge : "+el.size());
+		t = new ArrayList<Element>();
+		for (Element element : txt_array) {
+			t.addAll(merger.merge(element, el));
+		}
+		System.out.println("t.size : "+t.size());
+		el.addAll(t);
+		System.out.println("txt merge : "+el.size());
+		t = new ArrayList<Element>();
+		for (Element element : sql_array) {
+			t.addAll(merger.merge(element, el));
+		}
+		System.out.println("t.size : "+t.size());
+		el.addAll(t);
+		System.out.println("sql merge : "+el.size());
+//		System.out.println("results : \n"+el.toString());
 		el = merger.getOutDuplicates(el);
+		System.out.println("el size : "+el.size());
 		try {
 			this.writer(el, outPath);
 		} catch (IOException e1) {

@@ -36,11 +36,11 @@ public class Element {
 	}
 	
 	public String toString(){
-		String syn = "\tsynonyms : \n";
-		String treat = "\ttreatment : \n";
-		String cause = "\tcause : \n";
-		String symptoms = "\tsymptoms : \n";
-		String diseaseSynonyms = "\tdisease synonyms : \n";
+		String syn = "";
+		String treat = this.treat.toString();
+		String cause = "";
+		String symptoms = "\n";
+		String diseaseSynonyms = "";
 		for (String s : synonyms) {
 			syn += "\t\t"+s+"\n";
 		}
@@ -53,7 +53,7 @@ public class Element {
 		for (String s : this.diseaseSynonyms) {
 			diseaseSynonyms += "\t\t"+s+"\n";
 		}
-		return "name : "+name+"\n\ttreat: "+treat+"\n\tcause : "+cause+"\n\tsymptoms : "+symptoms+"\n\t"+syn+"\n\t"+diseaseSynonyms;
+		return "name : "+name+"\n\ttreatment: "+treat+"\n\tcause : "+cause+"\n\tsymptoms : "+symptoms+"\n\t"+syn+"\n\t"+diseaseSynonyms;
 	}
 
 	public String getName() {

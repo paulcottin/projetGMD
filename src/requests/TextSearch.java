@@ -40,7 +40,7 @@ public class TextSearch {
 		try {
 			parseCSV();
 			parseTxt();
-			list = merger.testMerge(new ArrayList<Medic>(), dList);
+			list = merger.DiseaseToElement(dList);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -70,7 +70,7 @@ public class TextSearch {
 					syns = getSynonyms(tab[1], tab[2]);
 				else
 					syns = new ArrayList<String>();
-				dList.add(new Disease(nom, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), syns));
+				dList.add(new Disease(medicName, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), syns));
 			}
 		}
 		br.close();
