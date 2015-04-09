@@ -102,19 +102,24 @@ public class Search extends Observable{
 			}
 		}
 		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
+		el.addAll(couchDB_array);
+		el.addAll(sql_array);
+		el.addAll(txt_array);
+		el.addAll(xml_array);
 		//Merge des résultats
-		for (Element element : xml_array) {
-			merger.merge(element, el);
-		}
-		for (Element element : couchDB_array) {
-			merger.merge(element, el);
-		}
-		for (Element element : txt_array) {
-			merger.merge(element, el);
-		}
-		for (Element element : sql_array) {
-			merger.merge(element, el);
-		}
+//		for (Element element : xml_array) {
+//			merger.merge(element, el);
+//		}
+//		for (Element element : couchDB_array) {
+//			merger.merge(element, el);
+//		}
+//		for (Element element : txt_array) {
+//			merger.merge(element, el);
+//		}
+//		for (Element element : sql_array) {
+//			merger.merge(element, el);
+//		}
+		el = merger.getOutDuplicates(el);
 		try {
 			this.writer(el, outPath);
 		} catch (IOException e1) {

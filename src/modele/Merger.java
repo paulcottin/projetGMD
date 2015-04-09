@@ -52,6 +52,86 @@ public class Merger {
 		}
 		return e;
 	}
+	
+	public ArrayList<Element> getOutDuplicates(ArrayList<Element> l){
+		ArrayList<Element> list = new ArrayList<Element>();
+		ArrayList<String> names = new ArrayList<String>();
+		boolean find = false;
+		for (Element element : l) {
+			Element e = new Element();
+			e.setName(element.getName());
+			if(!names.contains(e.getName())){
+				names.add(e.getName());
+				for (int i = 0; i < element.getTreat().size(); i++) {
+					System.out.println(element.getTreat().get(i));
+					for (int j = i+1; j < element.getTreat().size(); j++) {
+						System.out.println("\t"+element.getTreat().get(j));
+						if (element.getTreat().get(i).equals(element.getTreat().get(j))) {
+							find = true;
+						}
+					}
+					if (!find) {
+						e.getTreat().add(element.getTreat().get(i));
+					}
+					find = false;
+				}
+				for (int i = 0; i < element.getCause().size(); i++) {
+					System.out.println(element.getCause().get(i));
+					for (int j = i+1; j < element.getCause().size(); j++) {
+						System.out.println("\t"+element.getCause().get(j));
+						if (element.getCause().get(i).equals(element.getCause().get(j))) {
+							find = true;
+						}
+					}
+					if (!find) {
+						e.getCause().add(element.getCause().get(i));
+					}
+					find = false;
+				}
+				for (int i = 0; i < element.getSymptoms().size(); i++) {
+					System.out.println(element.getSymptoms().get(i));
+					for (int j = i+1; j < element.getSymptoms().size(); j++) {
+						System.out.println("\t"+element.getSymptoms().get(j));
+						if (element.getSymptoms().get(i).equals(element.getSymptoms().get(j))) {
+							find = true;
+						}
+					}
+					if (!find) {
+						e.getSymptoms().add(element.getSymptoms().get(i));
+					}
+					find = false;
+				}
+				for (int i = 0; i < element.getSynonyms().size(); i++) {
+					System.out.println(element.getSynonyms().get(i));
+					for (int j = i+1; j < element.getSynonyms().size(); j++) {
+						System.out.println("\t"+element.getSynonyms().get(j));
+						if (element.getSynonyms().get(i).equals(element.getSynonyms().get(j))) {
+							find = true;
+						}
+					}
+					if (!find) {
+						e.getSynonyms().add(element.getSynonyms().get(i));
+					}
+					find = false;
+				}
+				for (int i = 0; i < element.getDiseaseSynonyms().size(); i++) {
+					System.out.println(element.getDiseaseSynonyms().get(i));
+					for (int j = i+1; j < element.getDiseaseSynonyms().size(); j++) {
+						System.out.println("\t"+element.getDiseaseSynonyms().get(j));
+						if (element.getDiseaseSynonyms().get(i).equals(element.getDiseaseSynonyms().get(j))) {
+							find = true;
+						}
+					}
+					if (!find) {
+						e.getDiseaseSynonyms().add(element.getDiseaseSynonyms().get(i));
+					}
+					find = false;
+				}
+				list.add(e);
+			}
+		}
+		return list;
+	}
 
 	public void merge(Element e, ArrayList<Element> list){
 		boolean sameDisease = false, sameMedic = false;
@@ -69,7 +149,7 @@ public class Merger {
 					//Si même nom
 					if (element.getName().equals(e.getName())) {
 						sameMedic = true;
-						System.out.println("mm nom");
+//						System.out.println("mm nom");
 						if (!element.getTreat().equals(e.getTreat())) {
 							element.setTreat(e.getTreat());
 						}
@@ -88,7 +168,7 @@ public class Merger {
 					//Si même maladie
 					if (element.getTreat().equals(e.getTreat())) {
 						sameDisease = true;
-						System.out.println("mm maladie");
+//						System.out.println("mm maladie");
 						if (!element.getName().equals(e.getName())) {
 							element.setName(e.getName());
 						}
@@ -103,12 +183,12 @@ public class Merger {
 						}
 					}
 					if (!element.getName().equals(e.getName()) && !element.getTreat().equals(e.getTreat())) {
-						System.out.println("pas meme");
+//						System.out.println("pas meme");
 						l.add(e);
 					}
 				}
 				else{
-					System.out.println("ajout");
+//					System.out.println("ajout");
 					l.add(e);
 				}
 				sameDisease = false; 
