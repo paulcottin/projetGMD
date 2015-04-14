@@ -70,6 +70,17 @@ public class Search extends Observable{
 		ArrayList<Element> txt_array = new ArrayList<Element>();
 		ArrayList<Element> couchDB_array = new ArrayList<Element>();
 		ArrayList<Element> sql_array = new ArrayList<Element>();
+		
+		//On test si c'est une recherche exacte ou un joker (qqchose*)
+		if (disease.contains("*")) {
+			disease.replaceAll("\\*", ".*");
+		}
+		if (medic.contains("*")) {
+			medic.replaceAll("\\*", ".*");
+		}
+		
+		System.out.println("medic : "+medic+", disease : "+disease);
+		
 		xml.setDSearch(disease);
 		xml.setMSearch(medic);
 		txt.setDsearch(disease);
@@ -155,6 +166,7 @@ public class Search extends Observable{
 //		System.out.println("results : \n"+el.toString());
 		el = merger.getOutDuplicates(el);
 		System.out.println("el size : "+el.size());
+		
 		try {
 			this.writer(el, outPath);
 		} catch (IOException e1) {

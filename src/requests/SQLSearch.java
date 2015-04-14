@@ -73,10 +73,10 @@ public class SQLSearch {
 		}
 
 		ArrayList<String> List1 = new ArrayList<String>();
-		String myQuery1 = "SELECT DISTINCT a.se_name, l.drug_name1, l.drug_name2 FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 = \"" + Msearch + "\" OR i.label = l.label AND i.label = a.label AND l.drug_name2 = \"" + Msearch + "\" ;";
+		String myQuery1 = "SELECT DISTINCT a.se_name, l.drug_name1, l.drug_name2 FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 LIKE \"" + Msearch + "%\" OR i.label = l.label AND i.label = a.label AND l.drug_name2 = \"" + Msearch + "\" ;";
 
 		ArrayList<String> List2 = new ArrayList<String>();
-		String myQuery2 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 = \"" + Msearch + "\" OR i.label = l.label AND i.label = a.label AND l.drug_name2 = \"" + Msearch + "\" ;";
+		String myQuery2 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 LIKE \"" + Msearch + "%\" OR i.label = l.label AND i.label = a.label AND l.drug_name2 = \"" + Msearch + "\" ;";
 
 		try {
 			Connection con = DriverManager.getConnection(DB_SERVER+DB, USER_NAME, USER_PSWD);
@@ -94,7 +94,8 @@ public class SQLSearch {
 				medic.getTreat().add(res2.getString("i_name"));
 			}			
 			res2.close();
-
+			
+			medic.setOrigin("Sider2");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -111,7 +112,7 @@ public class SQLSearch {
 		}
 
 		ArrayList<String> List1 = new ArrayList<String>();		
-		String myQuery1 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, indications_raw i WHERE i.label = l.label AND i.i_name = \"" + Dsearch + "\" ORDER BY l.drug_name1;";
+		String myQuery1 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, indications_raw i WHERE i.label = l.label AND i.i_name LIKE \"" + Dsearch + "%\" ORDER BY l.drug_name1;";
 
 		try {
 			Connection con = DriverManager.getConnection(DB_SERVER+DB, USER_NAME, USER_PSWD);
@@ -126,6 +127,7 @@ public class SQLSearch {
 					disease.getTreatment().add(res1.getString("drug_name1"));
 				}
 				disease.setName(Dsearch);
+				disease.setOrigin("Sider2");
 				drug.add(disease);
 //				System.out.println(res1.getString("i_name"));
 			}

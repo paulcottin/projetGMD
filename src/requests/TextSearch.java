@@ -61,7 +61,7 @@ public class TextSearch {
 				nom = tab[1].split("&/&")[0];
 			}else
 				nom = tab[1];
-			if (nom.equals(this.Dsearch)) {
+			if (nom.matches(this.Dsearch)) {
 				if (tab.length >1)
 					medicName = nom;
 				else
@@ -70,7 +70,7 @@ public class TextSearch {
 					syns = getSynonyms(tab[1], tab[2]);
 				else
 					syns = new ArrayList<String>();
-				dList.add(new Disease(medicName, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), syns));
+				dList.add(new Disease(medicName, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), syns, "OMIM"));
 			}
 		}
 		br.close();
@@ -166,7 +166,7 @@ public class TextSearch {
 					moved = true;
 				}
 			}
-			if (name.equals(Dsearch)) {
+			if (name.matches(Dsearch)) {
 				this.name = name;
 				if (line.contains("*FIELD* CS") && !moved) {
 					while(!(line = br.readLine()).contains("*FIELD*")){
@@ -184,7 +184,7 @@ public class TextSearch {
 			}
 			moved = false;
 		}
-		dList.add(new Disease(this.name, new ArrayList<String>(), new ArrayList<String>(), symptoms, new ArrayList<String>()));
+		dList.add(new Disease(this.name, new ArrayList<String>(), new ArrayList<String>(), symptoms, new ArrayList<String>(), "OMIM"));
 		br.close();
 	}
 

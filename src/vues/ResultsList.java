@@ -1,5 +1,6 @@
 package vues;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.util.Vector;
@@ -43,6 +44,7 @@ public class ResultsList extends JScrollPane{
 		columnNames.addElement(("Cause"));
 		columnNames.addElement(("Synonyms"));
 		columnNames.addElement(("Disease Synonyms"));
+		columnNames.addElement(("Origin"));
 		
 		vec = new Vector<Vector<String>>();
 		Vector<String> v;
@@ -75,12 +77,14 @@ public class ResultsList extends JScrollPane{
 			v.addElement(symptoms);
 			v.addElement(synonyms);
 			v.addElement(diseaseSynonyms);
+			v.addElement(search.getEl().get(i).getOrigin());
 			vec.addElement(v);
 		}
 		JTable table= new JTable(vec, columnNames);
 		table.setEnabled(false);
 		table.getColumnModel().addColumnModelListener( new WrapColListener( table ) );
 		table.setDefaultRenderer( Object.class, new JTPRenderer() );
+		table.getColumn("Origin").setPreferredWidth(0);
 		this.setViewportView(table);
 	}
 	
@@ -90,6 +94,9 @@ public class ResultsList extends JScrollPane{
 		@Override
 		  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		    setText(value.toString());
+		    if (getText().equals("Sider2")) {
+		    	setBackground(Color.red);
+			}
 		    return this;
 		  }
 		}

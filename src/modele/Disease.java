@@ -6,7 +6,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 
 public class Disease {
 	
-	String name;
+	String name, origin;
 	ArrayList<String> treatment, cause, symptoms, synonyms;
 	
 	public Disease() {
@@ -17,12 +17,13 @@ public class Disease {
 		synonyms = new ArrayList<String>();
 	}
 	
-	public Disease(String name, ArrayList<String> treatment, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms){
+	public Disease(String name, ArrayList<String> treatment, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms, String origin){
 		this.name = name;
 		this.treatment = treatment;
 		this.cause = cause;
 		this.symptoms = symptoms;
 		this.synonyms = synonyms;
+		this.origin = origin;
 	}
 	
 	public String toString(){
@@ -67,6 +68,14 @@ public class Disease {
 
 	public void setSynonyms(ArrayList<String> synonyms) {
 		this.synonyms = synonyms;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
 	}
 
 }

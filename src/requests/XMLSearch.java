@@ -101,7 +101,7 @@ public class XMLSearch {
 					if (node != null && node.getLength() > 0) {
 						for (int j = 0; j < node.getLength(); j++) {
 							if (node.item(j).getNodeName().equals("name")) {
-								if (node.item(j).getFirstChild().getNodeValue().equals(Msearch)) {
+								if (node.item(j).getFirstChild().getNodeValue().matches(Msearch)) {
 									find = node;
 									name = find.item(j).getFirstChild().getNodeValue();
 									for (int k = 0; k < find.getLength(); k++) {
@@ -124,7 +124,7 @@ public class XMLSearch {
 									c.add(cause);
 									ArrayList<String> t = new ArrayList<String>();
 									t.add(treat);
-									list.add(new Medic(name, t, c, synonyms));
+									list.add(new Medic(name, t, c, synonyms, "DrugBank"));
 								}
 							}
 						}
@@ -149,7 +149,7 @@ public class XMLSearch {
 						for (int j = 0; j < node.getLength(); j++) {
 							if (node.item(j).getNodeName().equals("pharmacodynamics")) {
 								if (node.item(j).getFirstChild() != null) {
-									if (node.item(j).getFirstChild().getNodeValue().contains(Dsearch)) {
+									if (node.item(j).getFirstChild().getNodeValue().matches(".*"+Dsearch+".*")) {
 										find = node;
 										symptom = find.item(j).getFirstChild().getNodeValue();
 										for (int k = 0; k < find.getLength(); k++) {
@@ -171,7 +171,7 @@ public class XMLSearch {
 										t.add(treat);
 										ArrayList<String> s = new ArrayList<String>();
 										s.add(symptom);
-										list.add(new Disease(name, t, c, s, new ArrayList<String>()));
+										list.add(new Disease(name, t, c, s, new ArrayList<String>(), "DrugBank"));
 									}
 								}
 							}

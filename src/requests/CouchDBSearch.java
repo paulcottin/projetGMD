@@ -113,6 +113,7 @@ public class CouchDBSearch {
 				JSONObject synlist = (JSONObject) val.get("SynonymList");
 				String count_syn =  String.valueOf(synlist.get("count"));
 				d.setName(text_name);
+				d.setOrigin("OrphaData");
 				if (count_syn.equals("0")) {
 //					System.out.println("Le Nom est : " + text_name + "\nEt il n'a pas de Synonymes");		
 				} else if (count_syn.equals("1")) {
@@ -186,6 +187,7 @@ public class CouchDBSearch {
 				if (text_name.equals(dSearch)) {
 					Disease d = new Disease();
 					d.setName(text_name);
+					d.setOrigin("OrphaData");
 					JSONObject cl_sign = (JSONObject) val.get("clinicalSign");
 					JSONObject name_cl = (JSONObject) cl_sign.get("Name");
 					String text_cl =  String.valueOf(name_cl.get("text"));

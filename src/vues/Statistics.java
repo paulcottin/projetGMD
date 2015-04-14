@@ -19,6 +19,7 @@ public class Statistics extends JPanel implements Observer{
 	public Statistics(modele.Statistics s) {
 		this.s = s;
 		init();
+		this.setBackground(Selection.BACKGROUND_COLOR);
 		s.addObserver(this);
 		this.add(label);
 	}
@@ -29,6 +30,7 @@ public class Statistics extends JPanel implements Observer{
 				" ; ("+s.getCouchDbNumber()+") CouchDB : "+s.getCouchDbTimeTxt()+
 				" ; ("+s.getTxtNumber()+") Texte : "+s.getTxtTimeTxt()
 				);
+		this.label.setBackground(Selection.BACKGROUND_COLOR);
 	}
 	
 	@Override

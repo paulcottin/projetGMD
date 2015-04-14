@@ -3,6 +3,7 @@ package modele;
 import java.util.ArrayList;
 /**
  * Name : Name of medic
+ * Origin : De quelle source de données vient l'élément
  * Treat : Name of disease
  * Cause : Secondary Effect of the medic
  * Symptoms : Symptoms of the disease
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 
 public class Element {
 
-	String name;
+	String name, origin;
 	ArrayList<String> synonyms, treat, cause, symptoms, diseaseSynonyms;
 	
 	public Element() {
@@ -26,13 +27,14 @@ public class Element {
 		diseaseSynonyms = new ArrayList<String>();
 	}
 	
-	public Element(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms, ArrayList<String> diseaseSynonyms){
+	public Element(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms, ArrayList<String> diseaseSynonyms, String origin){
 		this.name = name;
 		this.treat = treat;
 		this.cause = cause;
 		this.symptoms = symptoms;
 		this.synonyms = synonyms;
 		this.diseaseSynonyms = diseaseSynonyms;
+		this.origin = origin;
 	}
 	
 	public String toString(){
@@ -102,6 +104,14 @@ public class Element {
 
 	public void setDiseaseSynonyms(ArrayList<String> diseaseSynonyms) {
 		this.diseaseSynonyms = diseaseSynonyms;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
 	}
 	
 	
