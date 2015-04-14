@@ -19,6 +19,7 @@ public class Fenetre extends JFrame implements Observer{
 	private Search search;
 	private Selection selection;
 	private ResultsList resultsList;
+	private Statistics stats;
 	
 	public Fenetre(Search search) {
 		super("Drug Search");
@@ -37,12 +38,14 @@ public class Fenetre extends JFrame implements Observer{
 		this.setLayout(new BorderLayout());
 		this.selection = new Selection(search);
 		this.resultsList = new ResultsList(search);
+		this.stats = new Statistics(search.getStats());
 	}
 	
 	private void creerFen(){
 		this.setJMenuBar(new Menu());
 		this.add(selection, BorderLayout.NORTH);
 		this.add(resultsList, BorderLayout.CENTER);
+		this.add(stats, BorderLayout.SOUTH);
 	}
 
 	public void update(Observable arg0, Object arg1) {

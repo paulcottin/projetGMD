@@ -14,6 +14,8 @@ public class Selection extends JPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	public static Color BACKGROUND_COLOR = Color.lightGray;
+	
 	private Options options;
 	private Recherche recherche;
 	private Search search;
@@ -21,14 +23,20 @@ public class Selection extends JPanel{
 	public Selection(Search s) {
 		super();
 		this.search = s;
-		this.setBackground(Color.gray);
-		this.setLayout(new GridLayout(1,2));
+		this.setBackground(Selection.BACKGROUND_COLOR);
+		JPanel opt = new JPanel();
+		JPanel rech = new JPanel();
+		opt.setBackground(Selection.BACKGROUND_COLOR);
+		rech.setBackground(Selection.BACKGROUND_COLOR);
 		
 		options = new Options(this.search);
 		recherche = new Recherche(this.search);
 		
-		this.add(options);
-		this.add(recherche);
+		opt.add(options);
+		rech.add(recherche);
+		
+		this.add(opt);
+		this.add(rech);
 	}
 
 	public Options getOptions() {

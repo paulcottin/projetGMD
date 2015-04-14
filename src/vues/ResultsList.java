@@ -42,16 +42,18 @@ public class ResultsList extends JScrollPane{
 		columnNames.addElement(("Symptoms"));
 		columnNames.addElement(("Cause"));
 		columnNames.addElement(("Synonyms"));
+		columnNames.addElement(("Disease Synonyms"));
 		
 		vec = new Vector<Vector<String>>();
 		Vector<String> v;
-		String synonyms = "", treats = "", causes = "", symptoms = "";
+		String synonyms = "", treats = "", causes = "", symptoms = "", diseaseSynonyms= "";
 		for (int i = 0; i < nbResults; i++) {
 			v = new Vector<String>();
 			treats = "";
 			causes = "";
 			symptoms = "";
 			synonyms = "";
+			diseaseSynonyms = "";
 			for (String string : search.getEl().get(i).getCause()) {
 				causes += string+"\n";
 			}
@@ -64,11 +66,15 @@ public class ResultsList extends JScrollPane{
 			for (String string : search.getEl().get(i).getSynonyms()) {
 				synonyms += string+"\n";
 			}
+			for (String string : search.getEl().get(i).getDiseaseSynonyms()) {
+				diseaseSynonyms += string+"\n";
+			}
 			v.addElement(search.getEl().get(i).getName());
 			v.addElement(treats);
 			v.addElement(causes);
 			v.addElement(symptoms);
 			v.addElement(synonyms);
+			v.addElement(diseaseSynonyms);
 			vec.addElement(v);
 		}
 		JTable table= new JTable(vec, columnNames);

@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.Observable;
 
 import javax.swing.JOptionPane;
@@ -27,6 +28,7 @@ public class Search extends Observable{
 	private CouchDBSearch couchDB;
 	private Merger merger;
 	private ArrayList<Element> el;
+	private Statistics stats;
 	
 	public Search() {
 		init();
@@ -59,6 +61,7 @@ public class Search extends Observable{
 		this.outPath = "out.txt";
 		this.el = new ArrayList<Element>();
 		this.merger = new Merger();
+		this.stats = new Statistics();
 	}
 	
 	public void search(){
@@ -73,6 +76,7 @@ public class Search extends Observable{
 		couchDB.setdSearch(disease);
 		sql.setMsearch(medic);
 		sql.setDsearch(disease);
+		stats.setXmlBegin(GregorianCalendar.getInstance());
 		if (xml_b) {
 			try {
 				for (Element e : xml.getInfos()) {
@@ -82,25 +86,37 @@ public class Search extends Observable{
 //				e.execute();
 			}
 		}
+		stats.setXmlEnd(GregorianCalendar.getInstance());
+		stats.setXmlNumber(xml_array.size());
 		System.out.println("XML ok, "+xml_array.size()+" result(s)");
+		stats.setCouchDbBegin(GregorianCalendar.getInstance());
 		if (couch_b) {
 			for (Element e : couchDB.search()) {
 				couchDB_array.add(e);
 			}
 		}
+		stats.setCouchDbEnd(GregorianCalendar.getInstance());
+		stats.setCouchDbNumber(couchDB_array.size());
 		System.out.println("CouchDB ok, "+couchDB_array.size()+" result(s)");
+		stats.setSqlBegin(GregorianCalendar.getInstance());
 		if (sql_b) {
 			for (Element element : sql.search()) {
 				sql_array.add(element);
 			}
 		}
+		stats.setSqlEnd(GregorianCalendar.getInstance());
+		stats.setSqlNumber(sql_array.size());
 		System.out.println("SQL ok, "+sql_array.size()+" result(s)");
 		txt.setDsearch(disease);
+		stats.setTxtBegin(GregorianCalendar.getInstance());
 		if (txt_b) {
 			for (Element e : txt.getInfos()) {
 				txt_array.add(e);
 			}
 		}
+		stats.setTxtEnd(GregorianCalendar.getInstance());
+		stats.setTxtNumber(txt_array.size());
+		stats.execute();
 		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
 //		System.out.println("***\n"+txt_array.toString()+"\n***");
 //		el.addAll(couchDB_array);
@@ -254,6 +270,14 @@ public class Search extends Observable{
 
 	public void setCsvPath(String csvPath) {
 		this.csvPath = csvPath;
+	}
+
+	public Statistics getStats() {
+		return stats;
+	}
+
+	public void setStats(Statistics stats) {
+		this.stats = stats;
 	}
 
 }

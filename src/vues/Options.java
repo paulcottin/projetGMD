@@ -2,6 +2,7 @@ package vues;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 
 import javax.swing.JCheckBox;
@@ -27,9 +28,11 @@ public class Options extends JPanel{
 	public Options(Search s) {
 		super();
 		this.search = s;
+		this.setBackground(Selection.BACKGROUND_COLOR);
 		this.setLayout(new BorderLayout());
 		initOptions();
 		creerOptions();
+		colored();
 	}
 	
 	public void initOptions(){
@@ -40,6 +43,12 @@ public class Options extends JPanel{
 		xml_case = new JCheckBox("XML");
 		txt_case = new JCheckBox("TXT");
 		couch_case = new JCheckBox("CouchDB");
+		
+		//Couleur
+		sql_case.setBackground(Selection.BACKGROUND_COLOR);
+		xml_case.setBackground(Selection.BACKGROUND_COLOR);
+		txt_case.setBackground(Selection.BACKGROUND_COLOR);
+		couch_case.setBackground(Selection.BACKGROUND_COLOR);
 		
 		//Listeners
 		sql_case.addActionListener(new SelectSourceController(search, "sql"));
@@ -64,6 +73,14 @@ public class Options extends JPanel{
 		cases.add(xml_case);
 		cases.add(couch_case);
 		
+		cases.setBackground(Selection.BACKGROUND_COLOR);
+		
 		this.add(cases, BorderLayout.CENTER);
+	}
+	
+	private void colored(){
+		for (Component c : this.getComponents()) {
+			c.setBackground(Selection.BACKGROUND_COLOR);
+		}
 	}
 }

@@ -229,6 +229,7 @@ public class Merger {
 	}
 	
 	private Element mergeElement(Element e1, Element e2){
+		System.out.println("coucou");
 		Element e = new Element();
 		e.setName(e1.getName());
 		e.setTreat(e1.getTreat());
