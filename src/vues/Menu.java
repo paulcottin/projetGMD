@@ -8,6 +8,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import modele.Search;
+import controller.SearchController;
 import controller.menu.QuitterListener;
 
 public class Menu extends JMenuBar{
@@ -17,10 +19,13 @@ public class Menu extends JMenuBar{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private JMenu fichier;
-	private JMenuItem quitter;
+	private JMenu fichier, recherche;
+	private JMenuItem quitter, rechercher;
+	private Recherche r;
+	private Search s;
 	
-	public Menu() {
+	public Menu(Search s, Recherche r) {
+		
 		super();		
 		initMenu();
 		creerMenu();
@@ -31,13 +36,18 @@ public class Menu extends JMenuBar{
 			quitter = new JMenuItem("Quitter");
 			quitter.addActionListener(new QuitterListener());
 			quitter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+		recherche = new JMenu("Recherche");
+			rechercher = new JMenuItem("Rechercher");
+			rechercher.addActionListener(new SearchController(s, r));
+			rechercher.setMnemonic(KeyEvent.VK_ENTER);
 	}
 	
 	private void creerMenu(){
 		fichier.add(quitter);
+		recherche.add(rechercher);
 		
 		this.add(fichier);
-		
+		this.add(recherche);
 	}
 
 }

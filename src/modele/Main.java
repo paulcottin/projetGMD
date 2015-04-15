@@ -14,10 +14,8 @@ import vues.Fenetre;
 
 public class Main {
 	public static void main(String args[]){
-//		Search search = new Search();
-//		Fenetre fen = new Fenetre(search);
-		CouchDBSearch cs = new CouchDBSearch("Glutaric acidemia type 1");
-		cs.search();
+		Search search = new Search();
+		Fenetre fen = new Fenetre(search);
 		
 	}
 
