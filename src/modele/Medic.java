@@ -3,7 +3,7 @@ package modele;
 import java.util.ArrayList;
 
 public class Medic {
-	String name;
+	String name, origin;
 	ArrayList<String> synonyms, treat, cause, symptoms;
 	
 	public Medic() {
@@ -14,11 +14,12 @@ public class Medic {
 		synonyms = new ArrayList<String>();
 	}
 	
-	public Medic(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> synonyms){
+	public Medic(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> synonyms, String origin){
 		this.name = name;
 		this.treat = treat;
 		this.cause = cause;
 		this.synonyms = synonyms;
+		this.origin = origin;
 	}
 	
 	public String toString(){
@@ -67,5 +68,13 @@ public class Medic {
 
 	public void setSymptoms(ArrayList<String> symptoms) {
 		this.symptoms = symptoms;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
 	}
 }
