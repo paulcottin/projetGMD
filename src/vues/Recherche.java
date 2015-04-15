@@ -3,15 +3,16 @@ package vues;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
 import modele.Search;
-
 import controller.SearchController;
-
 import sun.net.www.content.image.jpeg;
 
 public class Recherche extends JPanel {
@@ -45,6 +46,8 @@ public class Recherche extends JPanel {
 		disease_l = new JLabel("Disease Name: ");
 		disease_l.setBackground(Selection.BACKGROUND_COLOR);
 		search_button = new JButton("Search");
+		search_button.setMnemonic(KeyEvent.VK_ENTER);
+		
 	}
 	
 	private void creerRecherche(){
@@ -65,6 +68,7 @@ public class Recherche extends JPanel {
 		this.search_button.addActionListener(new SearchController(this.search, this));
 		search_p.add(search_button);
 		search_p.setBackground(Selection.BACKGROUND_COLOR);
+		
 		
 		this.add(cases, BorderLayout.CENTER);
 		this.add(search_p, BorderLayout.SOUTH);
