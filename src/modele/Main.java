@@ -16,7 +16,8 @@ public class Main {
 	public static void main(String args[]){
 		Search search = new Search();
 		Fenetre fen = new Fenetre(search);
-		
+		search.setDisease("HYPERCHOLESTEROLEMIA");
+		search.search();
 	}
 
 }

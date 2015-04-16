@@ -72,11 +72,12 @@ public class Search extends Observable{
 		ArrayList<Element> sql_array = new ArrayList<Element>();
 		
 		//On test si c'est une recherche exacte ou un joker (qqchose*)
+		System.out.println("medic : "+medic+", disease : "+disease);
 		if (disease.contains("*")) {
-			disease.replaceAll("\\*", ".*");
+			disease = disease.substring(0, disease.indexOf("*"))+".*"+disease.substring(disease.indexOf("*")+1, disease.length());
 		}
 		if (medic.contains("*")) {
-			medic.replaceAll("\\*", ".*");
+			medic.replaceAll("\\*", ".\\*");
 		}
 		
 		System.out.println("medic : "+medic+", disease : "+disease);
