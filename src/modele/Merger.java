@@ -201,32 +201,51 @@ public class Merger {
 	private ArrayList<Element> mergeTest(Element e, ArrayList<Element> list){
 		ArrayList<Element> l = new ArrayList<Element>();
 		if (list.size() == 0) {
-//			System.out.println("init : "+e.getName()+", "+e.getTreat());
+			System.out.println("init : "+e.getName()+", "+e.getTreat());
 			l.add(e);
 		}
 		else {
 			for (int i = 0; i < list.size(); i++) {
 				//Si mm noms et mm disease
-//				System.out.println(" i : "+i+", noms : "+e.getName()+" - "+list.get(i).getName());
-				if (e.getName().equals(list.get(i).getName()) && e.getTreat().equals(list.get(i).getTreat())) {
+				System.out.println(" i : "+i+", noms : "+e.getName()+" - "+list.get(i).getName());
+				if (e.getName().equalsIgnoreCase(list.get(i).getName()) && sameTreat(e.getTreat(), list.get(i).getTreat())) {
 					//Si mm disease (à revoir)
-					if (e.getTreat().equals(list.get(i).getTreat())) {
+//					if (e.getTreat().equals(list.get(i).getTreat())) {
 //						System.out.println("\tadd mm disease : "+list.get(i).getTreat().toString()+" (nom : "+e.getName()+") - SIZE : "+l.size());
-						Element temp = mergeElement(e, list.get(i));
-						System.out.println("\t\t"+temp.toString());
-						l.add(temp);
-					}
-					else{
+//						Element temp = mergeElement(e, list.get(i));
+//						System.out.println("\t\t"+temp.toString());
+//						l.add(temp);
+//					}
+//					else{
 //						System.out.println("\tadd mm noms != diseases : "+e.getName()+", "+e.getTreat().toString());
-						l.add(e);
-					}
-				}else{
-//					System.out.println("\tadd != noms != diseases : "+e.getName()+", "+e.getTreat().toString());
-					l.add(e);
+//						l.add(e);
+//					}
+					System.out.println("\t SAME : "+e.getName());
 				}
+//				else{
+//					System.out.println("\tadd != noms != diseases : "+e.getName()+", "+e.getTreat().toString());
+//					l.add(e);
+//				}
 			}
 		}
 		return l;
+	}
+	
+	private boolean sameTreat(ArrayList<String> a, ArrayList<String> b){
+		ArrayList<String> temp = new ArrayList<String>();
+		boolean same = false;
+		for (int i = 0; i < a.size(); i++) {
+			temp = new ArrayList<String>();
+			for (int j = 0; j < b.size(); j++) {
+				if (a.get(i).equalsIgnoreCase(b.get(j))) {
+					temp.add(b.get(j));
+				}
+			}
+			if (temp.size() == b.size()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private Element mergeElement(Element e1, Element e2){
