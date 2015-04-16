@@ -2,6 +2,7 @@ package modele;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import javax.print.attribute.standard.Sides;
 
@@ -40,8 +41,10 @@ public class Merger {
 			treat = new ArrayList<String>();
 			treat.add(di.getName());
 			for (String s: di.getTreatment()) {
-				name += s+"\n";
+				name += s+"\n";				
 			}
+			Pattern p = Pattern.compile(";");
+			String[] items = p.split(name);
 			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), new ArrayList<String>(), di.getSynonyms(), di.getOrigin()));
 		}
 		return e;
