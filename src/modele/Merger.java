@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 
 import javax.print.attribute.standard.Sides;
 
+import org.omg.PortableServer.ForwardRequestHelper;
+
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class Merger {
@@ -35,6 +37,7 @@ public class Merger {
 	public ArrayList<Element> DiseaseToElement(ArrayList<Disease> d){
 		ArrayList<Element> e = new ArrayList<Element>();
 		ArrayList<String> treat;
+		ArrayList<String> synonym;
 		String name;
 		for (Disease di : d) {
 			name = "";
@@ -45,7 +48,13 @@ public class Merger {
 			}
 			Pattern p = Pattern.compile(";");
 			String[] items = p.split(name);
-			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), new ArrayList<String>(), di.getSynonyms(), di.getOrigin()));
+			name = items[0];
+			synonym = new ArrayList<String>();
+			for (int i = 1; i < items.length; i++) {
+				synonym.add(items[i]);
+				
+			}
+			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), synonym, di.getSynonyms(), di.getOrigin()));
 		}
 		return e;
 	}
