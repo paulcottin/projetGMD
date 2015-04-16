@@ -128,7 +128,8 @@ public class Search extends Observable{
 		}
 		stats.setTxtEnd(GregorianCalendar.getInstance());
 		stats.setTxtNumber(txt_array.size());
-		stats.execute();
+		System.out.println("texte : "+txt_array.get(0).toString());
+		
 		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
 //		System.out.println("***\n"+txt_array.toString()+"\n***");
 //		el.addAll(couchDB_array);
@@ -137,43 +138,53 @@ public class Search extends Observable{
 //		el.addAll(xml_array);
 		//Merge des résultats
 		ArrayList<Element> t = new ArrayList<Element>();
-//		for (Element element : xml_array) {
-//			t.addAll(merger.merge(element, el));
-//		}
-//		System.out.println("t.size : "+t.size());
-//		el.addAll(t);
-//		System.out.println("xml merge : "+el.size());
-//		t = new ArrayList<Element>();
-//		for (Element element : couchDB_array) {
-//			t.addAll(merger.merge(element, el));
-//		}
-//		System.out.println("t.size : "+t.size());
-//		el.addAll(t);
-//		System.out.println("couchDB merge : "+el.size());
-//		t = new ArrayList<Element>();
-//		for (Element element : txt_array) {
-//			t.addAll(merger.merge(element, el));
-//		}
-//		System.out.println("t.size : "+t.size());
-//		el.addAll(t);
-//		System.out.println("txt merge : "+el.size());
+		for (Element element : xml_array) {
+			t = merger.merge(element, el);
+			if (t.size() > 0) {
+				el.addAll(t);
+			}
+		}
+		System.out.println("t.size : "+t.size());
+		el.addAll(t);
+		System.out.println("xml merge : "+el.size());
+		t = new ArrayList<Element>();
+		for (Element element : couchDB_array) {
+			t = merger.merge(element, el);
+			if (t.size() > 0) {
+				el.addAll(t);
+			}
+		}
+		System.out.println("t.size : "+t.size());
+		el.addAll(t);
+		System.out.println("couchDB merge : "+el.size());
+		t = new ArrayList<Element>();
+		for (Element element : txt_array) {
+			t = merger.merge(element, el);
+			if (t.size() > 0) {
+				el.addAll(t);
+			}
+		}
+		System.out.println("t.size : "+t.size());
+		el.addAll(t);
+		System.out.println("txt merge : "+el.size());
 		t = new ArrayList<Element>();
 		for (Element element : sql_array) {
 			t = merger.merge(element, el);
 			if (t.size() > 0) {
 				el.addAll(t);
-			}else
-				System.out.println("NULL");
-			System.out.println("-------------------");
+			}
+//			else
+//				System.out.println("NULL");
+//			System.out.println("-------------------");
 //			el.addAll(merger.merge(element, el));
 		}
-		System.out.println("t.size : "+t.size());
 		el.addAll(t);
 		System.out.println("sql merge : "+el.size());
 //		System.out.println("results : \n"+el.toString());
 		el = merger.getOutDuplicates(el);
 		System.out.println("el size : "+el.size());
-		
+		stats.setTotalNumber(el.size());
+		stats.execute();
 		try {
 			this.writer(el, outPath);
 		} catch (IOException e1) {

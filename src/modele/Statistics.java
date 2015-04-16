@@ -6,10 +6,11 @@ import java.util.Observable;
 
 public class Statistics extends Observable{
 
-	private int xmlTime, sqlTime, couchDbTime, txtTime;
-	private String xmlTimeTxt, sqlTimeTxt, couchDbTimeTxt, txtTimeTxt;
+	private int xmlTime, sqlTime, couchDbTime, txtTime, totalTime;
+	private String xmlTimeTxt, sqlTimeTxt, couchDbTimeTxt, txtTimeTxt, totalTimeTxt;
 	private int xmlNumber, sqlNumber, couchDbNumber, txtNumber;
 	private Calendar xmlBegin, xmlEnd, sqlBegin, sqlEnd, couchDbBegin, couchDbEnd, txtBegin, txtEnd;
+	private int totalNumber;
 	
 	public Statistics() {
 		init();
@@ -24,6 +25,8 @@ public class Statistics extends Observable{
 		this.sqlNumber = 0;
 		this.couchDbNumber = 0;
 		this.txtNumber = 0;
+		this.totalNumber = 0;
+		this.totalTime = 0;
 		this.xmlBegin = GregorianCalendar.getInstance();
 		this.xmlEnd = GregorianCalendar.getInstance();
 		this.sqlBegin = GregorianCalendar.getInstance();
@@ -44,6 +47,7 @@ public class Statistics extends Observable{
 		sqlTime = (int) (sqlEnd.getTimeInMillis() - sqlBegin.getTimeInMillis());
 		couchDbTime = (int) (sqlEnd.getTimeInMillis() - couchDbBegin.getTimeInMillis());
 		txtTime = (int) (txtEnd.getTimeInMillis() - txtBegin.getTimeInMillis());
+		totalTime = xmlTime+sqlTime+couchDbTime+txtTime;
 		getText();
 		setChanged();
 		notifyObservers();
@@ -54,6 +58,7 @@ public class Statistics extends Observable{
 		sqlTimeTxt = sqlTime/1000 + "s "+ sqlTime%1000+"ms";
 		couchDbTimeTxt = couchDbTime/1000+"s "+couchDbTime%1000+"ms";
 		txtTimeTxt = txtTime/1000+"s "+txtTime%1000+"ms";
+		totalTimeTxt = totalTime/1000+"s "+totalTime%1000+"ms";
 	}
 	
 	public int getXmlTime() {
@@ -214,5 +219,29 @@ public class Statistics extends Observable{
 
 	public void setTxtTimeTxt(String txtTimeTxt) {
 		this.txtTimeTxt = txtTimeTxt;
+	}
+
+	public int getTotalNumber() {
+		return totalNumber;
+	}
+
+	public void setTotalNumber(int totalNumber) {
+		this.totalNumber = totalNumber;
+	}
+
+	public int getTotalTime() {
+		return totalTime;
+	}
+
+	public void setTotalTime(int totalTime) {
+		this.totalTime = totalTime;
+	}
+
+	public String getTotalTimeTxt() {
+		return totalTimeTxt;
+	}
+
+	public void setTotalTimeTxt(String totalTimeTxt) {
+		this.totalTimeTxt = totalTimeTxt;
 	}
 }

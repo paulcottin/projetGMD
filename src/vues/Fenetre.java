@@ -42,7 +42,7 @@ public class Fenetre extends JFrame implements Observer{
 	}
 	
 	private void creerFen(){
-		this.setJMenuBar(new Menu(search, null));
+		this.setJMenuBar(new Menu(search, selection.getRecherche()));
 		this.add(selection, BorderLayout.NORTH);
 		this.add(resultsList, BorderLayout.CENTER);
 		this.add(stats, BorderLayout.SOUTH);

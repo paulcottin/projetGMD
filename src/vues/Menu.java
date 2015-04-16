@@ -25,7 +25,6 @@ public class Menu extends JMenuBar{
 	private Search s;
 	
 	public Menu(Search s, Recherche r) {
-		
 		super();		
 		initMenu();
 		creerMenu();

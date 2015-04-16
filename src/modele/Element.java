@@ -55,7 +55,7 @@ public class Element {
 		for (String s : this.diseaseSynonyms) {
 			diseaseSynonyms += "\t\t"+s+"\n";
 		}
-		return "name : "+name+"\n\ttreatment: "+treat+"\n\tcause : "+cause+"\n\tsymptoms : "+symptoms+"\n\t"+syn+"\n\t"+diseaseSynonyms;
+		return "name : "+name+"\n\ttreatment: "+treat+"\n\tcause : "+cause+"\n\tsymptoms : "+symptoms+"\n\t"+syn+"\n\t"+diseaseSynonyms+"\n\torigin : "+origin;
 	}
 
 	public String getName() {
