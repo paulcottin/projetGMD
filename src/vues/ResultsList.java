@@ -94,9 +94,9 @@ public class ResultsList extends JScrollPane{
 		@Override
 		  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		    setText(value.toString());
-		    if (getText().equals("Sider2")) {
-		    	setBackground(Color.red);
-			}
+//		    if (getText().equals("Sider2")) {
+//		    	setBackground(Color.red);
+//			}
 		    return this;
 		  }
 		}

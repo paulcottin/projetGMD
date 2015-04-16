@@ -137,29 +137,35 @@ public class Search extends Observable{
 //		el.addAll(xml_array);
 		//Merge des résultats
 		ArrayList<Element> t = new ArrayList<Element>();
-		for (Element element : xml_array) {
-			t.addAll(merger.merge(element, el));
-		}
-		System.out.println("t.size : "+t.size());
-		el.addAll(t);
-		System.out.println("xml merge : "+el.size());
-		t = new ArrayList<Element>();
-		for (Element element : couchDB_array) {
-			t.addAll(merger.merge(element, el));
-		}
-		System.out.println("t.size : "+t.size());
-		el.addAll(t);
-		System.out.println("couchDB merge : "+el.size());
-		t = new ArrayList<Element>();
-		for (Element element : txt_array) {
-			t.addAll(merger.merge(element, el));
-		}
-		System.out.println("t.size : "+t.size());
-		el.addAll(t);
-		System.out.println("txt merge : "+el.size());
+//		for (Element element : xml_array) {
+//			t.addAll(merger.merge(element, el));
+//		}
+//		System.out.println("t.size : "+t.size());
+//		el.addAll(t);
+//		System.out.println("xml merge : "+el.size());
+//		t = new ArrayList<Element>();
+//		for (Element element : couchDB_array) {
+//			t.addAll(merger.merge(element, el));
+//		}
+//		System.out.println("t.size : "+t.size());
+//		el.addAll(t);
+//		System.out.println("couchDB merge : "+el.size());
+//		t = new ArrayList<Element>();
+//		for (Element element : txt_array) {
+//			t.addAll(merger.merge(element, el));
+//		}
+//		System.out.println("t.size : "+t.size());
+//		el.addAll(t);
+//		System.out.println("txt merge : "+el.size());
 		t = new ArrayList<Element>();
 		for (Element element : sql_array) {
-			t.addAll(merger.merge(element, el));
+			t = merger.merge(element, el);
+			if (t.size() > 0) {
+				el.addAll(t);
+			}else
+				System.out.println("NULL");
+			System.out.println("-------------------");
+//			el.addAll(merger.merge(element, el));
 		}
 		System.out.println("t.size : "+t.size());
 		el.addAll(t);

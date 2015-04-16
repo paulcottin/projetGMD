@@ -80,7 +80,7 @@ public class Merger {
 					names.add(e.getName());
 					for (int i = 0; i < element.getTreat().size(); i++) {
 						for (int j = i+1; j < element.getTreat().size(); j++) {
-							if (element.getTreat().get(i).equals(element.getTreat().get(j))) {
+							if (element.getTreat().get(i).equalsIgnoreCase(element.getTreat().get(j))) {
 								find = true;
 							}
 						}
@@ -91,7 +91,7 @@ public class Merger {
 					}
 					for (int i = 0; i < element.getCause().size(); i++) {
 						for (int j = i+1; j < element.getCause().size(); j++) {
-							if (element.getCause().get(i).equals(element.getCause().get(j))) {
+							if (element.getCause().get(i).equalsIgnoreCase(element.getCause().get(j))) {
 								find = true;
 							}
 						}
@@ -102,7 +102,7 @@ public class Merger {
 					}
 					for (int i = 0; i < element.getSymptoms().size(); i++) {
 						for (int j = i+1; j < element.getSymptoms().size(); j++) {
-							if (element.getSymptoms().get(i).equals(element.getSymptoms().get(j))) {
+							if (element.getSymptoms().get(i).equalsIgnoreCase(element.getSymptoms().get(j))) {
 								find = true;
 							}
 						}
@@ -113,7 +113,7 @@ public class Merger {
 					}
 					for (int i = 0; i < element.getSynonyms().size(); i++) {
 						for (int j = i+1; j < element.getSynonyms().size(); j++) {
-							if (element.getSynonyms().get(i).equals(element.getSynonyms().get(j))) {
+							if (element.getSynonyms().get(i).equalsIgnoreCase(element.getSynonyms().get(j))) {
 								find = true;
 							}
 						}
@@ -124,7 +124,7 @@ public class Merger {
 					}
 					for (int i = 0; i < element.getDiseaseSynonyms().size(); i++) {
 						for (int j = i+1; j < element.getDiseaseSynonyms().size(); j++) {
-							if (element.getDiseaseSynonyms().get(i).equals(element.getDiseaseSynonyms().get(j))) {
+							if (element.getDiseaseSynonyms().get(i).equalsIgnoreCase(element.getDiseaseSynonyms().get(j))) {
 								find = true;
 							}
 						}
@@ -140,87 +140,30 @@ public class Merger {
 		return list;
 	}
 
-	public ArrayList<Element> merge(Element e, ArrayList<Element> list){
-//		boolean sameDisease = false, sameMedic = false;
-//		ArrayList<Element> l = new ArrayList<Element>();
-//		Element element;
-//		if (list.size() == 0) {
-//			l.add(e);
-//		}
-//		else{
-////			System.out.println("size : "+list.size());
-//			Iterator<Element> iter = list.iterator();
-//			while(iter.hasNext()) {
-//				element = iter.next();
-//				if (!element.getName().equals("") && !e.getName().equals("")) {
-//					//Si même nom
-//					if (element.getName().equals(e.getName())) {
-//						sameMedic = true;
-////						System.out.println("mm nom");
-//						if (!element.getTreat().equals(e.getTreat())) {
-//							element.setTreat(e.getTreat());
-//						}
-//						if (!element.getSymptoms().equals(e.getSymptoms())) {
-//							element.setSymptoms(e.getSymptoms());
-//						}
-//						if (!element.getSynonyms().equals(e.getSynonyms())) {
-//							element.setSynonyms(e.getSynonyms());
-//						}
-//						if (!element.getCause().equals(e.getCause())) {
-//							element.setCause(e.getCause());
-//						}
-//					}
-//				}
-//				else if (element.getTreat() != null && e.getTreat() != null) {
-//					for (int i = 0; i < e.getTreat().size(); i++) {
-//						if (!element.getTreat().contains(e.getTreat().get(i))) {
-//							element.getTreat().add(e.getTreat().get(i));
-//						}
-//					}
-//					if (element.getTreat().equals(e.getTreat())) {
-//						sameDisease = true;
-////						System.out.println("mm maladie : "+element.getTreat());
-//						if (!element.getName().equals(e.getName())) {
-//							element.setName(e.getName());
-//						}
-//						if (!element.getSymptoms().equals(e.getSymptoms())) {
-//							element.setSymptoms(e.getSymptoms());
-//						}
-//						if (!element.getSynonyms().equals(e.getSynonyms())) {
-//							element.setSynonyms(e.getSynonyms());
-//						}
-//						if (!element.getCause().equals(e.getCause())) {
-//							element.setCause(e.getCause());
-//						}
-//					}
-//					if (!element.getName().equals(e.getName()) && !element.getTreat().equals(e.getTreat())) {
-////						System.out.println("pas meme");
-//						l.add(e);
-//					}
-//				}
-//				else{
-////					System.out.println("ajout");
-//					l.add(e);
-//				}
-//				sameDisease = false; 
-//				sameMedic = false;
-//			}
-//		}
-//		list.addAll(l);
-		return mergeTest(e, list);
-	}
-	
-	private ArrayList<Element> mergeTest(Element e, ArrayList<Element> list){
+	private ArrayList<Element> merge(Element e, ArrayList<Element> list){
 		ArrayList<Element> l = new ArrayList<Element>();
 		if (list.size() == 0) {
 			System.out.println("init : "+e.getName()+", "+e.getTreat());
 			l.add(e);
 		}
+//		else if (list.size() == 1) {
+//			if (e.getName().equalsIgnoreCase(list.get(0).getName()+"\n") && sameTreat(e.getTreat(), list.get(0).getTreat())) {
+//				
+//			}else{
+//				System.out.println("ADD : "+e.getName());
+//				l.add(e);
+//			}
+//		}
+//		else if (list.size() > 10) {
+//			return new ArrayList<Element>();
+//		}
 		else {
+			
 			for (int i = 0; i < list.size(); i++) {
+				System.out.println("list size : "+list.size());
 				//Si mm noms et mm disease
-				System.out.println(" i : "+i+", noms : "+e.getName()+" - "+list.get(i).getName());
-				if (e.getName().equalsIgnoreCase(list.get(i).getName()) && sameTreat(e.getTreat(), list.get(i).getTreat())) {
+				System.out.println(" i : "+i+", noms : "+e.getName()+" - "+list.get(i).getName()+" same treat : "+sameTreat(e.getTreat(), list.get(i).getTreat()));
+				if (e.getName().equalsIgnoreCase(list.get(i).getName()+"\n") && sameTreat(e.getTreat(), list.get(i).getTreat())) {
 					//Si mm disease (à revoir)
 //					if (e.getTreat().equals(list.get(i).getTreat())) {
 //						System.out.println("\tadd mm disease : "+list.get(i).getTreat().toString()+" (nom : "+e.getName()+") - SIZE : "+l.size());
@@ -233,11 +176,15 @@ public class Merger {
 //						l.add(e);
 //					}
 					System.out.println("\t SAME : "+e.getName());
+					return new ArrayList<Element>();
 				}
-//				else{
-//					System.out.println("\tadd != noms != diseases : "+e.getName()+", "+e.getTreat().toString());
-//					l.add(e);
-//				}
+				else{
+					
+					if (!haveElement(l, e)) {
+						System.out.println("\tadd != noms != diseases : "+e.getName()+", "+e.getTreat().toString());
+						l.add(e);
+					}
+				}
 			}
 		}
 		return l;
@@ -254,6 +201,15 @@ public class Merger {
 				}
 			}
 			if (temp.size() == b.size()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean haveElement(ArrayList<Element> list, Element e){
+		for (Element element : list) {
+			if (element.getName().equalsIgnoreCase(e.getName())) {
 				return true;
 			}
 		}
