@@ -65,6 +65,7 @@ public class XMLSearch {
 	}
 
 	private void parseDocument() throws NotFoundException{
+		list.clear();
 		org.w3c.dom.Element docEle = dom.getDocumentElement();
 		ArrayList<Medic> med_res = new ArrayList<Medic>();
 		ArrayList<Disease> dis_res = new ArrayList<Disease>();

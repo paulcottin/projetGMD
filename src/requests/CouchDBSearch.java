@@ -56,6 +56,7 @@ public class CouchDBSearch {
 	}
 
 	public ArrayList<Element> search(){
+		dList.clear();
 		this.disease = getDisease();
 //		this.clinicalSigns = getClinicalSigns();
 		try {

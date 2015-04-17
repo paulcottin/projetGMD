@@ -48,10 +48,10 @@ public class Merger {
 				name += (di.getTreatment().indexOf(s) == di.getTreatment().size()) ? s+"\n" : s;				
 			}
 			if (name.contains("(") && name.contains(")")) {
-				System.out.println(name);
+//				System.out.println(name);
 				int begin = name.indexOf("(")+1;
 				int end = name.indexOf(")");
-				System.out.println("\t"+name.substring(0, begin-((name.charAt(begin-1) == ' ') ? 2 : 1))+"\t"+name.substring(begin, end));
+//				System.out.println("\t"+name.substring(0, begin-((name.charAt(begin-1) == ' ') ? 2 : 1))+"\t"+name.substring(begin, end));
 				synonym.add(name.substring(begin, end));
 				name = name.substring(0, begin-((name.charAt(begin-1) == ' ') ? 2 : 1));
 			}
@@ -82,7 +82,7 @@ public class Merger {
 			Element e = new Element();
 			e.setName(element.getName());
 			e.setOrigin(element.getOrigin());
-			if (!e.getName().equals("") && element.getTreat() != null) {
+			if (!e.getName().equals("") || element.getTreat() != null) {
 				if(!names.contains(e.getName())){
 					names.add(e.getName());
 					for (int i = 0; i < element.getTreat().size(); i++) {

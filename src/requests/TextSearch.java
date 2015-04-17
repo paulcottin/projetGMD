@@ -38,6 +38,7 @@ public class TextSearch {
 	}
 	
 	public ArrayList<Element> getInfos(){
+		list.clear();
 		ArrayList<Element> l = new ArrayList<Element>();
 		try {
 			parseCSV();

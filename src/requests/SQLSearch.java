@@ -51,6 +51,7 @@ public class SQLSearch {
 	}
 
 	public ArrayList<Element> search(){
+		list.clear();
 		if (!Dsearch.equals("")) {
 			for (Element element : merger.DiseaseToElement(searchByDisease())) {
 				list.add(element);

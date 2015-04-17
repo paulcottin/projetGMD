@@ -3,6 +3,8 @@ package vues;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -13,12 +15,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import modele.Search;
 
-public class ResultsList extends JScrollPane{
+public class ResultsList extends JScrollPane implements Observer{
 
 	/**
 	 * 
@@ -27,17 +30,29 @@ public class ResultsList extends JScrollPane{
 	
 	private Search search;
 	private Vector<Vector<String>> vec;
+	private Vector<String> columnNames;
+	private DefaultTableModel model;
 	private int nbResults;
+	private JTable table;
 	
 	public ResultsList(Search search) {
 		super();
+		init();
 		this.search = search;
 		this.nbResults = this.search.getEl().size();
+		search.addObserver(this);
+//		System.out.println("constructeur, results size : "+nbResults);
+//		System.out.println("longueur table : "+table.getRowCount());
+		if (table.getRowCount() > 0) {
+//			System.out.println("remove");
+			remove();
+		}
 		this.updateList();
+//		System.out.println("longueur table : "+table.getRowCount());
 	}
 	
-	private void updateList(){
-		Vector<String> columnNames = new Vector<String>();
+	private void init(){
+		columnNames = new Vector<String>();
 		columnNames.addElement(("Medic name"));
 		columnNames.addElement(("Disease name"));
 		columnNames.addElement(("Symptoms"));
@@ -47,6 +62,25 @@ public class ResultsList extends JScrollPane{
 		columnNames.addElement(("Origin"));
 		
 		vec = new Vector<Vector<String>>();
+		model = new DefaultTableModel(vec, columnNames);
+		table = new JTable(model);
+		
+		table.setEnabled(false);
+		table.getColumnModel().addColumnModelListener( new WrapColListener( table ) );
+		table.setDefaultRenderer( Object.class, new JTPRenderer() );
+		table.getColumn("Origin").setPreferredWidth(0);
+		
+		this.setViewportView(table);
+	}
+	
+	private void remove(){
+		vec = new Vector<Vector<String>>();
+		model.setRowCount(0);
+		table.setModel(model);
+		this.setViewportView(table);
+	}
+	
+	private void updateList(){
 		Vector<String> v;
 		String synonyms = "", treats = "", causes = "", symptoms = "", diseaseSynonyms= "";
 		for (int i = 0; i < nbResults; i++) {
@@ -80,12 +114,18 @@ public class ResultsList extends JScrollPane{
 			v.addElement(search.getEl().get(i).getOrigin());
 			vec.addElement(v);
 		}
-		JTable table= new JTable(vec, columnNames);
-		table.setEnabled(false);
-		table.getColumnModel().addColumnModelListener( new WrapColListener( table ) );
-		table.setDefaultRenderer( Object.class, new JTPRenderer() );
-		table.getColumn("Origin").setPreferredWidth(0);
+		model.setDataVector(vec, columnNames);
+		table.setModel(model);
 		this.setViewportView(table);
+	}
+	
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		nbResults = search.getEl().size();
+//		System.out.println("nbResults : "+nbResults);
+		
+		
+//		updateList();
 	}
 	
 	class JTPRenderer extends JTextPane implements TableCellRenderer {
@@ -158,5 +198,4 @@ public class ResultsList extends JScrollPane{
 		  public void columnSelectionChanged(ListSelectionEvent e) {
 		  }
 	}
-
 }

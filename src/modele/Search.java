@@ -66,10 +66,16 @@ public class Search extends Observable{
 	
 	public void search(){
 		el = new ArrayList<Element>();
+		el.clear();
+//		System.out.println("el : "+el.toString());
 		ArrayList<Element> xml_array = new ArrayList<Element>();
+		xml_array.clear();
 		ArrayList<Element> txt_array = new ArrayList<Element>();
+		txt_array.clear();
 		ArrayList<Element> couchDB_array = new ArrayList<Element>();
+		couchDB_array.clear();
 		ArrayList<Element> sql_array = new ArrayList<Element>();
+		sql_array.clear();
 		
 		//On test si c'est une recherche exacte ou un joker (qqchose*)
 		System.out.println("medic : "+medic+", disease : "+disease);
@@ -143,30 +149,30 @@ public class Search extends Observable{
 				el.addAll(t);
 			}
 		}
-		System.out.println("t.size : "+t.size());
+//		System.out.println("t.size : "+t.size());
 		el.addAll(t);
-		System.out.println("xml merge : "+el.size());
-		t = new ArrayList<Element>();
+//		System.out.println("xml merge : "+el.size());
+		t.clear();
 		for (Element element : couchDB_array) {
 			t = merger.merge(element, el);
 			if (t.size() > 0) {
 				el.addAll(t);
 			}
 		}
-		System.out.println("t.size : "+t.size());
+//		System.out.println("t.size : "+t.size());
 		el.addAll(t);
-		System.out.println("couchDB merge : "+el.size());
-		t = new ArrayList<Element>();
+//		System.out.println("couchDB merge : "+el.size());
+		t.clear();
 		for (Element element : txt_array) {
 			t = merger.merge(element, el);
 			if (t.size() > 0) {
 				el.addAll(t);
 			}
 		}
-		System.out.println("t.size : "+t.size());
+//		System.out.println("t.size : "+t.size());
 		el.addAll(t);
-		System.out.println("txt merge : "+el.size());
-		t = new ArrayList<Element>();
+//		System.out.println("txt merge : "+el.size());
+		t.clear();
 		for (Element element : sql_array) {
 			t = merger.merge(element, el);
 			if (t.size() > 0) {
@@ -178,10 +184,12 @@ public class Search extends Observable{
 //			el.addAll(merger.merge(element, el));
 		}
 		el.addAll(t);
-		System.out.println("sql merge : "+el.size());
+//		System.out.println("sql merge : "+el.size());
 //		System.out.println("results : \n"+el.toString());
+//		System.out.println("el size : "+el.size());
+//		System.out.println("el avant dup : "+el.size());
 		el = merger.getOutDuplicates(el);
-		System.out.println("el size : "+el.size());
+//		System.out.println("el size : "+el.size());
 		stats.setTotalNumber(el.size());
 		stats.execute();
 		try {
@@ -189,6 +197,7 @@ public class Search extends Observable{
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+//		System.out.println("__ el size : "+el.size());
 		setChanged();
 		notifyObservers();
 	}
