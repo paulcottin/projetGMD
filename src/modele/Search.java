@@ -100,7 +100,7 @@ public class Search extends Observable{
 		}
 		stats.setXmlEnd(GregorianCalendar.getInstance());
 		stats.setXmlNumber(xml_array.size());
-		System.out.println("XML ok, "+xml_array.size()+" result(s)");
+//		System.out.println("XML ok, "+xml_array.size()+" result(s)");
 		stats.setCouchDbBegin(GregorianCalendar.getInstance());
 		if (couch_b) {
 			for (Element e : couchDB.search()) {
@@ -109,7 +109,7 @@ public class Search extends Observable{
 		}
 		stats.setCouchDbEnd(GregorianCalendar.getInstance());
 		stats.setCouchDbNumber(couchDB_array.size());
-		System.out.println("CouchDB ok, "+couchDB_array.size()+" result(s)");
+//		System.out.println("CouchDB ok, "+couchDB_array.size()+" result(s)");
 		stats.setSqlBegin(GregorianCalendar.getInstance());
 		if (sql_b) {
 			for (Element element : sql.search()) {
@@ -118,8 +118,7 @@ public class Search extends Observable{
 		}
 		stats.setSqlEnd(GregorianCalendar.getInstance());
 		stats.setSqlNumber(sql_array.size());
-		System.out.println("sql : "+sql_array.get(0).toString());
-		System.out.println("SQL ok, "+sql_array.size()+" result(s)");
+//		System.out.println("SQL ok, "+sql_array.size()+" result(s)");
 		txt.setDsearch(disease);
 		stats.setTxtBegin(GregorianCalendar.getInstance());
 		if (txt_b) {
@@ -129,9 +128,8 @@ public class Search extends Observable{
 		}
 		stats.setTxtEnd(GregorianCalendar.getInstance());
 		stats.setTxtNumber(txt_array.size());
-		System.out.println("texte : "+txt_array.get(0).toString());
 		
-		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
+//		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
 //		System.out.println("***\n"+txt_array.toString()+"\n***");
 //		el.addAll(couchDB_array);
 //		el.addAll(sql_array);

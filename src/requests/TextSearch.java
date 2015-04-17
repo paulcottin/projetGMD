@@ -13,6 +13,7 @@ import com.googlecode.jcsv.reader.CSVReader;
 import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 import com.sun.org.apache.xml.internal.utils.SuballocatedByteVector;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import modele.Disease;
 import modele.Element;
@@ -37,10 +38,18 @@ public class TextSearch {
 	}
 	
 	public ArrayList<Element> getInfos(){
+		ArrayList<Element> l = new ArrayList<Element>();
 		try {
 			parseCSV();
 			parseTxt();
-			list = merger.DiseaseToElement(dList);
+			l = merger.DiseaseToElement(dList);
+			for (Element element : l) {
+				if (element.getTreat() != null) {
+					if (element.getName() == "" && element.getTreat().get(0) !=null ) {
+						list.add(element);
+					}
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -166,7 +175,7 @@ public class TextSearch {
 					moved = true;
 				}
 			}
-			if (name.matches(Dsearch)) {
+			if (name.matches(Dsearch) && name != "") {
 				this.name = name;
 				if (line.contains("*FIELD* CS") && !moved) {
 					while(!(line = br.readLine()).contains("*FIELD*")){
