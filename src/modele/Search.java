@@ -118,6 +118,7 @@ public class Search extends Observable{
 		}
 		stats.setSqlEnd(GregorianCalendar.getInstance());
 		stats.setSqlNumber(sql_array.size());
+		System.out.println("sql : "+sql_array.get(0).toString());
 		System.out.println("SQL ok, "+sql_array.size()+" result(s)");
 		txt.setDsearch(disease);
 		stats.setTxtBegin(GregorianCalendar.getInstance());

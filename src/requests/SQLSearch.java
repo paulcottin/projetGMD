@@ -94,7 +94,7 @@ public class SQLSearch {
 				medic.getTreat().add(res2.getString("i_name"));
 			}			
 			res2.close();
-			
+			medic.setName(Msearch);
 			medic.setOrigin("Sider2");
 		} catch (SQLException e) {
 			e.printStackTrace();
