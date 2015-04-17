@@ -91,21 +91,21 @@ public class ResultsList extends JScrollPane implements Observer{
 			synonyms = "";
 			diseaseSynonyms = "";
 			for (String string : search.getEl().get(i).getCause()) {
-				causes += string+"\n";
+				causes += (!string.equals("")) ? string.replaceFirst(".",(string.charAt(0)+"").toUpperCase())+",\n" : "";
 			}
 			for (String string : search.getEl().get(i).getTreat()) {
-				treats += string+"\n";
+				treats += (!string.equals("")) ? string.replaceFirst(".",(string.charAt(0)+"").toUpperCase())+",\n" : "";
 			}
 			for (String string : search.getEl().get(i).getSymptoms()) {
-				symptoms += string+"\n";
+				symptoms += (!string.equals("")) ? string.replaceFirst(".",(string.charAt(0)+"").toUpperCase())+",\n" : "";
 			}
 			for (String string : search.getEl().get(i).getSynonyms()) {
-				synonyms += string+"\n";
+				synonyms += (!string.equals("")) ? string.replaceFirst(".",(string.charAt(0)+"").toUpperCase())+",\n" : "";
 			}
 			for (String string : search.getEl().get(i).getDiseaseSynonyms()) {
-				diseaseSynonyms += string+"\n";
+				diseaseSynonyms += (!string.equals("")) ? string.replaceFirst(".",(string.charAt(0)+"").toUpperCase())+",\n" : "";
 			}
-			v.addElement(search.getEl().get(i).getName());
+			v.addElement(search.getEl().get(i).getName().toUpperCase());
 			v.addElement(treats);
 			v.addElement(causes);
 			v.addElement(symptoms);
@@ -122,10 +122,6 @@ public class ResultsList extends JScrollPane implements Observer{
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		nbResults = search.getEl().size();
-//		System.out.println("nbResults : "+nbResults);
-		
-		
-//		updateList();
 	}
 	
 	class JTPRenderer extends JTextPane implements TableCellRenderer {

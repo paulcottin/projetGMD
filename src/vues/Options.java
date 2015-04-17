@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -14,7 +16,7 @@ import modele.Search;
 
 import controller.SelectSourceController;
 
-public class Options extends JPanel{
+public class Options extends JPanel implements Observer{
 
 	/**
 	 * 
@@ -58,7 +60,7 @@ public class Options extends JPanel{
 		
 		//Sélection par défaut
 		sql_case.setSelected(true);
-//		xml_case.setSelected(true);
+		xml_case.setSelected(true);
 		txt_case.setSelected(true);
 		couch_case.setSelected(true);
 	}
@@ -82,5 +84,33 @@ public class Options extends JPanel{
 		for (Component c : this.getComponents()) {
 			c.setBackground(Selection.BACKGROUND_COLOR);
 		}
+	}
+	
+	private void caseProcessing(){
+		if (search.isCouch_b()) {
+			couch_case.setSelected(true);
+		}else {
+			couch_case.setSelected(false);
+		}
+		if (search.isSql_b()) {
+			sql_case.setSelected(true);
+		}else {
+			sql_case.setSelected(false);
+		}
+		if (search.isTxt_b()) {
+			txt_case.setSelected(true);
+		}else {
+			txt_case.setSelected(false);
+		}
+		if (search.isXml_b()) {
+			xml_case.setSelected(true);
+		}else {
+			xml_case.setSelected(false);
+		}
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		caseProcessing();
 	}
 }

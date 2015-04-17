@@ -8,6 +8,8 @@ import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Observable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
@@ -54,8 +56,8 @@ public class Search extends Observable{
 		this.couch_b = true;
 		this.txt_b = true;
 		this.sql_b = true;
-		this.xml_b = false;
-		this.xmlPath = "drugbank.xml";
+		this.xml_b = true;
+		this.xmlPath = "drugbankTest.xml";
 		this.txtPath = "_text.txt";
 		this.csvPath = "omim_onto.csv";
 		this.outPath = "out.txt";
@@ -78,34 +80,17 @@ public class Search extends Observable{
 		sql_array.clear();
 		
 		//On test si c'est une recherche exacte ou un joker (qqchose*)
-		System.out.println("medic : "+medic+", disease : "+disease);
-		if (disease.contains("*")) {
-			disease = disease.substring(0, disease.indexOf("*"))+".*"+disease.substring(disease.indexOf("*")+1, disease.length());
-		}
-		if (medic.contains("*")) {
-			medic.replaceAll("\\*", ".\\*");
-		}
+		nameHelper();
 		
-		System.out.println("medic : "+medic+", disease : "+disease);
-		
-		xml.setDSearch(disease);
-		xml.setMSearch(medic);
-		txt.setDsearch(disease);
-		couchDB.setdSearch(disease);
-		sql.setMsearch(medic);
-		sql.setDsearch(disease);
 		stats.setXmlBegin(GregorianCalendar.getInstance());
 		if (xml_b) {
-			try {
-				for (Element e : xml.getInfos()) {
-					xml_array.add(e);
-				}
-			} catch (NotFoundException e) {
-//				e.execute();
+			for (Element e : xml.getInfos()) {
+				xml_array.add(e);
 			}
 		}
 		stats.setXmlEnd(GregorianCalendar.getInstance());
 		stats.setXmlNumber(xml_array.size());
+		update();
 //		System.out.println("XML ok, "+xml_array.size()+" result(s)");
 		stats.setCouchDbBegin(GregorianCalendar.getInstance());
 		if (couch_b) {
@@ -124,8 +109,8 @@ public class Search extends Observable{
 		}
 		stats.setSqlEnd(GregorianCalendar.getInstance());
 		stats.setSqlNumber(sql_array.size());
+		update();
 //		System.out.println("SQL ok, "+sql_array.size()+" result(s)");
-		txt.setDsearch(disease);
 		stats.setTxtBegin(GregorianCalendar.getInstance());
 		if (txt_b) {
 			for (Element e : txt.getInfos()) {
@@ -134,7 +119,7 @@ public class Search extends Observable{
 		}
 		stats.setTxtEnd(GregorianCalendar.getInstance());
 		stats.setTxtNumber(txt_array.size());
-		
+		update();
 //		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
 //		System.out.println("***\n"+txt_array.toString()+"\n***");
 //		el.addAll(couchDB_array);
@@ -143,6 +128,7 @@ public class Search extends Observable{
 //		el.addAll(xml_array);
 		//Merge des résultats
 		ArrayList<Element> t = new ArrayList<Element>();
+		t.clear();
 		for (Element element : xml_array) {
 			t = merger.merge(element, el);
 			if (t.size() > 0) {
@@ -192,14 +178,57 @@ public class Search extends Observable{
 //		System.out.println("el size : "+el.size());
 		stats.setTotalNumber(el.size());
 		stats.execute();
-		try {
-			this.writer(el, outPath);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+//		try {
+//			this.writer(el, outPath);
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
 //		System.out.println("__ el size : "+el.size());
-		setChanged();
-		notifyObservers();
+		if (el.size() == 0) {
+			try {
+				throw new NotFoundException();
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.execute();
+			}
+		}
+		update();
+	}
+	
+	private void nameHelper(){
+		String d = "", m = "";
+		if (disease.contains("*")) {
+			d = disease.replaceAll("\\*", ".*");
+			xml.setDSearch(d);
+			txt.setDsearch(d);
+			
+			d = disease.replaceAll("\\*", "%");
+			sql.setDsearch(d);
+			
+			if (disease.indexOf("*") > 1) {
+				d = disease.substring(0, disease.indexOf("*")-1);
+				couchDB.setJoker(true);
+			}else {
+				//On ne recherche pas dans CouchDB
+				couch_b = false;
+			}
+		}else{
+			xml.setDSearch(disease);
+			txt.setDsearch(disease);
+			sql.setDsearch(disease);
+			couchDB.setJoker(false);
+			couchDB.setdSearch(disease);
+		}
+		if (medic.contains("*")) {
+			m = medic.replaceAll("\\*", ".*");
+			xml.setMSearch(m);
+			
+			m = medic.replaceAll("\\*", "%");
+			sql.setMsearch(m);
+		}else{
+			xml.setMSearch(medic);
+			sql.setMsearch(medic);
+		}
 	}
 	
 	private void writer(ArrayList<Element> list, String path) throws IOException{
@@ -212,6 +241,11 @@ public class Search extends Observable{
 			bw.write("--");
 		}
 		bw.close();		
+	}
+	
+	private void update(){
+		setChanged();
+		notifyObservers();
 	}
 
 	public String getXmlPath() {

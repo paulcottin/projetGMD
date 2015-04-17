@@ -71,7 +71,7 @@ public class TextSearch {
 				nom = tab[1].split("&/&")[0];
 			}else
 				nom = tab[1];
-			if (nom.matches(this.Dsearch)) {
+			if (nom.toUpperCase().matches(this.Dsearch.toUpperCase())) {
 				if (tab.length >1)
 					medicName = nom;
 				else
@@ -176,7 +176,7 @@ public class TextSearch {
 					moved = true;
 				}
 			}
-			if (name.matches(Dsearch) && name != "") {
+			if (name.toUpperCase().matches(Dsearch.toUpperCase()) && name != "") {
 				this.name = name;
 				if (line.contains("*FIELD* CS") && !moved) {
 					while(!(line = br.readLine()).contains("*FIELD*")){

@@ -43,7 +43,7 @@ public class XMLSearch {
 		this.list = new ArrayList<Element>();
 	}
 
-	public ArrayList<Element> getInfos() throws NotFoundException{
+	public ArrayList<Element> getInfos(){
 		parseXmlFile();
 		parseDocument();
 		return list;
@@ -64,33 +64,27 @@ public class XMLSearch {
 		}
 	}
 
-	private void parseDocument() throws NotFoundException{
+	private void parseDocument(){
 		list.clear();
 		org.w3c.dom.Element docEle = dom.getDocumentElement();
 		ArrayList<Medic> med_res = new ArrayList<Medic>();
 		ArrayList<Disease> dis_res = new ArrayList<Disease>();
 		if (!Dsearch.equals("")) {
 			dis_res = searchByDisease(docEle);
-			//				writerD(dis_res);
 		}
 		if (!Msearch.equals("")) {
 			med_res = searchByMedic(docEle);
-			//				writerM(med_res);
 		}
-		if (dis_res.size() == 0 && med_res.size() == 0) {
-			NotFoundException e = new NotFoundException();
-			throw e;
-		}else {
-			//				list = merger.mergeFile("_byM.txt", "_byD.txt"); 
-			//				deleteTempFile();
-			list = merger.testMerge(med_res, dis_res);
+		if (!(dis_res.size() == 0 && med_res.size() == 0)) {
+			list.addAll(merger.DiseaseToElement(dis_res));
+			list.addAll(merger.MedicToElement(med_res));
 		}
 	}
 
 	private ArrayList<Medic> searchByMedic(org.w3c.dom.Element doc){
 		ArrayList<Medic> list = new ArrayList<Medic>();
-		String name = "", treat = "", cause = "";
-		ArrayList<String> synonyms = new ArrayList<String>();
+		String name = "";
+		ArrayList<String> synonyms = new ArrayList<String>(), treat = new ArrayList<String>(), cause = new ArrayList<String>();
 		NodeList general = doc.getChildNodes();
 		NodeList node;
 		NodeList find;
@@ -102,7 +96,7 @@ public class XMLSearch {
 					if (node != null && node.getLength() > 0) {
 						for (int j = 0; j < node.getLength(); j++) {
 							if (node.item(j).getNodeName().equals("name")) {
-								if (node.item(j).getFirstChild().getNodeValue().matches(Msearch)) {
+								if (node.item(j).getFirstChild().getNodeValue().toUpperCase().matches(Msearch.toUpperCase())) {
 									find = node;
 									name = find.item(j).getFirstChild().getNodeValue();
 									for (int k = 0; k < find.getLength(); k++) {
@@ -110,7 +104,7 @@ public class XMLSearch {
 											treat = getTreatment(find.item(k).getFirstChild().getNodeValue());
 										}
 										if (find.item(k).getNodeName().equals("toxicity")) {
-											cause = getCause(find.item(k).getFirstChild().getNodeValue());
+											cause = getCause(((find.item(k).getFirstChild() != null) ? find.item(k).getFirstChild().getNodeValue() : ""));
 										}
 										if (find.item(k).getNodeName().equals("synonyms")) {
 											syn = find.item(k).getChildNodes();
@@ -121,11 +115,7 @@ public class XMLSearch {
 											}
 										}
 									}
-									ArrayList<String> c = new ArrayList<String>();
-									c.add(cause);
-									ArrayList<String> t = new ArrayList<String>();
-									t.add(treat);
-									list.add(new Medic(name, t, c, synonyms, "DrugBank"));
+									list.add(new Medic(name, treat, cause, synonyms, "DrugBank"));
 								}
 							}
 						}
@@ -138,7 +128,7 @@ public class XMLSearch {
 
 	private ArrayList<Disease> searchByDisease(org.w3c.dom.Element doc){
 		ArrayList<Disease> list = new ArrayList<Disease>();
-		String name = "", treat = "", cause = "", symptom = "";
+		ArrayList<String> treat = new ArrayList<String>(), cause = new ArrayList<String>(), symptom = new ArrayList<String>(), name = new ArrayList<String>();
 		NodeList general = doc.getChildNodes();
 		NodeList node;
 		NodeList find;
@@ -150,15 +140,15 @@ public class XMLSearch {
 						for (int j = 0; j < node.getLength(); j++) {
 							if (node.item(j).getNodeName().equals("pharmacodynamics")) {
 								if (node.item(j).getFirstChild() != null) {
-									if (node.item(j).getFirstChild().getNodeValue().matches(".*"+Dsearch+".*")) {
+									if (node.item(j).getFirstChild().getNodeValue().toUpperCase().matches(".*"+Dsearch.toUpperCase()+".*")) {
 										find = node;
-										symptom = find.item(j).getFirstChild().getNodeValue();
+										symptom = getSymptoms(find.item(j).getFirstChild().getNodeValue());
 										for (int k = 0; k < find.getLength(); k++) {
 											if (find.item(k).getNodeName().equals("name")) {
-												name = getTreatment(find.item(k).getFirstChild().getNodeValue());
+												treat = getTreatment(find.item(k).getFirstChild().getNodeValue());
 											}
 											if (find.item(k).getNodeName().equals("indication")) {
-												treat = getTreatment(find.item(k).getFirstChild().getNodeValue());
+												name = getTreatment(find.item(k).getFirstChild().getNodeValue());
 											}
 											if (find.item(k).getNodeName().equals("toxicity")) {
 												if (find.item(k).getFirstChild() != null) {
@@ -166,13 +156,8 @@ public class XMLSearch {
 												}
 											}
 										}
-										ArrayList<String> c = new ArrayList<String>();
-										c.add(cause);
-										ArrayList<String> t = new ArrayList<String>();
-										t.add(treat);
-										ArrayList<String> s = new ArrayList<String>();
-										s.add(symptom);
-										list.add(new Disease(name, t, c, s, new ArrayList<String>(), "DrugBank"));
+
+										list.add(new Disease(name.get(0), treat, symptom, cause, new ArrayList<String>(), "DrugBank"));
 									}
 								}
 							}
@@ -184,7 +169,8 @@ public class XMLSearch {
 		return list;
 	}
 
-	private String getTreatment(String s){
+	private ArrayList<String> getTreatment(String s){
+		ArrayList<String> l = new ArrayList<String>();
 		int begin = (s.contains("treatment of"))? s.indexOf("treatment of") + "treatment of".length()+1 : 0;
 		int end;
 		if (s.contains(" in ")) {
@@ -192,16 +178,45 @@ public class XMLSearch {
 		}else{
 			end = s.length();
 		}
-		return s.substring(begin, end);
+		l.add(s.substring(begin, end));
+		return l;
 	}
 
-	private String getCause(String s){
+	private ArrayList<String> getCause(String s){
+		ArrayList<String> l = new ArrayList<String>();
+		String temp;
 		int begin = 0, end = 0;
 		if (s.contains("adverse effects include ")) {
 			begin = s.indexOf("adverse effects include ") + "adverse effects include ".length();
 			end = s.substring(begin).indexOf(".") + begin;
+			temp = s.substring(begin, end);
+			if (temp.contains(",")) {
+				for (String string : temp.split(", ")) {
+					int b = 0, e = string.length();
+					if (string.contains("and ")) {
+						b = string.indexOf("and ") + "and ".length();
+					}
+					l.add(string.substring(b, e));
+				}
+			}else {
+				l.add(temp);
+			}
 		}
-		return s.substring(begin, end);
+		else {
+			l.add(s);
+		}
+		return l;
+	}
+
+	private ArrayList<String> getSymptoms(String s){
+		ArrayList<String> l = new ArrayList<String>();
+		if (s.contains("characterized by")) {
+			int begin = s.indexOf("characterized by") + "characterized by".length()+1;
+			int end = (s.substring(begin).contains(".")) ? s.indexOf(".") : s.length();
+			l.add(s.substring(begin, end));
+		}else
+			l.add(s);
+		return l;
 	}
 
 	private void writerM(ArrayList<Medic> list) throws IOException{

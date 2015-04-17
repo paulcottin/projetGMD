@@ -36,6 +36,7 @@ public class CouchDBSearch {
 	private ArrayList<Disease> dList;
 	private String clinicalSigns, disease;
 	private Merger merger;
+	private boolean joker;
 
 	public CouchDBSearch() { 
 		init();
@@ -52,6 +53,7 @@ public class CouchDBSearch {
 		this.clinicalSigns = "";
 		this.disease = "";
 		this.merger = new Merger();
+		this.joker = false;
 
 	}
 
@@ -75,7 +77,10 @@ public class CouchDBSearch {
 		String cle_bis = dSearch.replace(" ","%20");
 
 		try {
-			url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseasesByName?key=\""+cle_bis+"\"");
+			if (joker) {
+				url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseasesByName?startkey=\""+cle_bis+"\"");
+			}else
+				url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseasesByName?key=\""+cle_bis+"\"");
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -209,5 +214,13 @@ public class CouchDBSearch {
 
 	public void setdSearch(String dSearch) {
 		this.dSearch = dSearch;
+	}
+
+	public boolean isJoker() {
+		return joker;
+	}
+
+	public void setJoker(boolean joker) {
+		this.joker = joker;
 	}
 }

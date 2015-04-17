@@ -12,10 +12,16 @@ import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class Merger {
 
-	ArrayList<Element> list;
+	private ArrayList<Element> list;
+	private int index;
 
 	public Merger() {
+		init();
+	}
+	
+	private void init(){
 		list = new ArrayList<Element>();
+		index = 0;
 	}
 
 	public ArrayList<Element> testMerge(ArrayList<Medic> medics, ArrayList<Disease> diseases){
@@ -36,8 +42,8 @@ public class Merger {
 
 	public ArrayList<Element> DiseaseToElement(ArrayList<Disease> d){
 		ArrayList<Element> e = new ArrayList<Element>();
-		ArrayList<String> treat;
-		ArrayList<String> synonym; 
+		ArrayList<String> treat = new ArrayList<String>();
+		ArrayList<String> synonym = new ArrayList<String>(); 
 		String name;
 		for (Disease di : d) {
 			synonym = new ArrayList<String>();
@@ -61,6 +67,16 @@ public class Merger {
 			for (int i = 1; i < items.length; i++) {
 				synonym.add(items[i]);		
 			}
+			
+			//if pls disease name -> disease synonyms
+//			if (treat.size() > 1) {
+//				String t = treat.get(0);
+//				for (int i = 1; i < treat.size(); i++) {
+//					di.getSynonyms().add(treat.get(i));
+//				}
+//				treat.clear();
+//				treat.add(t);
+//			}
 			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), synonym, di.getSynonyms(), di.getOrigin()));
 		}
 		return e;
@@ -69,7 +85,7 @@ public class Merger {
 	public ArrayList<Element> MedicToElement(ArrayList<Medic> medic){
 		ArrayList<Element> e = new ArrayList<Element>();
 		for (Medic m : medic) {
-			e.add(new Element(m.getName(), m.getTreat(), m.getCause(), new ArrayList<String>(), m.getSynonyms(), new ArrayList<String>(), m.getOrigin()));
+			e.add(new Element(m.getName(), m.getTreat(), new ArrayList<String>(), m.getCause(), m.getSynonyms(), new ArrayList<String>(), m.getOrigin()));
 		}
 		return e;
 	}
@@ -151,13 +167,13 @@ public class Merger {
 		ArrayList<Element> l = new ArrayList<Element>();
 		if (list.size() == 0) {
 //			System.out.println("init : "+e.getName()+", "+e.getTreat());
+//			System.out.println("e origin : "+e.getOrigin());
 			l.add(e);
 		}
 //		else if (list.size() > 15) {
 //			return new ArrayList<Element>();
 //		}
 		else {
-			
 			for (int i = 0; i < list.size(); i++) {
 //				System.out.println("list size : "+list.size());
 				//Si mm noms et mm disease
@@ -177,11 +193,57 @@ public class Merger {
 //					System.out.println("\t SAME : "+e.getName());
 					return new ArrayList<Element>();
 				}
+				//Si seulement mm noms
+				else if (e.getName().equalsIgnoreCase(list.get(i).getName()) && (!e.getName().equals("") || !list.get(i).getName().equals(""))) {
+					for (String s : e.getTreat()) {
+						if (!list.get(i).getTreat().contains(s)) {
+							list.get(i).getDiseaseSynonyms().add(s);
+						}
+					}
+					for (String s : e.getCause()) {
+						if (!list.get(i).getCause().contains(s)) {
+							list.get(i).getCause().add(s);
+						}
+					}
+//					for (String s : e.getSymptoms()) {
+//						if (!list.get(i).getSymptoms().contains(s)) {
+//							list.get(i).getSymptoms().add(s);
+//						}
+//					}
+					for (String s : e.getSynonyms()) {
+						if (!list.get(i).getSynonyms().contains(s)) {
+							list.get(i).getSynonyms().add(s);
+						}
+					}
+					for (String s : e.getDiseaseSynonyms()) {
+						if (!list.get(i).getDiseaseSynonyms().contains(s)) {
+							list.get(i).getDiseaseSynonyms().add(s);
+						}
+					}
+					if (!e.getOrigin().equals(list.get(i).getOrigin()) && !list.get(i).getOrigin().matches(".*"+e.getOrigin()+".*")) {
+						list.get(i).setOrigin(list.get(i).getOrigin()+"/"+e.getOrigin());
+					}
+				}
+				//Si seulement mm disease
+				else if (sameTreat(e.getTreat(), list.get(i).getTreat())) {
+//					System.out.println("seulement mm disease");
+					if (e.getName().equals("") && !e.getOrigin().equals(list.get(i).getOrigin()) && !list.get(i).getOrigin().matches(".*"+e.getOrigin()+".*")) {
+						list.get(i).setOrigin(list.get(i).getOrigin()+"/"+e.getOrigin());
+					}
+					else if(!haveElement(l, e)) {
+						l.add(e);
+					}
+				}
 				else{
-					
 					if (!haveElement(l, e)) {
 //						System.out.println("\tadd != noms != diseases : "+e.getName()+", "+e.getTreat().toString());
 						l.add(e);
+					}else{
+						Element element = l.get(index);
+						if (!e.getOrigin().equals(element.getOrigin())) {
+							element.setOrigin(element.getOrigin()+"/"+e.getOrigin());
+						}
+						l.set(index, element);
 					}
 				}
 			}
@@ -221,6 +283,7 @@ public class Merger {
 	private boolean haveElement(ArrayList<Element> list, Element e){
 		for (Element element : list) {
 			if (element.getName().equalsIgnoreCase(e.getName())) {
+				index = list.indexOf(element);
 				return true;
 			}
 		}
