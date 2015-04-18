@@ -110,4 +110,12 @@ public class Recherche extends JPanel {
 		this.mode = mode;
 	}
 
+	public JButton getSearch_button() {
+		return search_button;
+	}
+
+	public void setSearch_button(JButton search_button) {
+		this.search_button = search_button;
+	}
+
 }

@@ -25,12 +25,14 @@ public class SearchController implements ActionListener{
 		s.setMedic(r.getName());
 		s.setDisease(r.getDisease());
 		r.getMode().setEnabled(false);
+		r.getSearch_button().setEnabled(false);
 		try {
 			s.search();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
 		r.getMode().setEnabled(true);
+		r.getSearch_button().setEnabled(true);
 	}
 	
 	private void booleanInit(){
