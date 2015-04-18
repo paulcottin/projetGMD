@@ -6,10 +6,12 @@ import java.util.Observable;
 
 public class Statistics extends Observable{
 
-	private int xmlTime, sqlTime, couchDbTime, txtTime, totalTime;
-	private String xmlTimeTxt, sqlTimeTxt, couchDbTimeTxt, txtTimeTxt, totalTimeTxt;
+	private int xmlTime, sqlTime, couchDbTime, txtTime, totalTime, mergeTime;
+	private String xmlTimeTxt, sqlTimeTxt, couchDbTimeTxt, txtTimeTxt, totalTimeTxt, mergeTimeTxt;
 	private int xmlNumber, sqlNumber, couchDbNumber, txtNumber;
 	private Calendar xmlBegin, xmlEnd, sqlBegin, sqlEnd, couchDbBegin, couchDbEnd, txtBegin, txtEnd;
+	private Calendar mergeBegin, mergeEnd;
+	private Calendar totalBegin, totalEnd;
 	private int totalNumber;
 	
 	public Statistics() {
@@ -35,6 +37,10 @@ public class Statistics extends Observable{
 		this.couchDbEnd = GregorianCalendar.getInstance();
 		this.txtBegin = GregorianCalendar.getInstance();
 		this.txtEnd = GregorianCalendar.getInstance();
+		this.totalBegin = GregorianCalendar.getInstance();
+		this.totalEnd = GregorianCalendar.getInstance();
+		this.mergeBegin = GregorianCalendar.getInstance();
+		this.mergeEnd = GregorianCalendar.getInstance();
 //		this.xmlTimeTxt = "";
 //		this.sqlTimeTxt = "";
 //		this.couchDbTimeTxt = "";
@@ -47,7 +53,8 @@ public class Statistics extends Observable{
 		sqlTime = (int) (sqlEnd.getTimeInMillis() - sqlBegin.getTimeInMillis());
 		couchDbTime = (int) (sqlEnd.getTimeInMillis() - couchDbBegin.getTimeInMillis());
 		txtTime = (int) (txtEnd.getTimeInMillis() - txtBegin.getTimeInMillis());
-		totalTime = xmlTime+sqlTime+couchDbTime+txtTime;
+		totalTime = (int) (totalEnd.getTimeInMillis() - totalBegin.getTimeInMillis());
+		mergeTime = (int) (mergeEnd.getTimeInMillis() - mergeBegin.getTimeInMillis());
 		getText();
 		setChanged();
 		notifyObservers();
@@ -59,6 +66,7 @@ public class Statistics extends Observable{
 		couchDbTimeTxt = couchDbTime/1000+"s "+couchDbTime%1000+"ms";
 		txtTimeTxt = txtTime/1000+"s "+txtTime%1000+"ms";
 		totalTimeTxt = totalTime/1000+"s "+totalTime%1000+"ms";
+		mergeTimeTxt = mergeTime/1000+"s "+mergeTime%1000+"ms";
 	}
 	
 	public int getXmlTime() {
@@ -243,5 +251,53 @@ public class Statistics extends Observable{
 
 	public void setTotalTimeTxt(String totalTimeTxt) {
 		this.totalTimeTxt = totalTimeTxt;
+	}
+
+	public Calendar getTotalBegin() {
+		return totalBegin;
+	}
+
+	public void setTotalBegin(Calendar totalBegin) {
+		this.totalBegin = totalBegin;
+	}
+
+	public Calendar getTotalEnd() {
+		return totalEnd;
+	}
+
+	public void setTotalEnd(Calendar totalEnd) {
+		this.totalEnd = totalEnd;
+	}
+
+	public Calendar getMergeBegin() {
+		return mergeBegin;
+	}
+
+	public void setMergeBegin(Calendar mergeBegin) {
+		this.mergeBegin = mergeBegin;
+	}
+
+	public Calendar getMergeEnd() {
+		return mergeEnd;
+	}
+
+	public void setMergeEnd(Calendar mergeEnd) {
+		this.mergeEnd = mergeEnd;
+	}
+
+	public int getMergeTime() {
+		return mergeTime;
+	}
+
+	public void setMergeTime(int mergeTime) {
+		this.mergeTime = mergeTime;
+	}
+
+	public String getMergeTimeTxt() {
+		return mergeTimeTxt;
+	}
+
+	public void setMergeTimeTxt(String mergeTimeTxt) {
+		this.mergeTimeTxt = mergeTimeTxt;
 	}
 }

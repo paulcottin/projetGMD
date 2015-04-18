@@ -19,6 +19,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
+
 import exceptions.NotFoundException;
 /**
  * Reste à gérer : 
@@ -26,7 +28,7 @@ import exceptions.NotFoundException;
  * @author paul
  *
  */
-public class XMLSearch {
+public class XMLSearch implements Runnable{
 
 	private Document dom;
 	private ArrayList<Element> list;
@@ -34,6 +36,7 @@ public class XMLSearch {
 	private String Msearch = "";
 	private String Dsearch = "";
 	private Merger merger;
+	private ArrayList<Element> returnList;
 
 	public XMLSearch(String Msearch, String Dsearch, String path) {
 		this.Msearch = Msearch;
@@ -41,6 +44,13 @@ public class XMLSearch {
 		this.path = path;
 		this.merger = new Merger();
 		this.list = new ArrayList<Element>();
+		this.returnList = new ArrayList<Element>();
+	}
+	
+	@Override
+	public void run() {
+		returnList.clear();
+		returnList = getInfos();
 	}
 
 	public ArrayList<Element> getInfos(){
@@ -276,4 +286,11 @@ public class XMLSearch {
 		this.Dsearch = search;
 	}
 
+	public ArrayList<Element> getReturnList() {
+		return returnList;
+	}
+
+	public void setReturnList(ArrayList<Element> returnList) {
+		this.returnList = returnList;
+	}
 }

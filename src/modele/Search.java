@@ -24,6 +24,8 @@ public class Search extends Observable{
 	
 	private String medic, disease, xmlPath, txtPath, csvPath, outPath;
 	private boolean xml_b, txt_b, couch_b, sql_b;
+	private boolean xmlProcBegin, xmlProcEnd, txtProcBegin, txtProcEnd, couchDBProcBegin, couchDBProcEnd, sqlProcBegin, sqlProcEnd;
+	private boolean mergeProcBegin, mergeProcEnd;
 	private XMLSearch xml;
 	private SQLSearch sql;
 	private TextSearch txt;
@@ -64,9 +66,19 @@ public class Search extends Observable{
 		this.el = new ArrayList<Element>();
 		this.merger = new Merger();
 		this.stats = new Statistics();
+		this.xmlProcBegin = false;
+		this.xmlProcEnd = false;
+		this.sqlProcBegin = false;
+		this.sqlProcEnd = false;
+		this.txtProcBegin = false;
+		this.txtProcEnd = false;
+		this.couchDBProcBegin = false;
+		this.couchDBProcEnd = false;
+		this.mergeProcBegin = false;
+		this.mergeProcEnd = false;
 	}
 	
-	public void search(){
+	public void search() throws InterruptedException{
 		el = new ArrayList<Element>();
 		el.clear();
 //		System.out.println("el : "+el.toString());
@@ -82,43 +94,93 @@ public class Search extends Observable{
 		//On test si c'est une recherche exacte ou un joker (qqchose*)
 		nameHelper();
 		
-		stats.setXmlBegin(GregorianCalendar.getInstance());
+		//Déclaration des thread
+		Thread couchDB_t = new Thread(couchDB);
+		Thread xml_t = new Thread(xml);
+		Thread sql_t = new Thread(sql);
+		Thread txt_t = new Thread(txt);
+		
+		//Lancement des requêtes
+		stats.setTotalBegin(GregorianCalendar.getInstance());
 		if (xml_b) {
+			stats.setXmlBegin(GregorianCalendar.getInstance());
+			xmlProcBegin = true;
+			update();
+			xml_t.start();
+		}
+		if (couch_b) {
+			stats.setCouchDbBegin(GregorianCalendar.getInstance());
+			couchDBProcBegin = true;
+			update();
+			couchDB_t.start();
+		}
+		if (sql_b) {
+			stats.setSqlBegin(GregorianCalendar.getInstance());
+			sqlProcBegin = true;
+			update();
+			sql_t.start();
+		}
+		if (txt_b) {
+			txtProcBegin = true;
+			update();
+			txt_t.start();
+		}
+		
+		//Récuperation des resultats
+		
+		if (xml_b) {
+			xml_t.join();
 			for (Element e : xml.getInfos()) {
 				xml_array.add(e);
 			}
+			xmlProcEnd = true;
+			update();
 		}
 		stats.setXmlEnd(GregorianCalendar.getInstance());
 		stats.setXmlNumber(xml_array.size());
+		stats.execute();
 		update();
 //		System.out.println("XML ok, "+xml_array.size()+" result(s)");
-		stats.setCouchDbBegin(GregorianCalendar.getInstance());
+		
 		if (couch_b) {
-			for (Element e : couchDB.search()) {
+			couchDB_t.join();
+			for (Element e : couchDB.getReturnList()) {
 				couchDB_array.add(e);
 			}
+			couchDBProcEnd = true;
+			update();
 		}
 		stats.setCouchDbEnd(GregorianCalendar.getInstance());
 		stats.setCouchDbNumber(couchDB_array.size());
 //		System.out.println("CouchDB ok, "+couchDB_array.size()+" result(s)");
-		stats.setSqlBegin(GregorianCalendar.getInstance());
+		
 		if (sql_b) {
-			for (Element element : sql.search()) {
+			sql_t.join();
+			for (Element element : sql.getReturnList()) {
 				sql_array.add(element);
 			}
+			sqlProcEnd = true;
+			update();
 		}
 		stats.setSqlEnd(GregorianCalendar.getInstance());
 		stats.setSqlNumber(sql_array.size());
+		stats.execute();
 		update();
 //		System.out.println("SQL ok, "+sql_array.size()+" result(s)");
-		stats.setTxtBegin(GregorianCalendar.getInstance());
+		
 		if (txt_b) {
-			for (Element e : txt.getInfos()) {
+			stats.setTxtBegin(GregorianCalendar.getInstance());
+			txt_t.join();
+			for (Element e : txt.getReturnList()) {
 				txt_array.add(e);
 			}
+			txtProcEnd = true;
+			update();
 		}
 		stats.setTxtEnd(GregorianCalendar.getInstance());
 		stats.setTxtNumber(txt_array.size());
+		stats.setTotalEnd(GregorianCalendar.getInstance());
+		stats.execute();
 		update();
 //		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
 //		System.out.println("***\n"+txt_array.toString()+"\n***");
@@ -127,6 +189,9 @@ public class Search extends Observable{
 //		el.addAll(txt_array);
 //		el.addAll(xml_array);
 		//Merge des résultats
+		stats.setMergeBegin(GregorianCalendar.getInstance());
+		mergeProcBegin = true;
+		update();
 		ArrayList<Element> t = new ArrayList<Element>();
 		t.clear();
 		for (Element element : xml_array) {
@@ -175,8 +240,11 @@ public class Search extends Observable{
 //		System.out.println("el size : "+el.size());
 //		System.out.println("el avant dup : "+el.size());
 		el = merger.getOutDuplicates(el);
+		mergeProcEnd = true;
+		update();
 //		System.out.println("el size : "+el.size());
 		stats.setTotalNumber(el.size());
+		stats.setMergeEnd(GregorianCalendar.getInstance());
 		stats.execute();
 //		try {
 //			this.writer(el, outPath);
@@ -193,6 +261,8 @@ public class Search extends Observable{
 			}
 		}
 		update();
+		medic = "";
+		disease = "";
 	}
 	
 	private void nameHelper(){
@@ -350,6 +420,86 @@ public class Search extends Observable{
 
 	public void setStats(Statistics stats) {
 		this.stats = stats;
+	}
+
+	public boolean isXmlProcBegin() {
+		return xmlProcBegin;
+	}
+
+	public void setXmlProcBegin(boolean xmlProcBegin) {
+		this.xmlProcBegin = xmlProcBegin;
+	}
+
+	public boolean isXmlProcEnd() {
+		return xmlProcEnd;
+	}
+
+	public void setXmlProcEnd(boolean xmlProcEnd) {
+		this.xmlProcEnd = xmlProcEnd;
+	}
+
+	public boolean isTxtProcBegin() {
+		return txtProcBegin;
+	}
+
+	public void setTxtProcBegin(boolean txtProcBegin) {
+		this.txtProcBegin = txtProcBegin;
+	}
+
+	public boolean isTxtProcEnd() {
+		return txtProcEnd;
+	}
+
+	public void setTxtProcEnd(boolean txtProcEnd) {
+		this.txtProcEnd = txtProcEnd;
+	}
+
+	public boolean isCouchDBProcBegin() {
+		return couchDBProcBegin;
+	}
+
+	public void setCouchDBProcBegin(boolean couchDBProcBegin) {
+		this.couchDBProcBegin = couchDBProcBegin;
+	}
+
+	public boolean isCouchDBProcEnd() {
+		return couchDBProcEnd;
+	}
+
+	public void setCouchDBProcEnd(boolean couchDBProcEnd) {
+		this.couchDBProcEnd = couchDBProcEnd;
+	}
+
+	public boolean isSqlProcBegin() {
+		return sqlProcBegin;
+	}
+
+	public void setSqlProcBegin(boolean sqlProcBegin) {
+		this.sqlProcBegin = sqlProcBegin;
+	}
+
+	public boolean isSqlProcEnd() {
+		return sqlProcEnd;
+	}
+
+	public void setSqlProcEnd(boolean sqlProcEnd) {
+		this.sqlProcEnd = sqlProcEnd;
+	}
+
+	public boolean isMergeProcBegin() {
+		return mergeProcBegin;
+	}
+
+	public void setMergeProcBegin(boolean mergeProcBegin) {
+		this.mergeProcBegin = mergeProcBegin;
+	}
+
+	public boolean isMergeProcEnd() {
+		return mergeProcEnd;
+	}
+
+	public void setMergeProcEnd(boolean mergeProcEnd) {
+		this.mergeProcEnd = mergeProcEnd;
 	}
 
 }

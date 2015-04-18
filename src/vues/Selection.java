@@ -5,6 +5,8 @@ import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 
+import sun.net.www.content.image.jpeg;
+
 import modele.Search;
 
 public class Selection extends JPanel{
@@ -18,6 +20,7 @@ public class Selection extends JPanel{
 	
 	private Options options;
 	private Recherche recherche;
+	private Progress progress;
 	private Search search;
 	
 	public Selection(Search s) {
@@ -26,17 +29,22 @@ public class Selection extends JPanel{
 		this.setBackground(Selection.BACKGROUND_COLOR);
 		JPanel opt = new JPanel();
 		JPanel rech = new JPanel();
+		JPanel prog = new JPanel();
 		opt.setBackground(Selection.BACKGROUND_COLOR);
 		rech.setBackground(Selection.BACKGROUND_COLOR);
+		prog.setBackground(Selection.BACKGROUND_COLOR);
 		
 		options = new Options(this.search);
 		recherche = new Recherche(this.search);
+		progress = new Progress(this.search);
 		
 		opt.add(options);
 		rech.add(recherche);
+		prog.add(progress);
 		
 		this.add(opt);
 		this.add(rech);
+		this.add(prog);
 	}
 
 	public Options getOptions() {
@@ -53,6 +61,14 @@ public class Selection extends JPanel{
 
 	public void setRecherche(Recherche recherche) {
 		this.recherche = recherche;
+	}
+
+	public Progress getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Progress progress) {
+		this.progress = progress;
 	}
 
 }

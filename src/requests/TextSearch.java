@@ -21,12 +21,13 @@ import modele.Medic;
 import modele.Merger;
 
 
-public class TextSearch {
+public class TextSearch implements Runnable{
 	
 	private String CSVpath, TXTpath, Dsearch, name;
 	private Merger merger;
 	private ArrayList<Element> list;
 	private ArrayList<Disease> dList;
+	private ArrayList<Element> returnList;
 	
 	public TextSearch(String Dsearch, String TXTpath, String CSVpath) {
 		this.Dsearch = Dsearch;
@@ -35,6 +36,7 @@ public class TextSearch {
 		this.list = new ArrayList<Element>();
 		this.dList = new ArrayList<Disease>();
 		this.merger = new Merger();
+		this.returnList = new ArrayList<Element>();
 	}
 	
 	public ArrayList<Element> getInfos(){
@@ -56,6 +58,12 @@ public class TextSearch {
 		}
 
 		return list;
+	}
+	
+	@Override
+	public void run() {
+		returnList.clear();
+		returnList = getInfos();
 	}
 	
 	private void parseCSV() throws IOException{
@@ -230,4 +238,11 @@ public class TextSearch {
 		TXTpath = tXTpath;
 	}
 
+	public ArrayList<Element> getReturnList() {
+		return returnList;
+	}
+
+	public void setReturnList(ArrayList<Element> returnList) {
+		this.returnList = returnList;
+	}
 }

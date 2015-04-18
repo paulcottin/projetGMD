@@ -18,7 +18,7 @@ import org.w3c.dom.Document;
 
 import exceptions.NotFoundException;
 
-public class SQLSearch {
+public class SQLSearch implements Runnable{
 
 	static String DB_SERVER = "jdbc:mysql://neptune.telecomnancy.univ-lorraine.fr/";
 	static String DB = "gmd";
@@ -36,6 +36,7 @@ public class SQLSearch {
 	private String Indications = "";
 	private String Adverse_effects = "";
 	private Merger merger;
+	private ArrayList<Element> returnList;
 
 
 	public SQLSearch(String Msearch, String Dsearch) {
@@ -48,8 +49,15 @@ public class SQLSearch {
 		this.medic.setName(Msearch);
 		this.disease = new Disease();
 		this.disease.setName(Dsearch);
+		returnList = new ArrayList<Element>();
 	}
 
+	@Override
+	public void run() {
+		returnList.clear();
+		returnList = search();
+	}
+	
 	public ArrayList<Element> search(){
 		list.clear();
 		if (!Dsearch.equals("")) {
@@ -161,5 +169,13 @@ public class SQLSearch {
 
 	public void setDsearch(String dsearch) {
 		Dsearch = dsearch;
+	}
+
+	public ArrayList<Element> getReturnList() {
+		return returnList;
+	}
+
+	public void setReturnList(ArrayList<Element> returnList) {
+		this.returnList = returnList;
 	}
 }

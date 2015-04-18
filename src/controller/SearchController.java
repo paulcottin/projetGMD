@@ -3,6 +3,9 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JLabel;
+
+import vues.Progress;
 import vues.Recherche;
 
 import modele.Search;
@@ -18,8 +21,26 @@ public class SearchController implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		booleanInit();
 		s.setMedic(r.getName());
 		s.setDisease(r.getDisease());
-		s.search();
+		try {
+			s.search();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	private void booleanInit(){
+		s.setXmlProcBegin(false);
+		s.setXmlProcEnd(false);
+		s.setCouchDBProcEnd(false);
+		s.setCouchDBProcBegin(false);
+		s.setSqlProcEnd(false);
+		s.setSqlProcBegin(false);
+		s.setTxtProcEnd(false);
+		s.setTxtProcBegin(false);
+		s.setMergeProcEnd(false);
+		s.setMergeProcBegin(false);
 	}
 }

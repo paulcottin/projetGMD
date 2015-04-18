@@ -25,7 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CouchDBSearch {
+public class CouchDBSearch implements Runnable{
 
 	static String DB_SERVER = "http://couchdb.telecomnancy.univ-lorraine.fr";
 	static String DB = "orphadatabase";
@@ -37,6 +37,7 @@ public class CouchDBSearch {
 	private String clinicalSigns, disease;
 	private Merger merger;
 	private boolean joker;
+	private ArrayList<Element> returnList;
 
 	public CouchDBSearch() { 
 		init();
@@ -54,7 +55,13 @@ public class CouchDBSearch {
 		this.disease = "";
 		this.merger = new Merger();
 		this.joker = false;
-
+		this.returnList = new ArrayList<Element>();
+	}
+	
+	@Override
+	public void run() {
+		returnList.clear();
+		returnList = search();
 	}
 
 	public ArrayList<Element> search(){
@@ -222,5 +229,13 @@ public class CouchDBSearch {
 
 	public void setJoker(boolean joker) {
 		this.joker = joker;
+	}
+
+	public ArrayList<Element> getReturnList() {
+		return returnList;
+	}
+
+	public void setReturnList(ArrayList<Element> returnList) {
+		this.returnList = returnList;
 	}
 }

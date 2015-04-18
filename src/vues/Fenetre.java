@@ -32,7 +32,7 @@ public class Fenetre extends JFrame implements Observer{
 	}
 	
 	private void initFen(){
-		this.setSize(1000, 600);
+		this.setSize(1300, 600);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setLayout(new BorderLayout());

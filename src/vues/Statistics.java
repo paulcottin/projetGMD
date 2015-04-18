@@ -14,7 +14,7 @@ public class Statistics extends JPanel implements Observer{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private JLabel xml, sql, couchDB, txt, nbresults, tpsTotal;
+	private JLabel xml, sql, couchDB, txt, nbresults, tpsTotal, tpsMerge;
 	private modele.Statistics s;
 	
 	public Statistics(modele.Statistics s) {
@@ -30,7 +30,7 @@ public class Statistics extends JPanel implements Observer{
 		this.add(nbresults);
 		this.add(new JLabel());
 		this.add(tpsTotal);
-		this.add(new JLabel());
+		this.add(tpsMerge);
 	}
 	
 	private void init(){
@@ -40,11 +40,13 @@ public class Statistics extends JPanel implements Observer{
 		this.txt = new JLabel("("+s.getTxtNumber()+") Texte : "+s.getTxtTimeTxt());
 		this.nbresults = new JLabel("Number of results : "+s.getTotalNumber());
 		this.tpsTotal = new JLabel("Total Time : "+s.getTotalTimeTxt());
+		this.tpsMerge = new JLabel("Merge time : "+s.getMergeTimeTxt());
 		
 		this.xml.setBackground(Selection.BACKGROUND_COLOR);
 		this.sql.setBackground(Selection.BACKGROUND_COLOR);
 		this.couchDB.setBackground(Selection.BACKGROUND_COLOR);
 		this.txt.setBackground(Selection.BACKGROUND_COLOR);
+		this.tpsMerge.setBackground(Selection.BACKGROUND_COLOR);
 	}
 	
 	@Override
@@ -55,6 +57,7 @@ public class Statistics extends JPanel implements Observer{
 		this.txt.setText("("+s.getTxtNumber()+") Texte : "+s.getTxtTimeTxt());
 		this.nbresults.setText("Number of results : "+s.getTotalNumber());
 		this.tpsTotal.setText("Total Time : "+s.getTotalTimeTxt());
+		this.tpsMerge.setText("Merge time : "+s.getMergeTimeTxt());
 	}
 	
 	public modele.Statistics getS() {
