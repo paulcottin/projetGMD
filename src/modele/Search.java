@@ -22,6 +22,9 @@ import requests.XMLSearch;
 
 public class Search extends Observable{
 	
+	public static int AND = 0;
+	public static int OR = 1;
+
 	private String medic, disease, xmlPath, txtPath, csvPath, outPath;
 	private boolean xml_b, txt_b, couch_b, sql_b;
 	private boolean xmlProcBegin, xmlProcEnd, txtProcBegin, txtProcEnd, couchDBProcBegin, couchDBProcEnd, sqlProcBegin, sqlProcEnd;
@@ -31,9 +34,10 @@ public class Search extends Observable{
 	private TextSearch txt;
 	private CouchDBSearch couchDB;
 	private Merger merger;
-	private ArrayList<Element> el;
+	private ArrayList<Element> el, sql_array, txt_array, xml_array, couchDB_array;
 	private Statistics stats;
-	
+	private int mode;
+
 	public Search() {
 		init();
 		this.xml = new XMLSearch(medic, disease, xmlPath);
@@ -41,7 +45,7 @@ public class Search extends Observable{
 		this.couchDB = new CouchDBSearch(disease);
 		this.sql = new SQLSearch(medic, disease);
 	}
-	
+
 	public Search(String medic, String disease){
 		init();
 		this.medic = medic;
@@ -51,7 +55,7 @@ public class Search extends Observable{
 		this.couchDB = new CouchDBSearch(disease);
 		this.sql = new SQLSearch(medic, disease);
 	}
-	
+
 	private void init(){
 		this.disease = "";
 		this.medic = "";
@@ -76,30 +80,46 @@ public class Search extends Observable{
 		this.couchDBProcEnd = false;
 		this.mergeProcBegin = false;
 		this.mergeProcEnd = false;
+		this.sql_array = new ArrayList<Element>();
+		this.txt_array = new ArrayList<Element>();
+		this.couchDB_array = new ArrayList<Element>();
+		this.xml_array = new ArrayList<Element>();
+		this.mode = OR;
 	}
-	
+
 	public void search() throws InterruptedException{
-		el = new ArrayList<Element>();
-		el.clear();
-//		System.out.println("el : "+el.toString());
-		ArrayList<Element> xml_array = new ArrayList<Element>();
-		xml_array.clear();
-		ArrayList<Element> txt_array = new ArrayList<Element>();
-		txt_array.clear();
-		ArrayList<Element> couchDB_array = new ArrayList<Element>();
-		couchDB_array.clear();
-		ArrayList<Element> sql_array = new ArrayList<Element>();
-		sql_array.clear();
-		
+		searchClear();
+
 		//On test si c'est une recherche exacte ou un joker (qqchose*)
 		nameHelper();
-		
+
+		executeRequests();
+
+		if (mode == OR) {
+			doMerge();
+		}
+		else if (mode == AND) {
+			System.out.println("merge special");
+		}
+
+		if (el.size() == 0) {
+			try {
+				throw new NotFoundException();
+			} catch (NotFoundException e) {
+				e.execute();
+			}
+		}
+		medic = "";
+		disease = "";
+	}
+
+	private void executeRequests() throws InterruptedException{
 		//Déclaration des thread
 		Thread couchDB_t = new Thread(couchDB);
 		Thread xml_t = new Thread(xml);
 		Thread sql_t = new Thread(sql);
 		Thread txt_t = new Thread(txt);
-		
+
 		//Lancement des requêtes
 		stats.setTotalBegin(GregorianCalendar.getInstance());
 		if (xml_b) {
@@ -125,9 +145,9 @@ public class Search extends Observable{
 			update();
 			txt_t.start();
 		}
-		
+
 		//Récuperation des resultats
-		
+
 		if (xml_b) {
 			xml_t.join();
 			for (Element e : xml.getInfos()) {
@@ -140,8 +160,7 @@ public class Search extends Observable{
 		stats.setXmlNumber(xml_array.size());
 		stats.execute();
 		update();
-//		System.out.println("XML ok, "+xml_array.size()+" result(s)");
-		
+
 		if (couch_b) {
 			couchDB_t.join();
 			for (Element e : couchDB.getReturnList()) {
@@ -152,8 +171,8 @@ public class Search extends Observable{
 		}
 		stats.setCouchDbEnd(GregorianCalendar.getInstance());
 		stats.setCouchDbNumber(couchDB_array.size());
-//		System.out.println("CouchDB ok, "+couchDB_array.size()+" result(s)");
-		
+		//				System.out.println("CouchDB ok, "+couchDB_array.size()+" result(s)");
+
 		if (sql_b) {
 			sql_t.join();
 			for (Element element : sql.getReturnList()) {
@@ -166,8 +185,8 @@ public class Search extends Observable{
 		stats.setSqlNumber(sql_array.size());
 		stats.execute();
 		update();
-//		System.out.println("SQL ok, "+sql_array.size()+" result(s)");
-		
+		//				System.out.println("SQL ok, "+sql_array.size()+" result(s)");
+
 		if (txt_b) {
 			stats.setTxtBegin(GregorianCalendar.getInstance());
 			txt_t.join();
@@ -182,13 +201,9 @@ public class Search extends Observable{
 		stats.setTotalEnd(GregorianCalendar.getInstance());
 		stats.execute();
 		update();
-//		System.out.println("TXT ok, "+txt_array.size()+" result(s)");
-//		System.out.println("***\n"+txt_array.toString()+"\n***");
-//		el.addAll(couchDB_array);
-//		el.addAll(sql_array);
-//		el.addAll(txt_array);
-//		el.addAll(xml_array);
-		//Merge des résultats
+	}
+
+	private void doMerge(){
 		stats.setMergeBegin(GregorianCalendar.getInstance());
 		mergeProcBegin = true;
 		update();
@@ -200,9 +215,9 @@ public class Search extends Observable{
 				el.addAll(t);
 			}
 		}
-//		System.out.println("t.size : "+t.size());
+		//		System.out.println("t.size : "+t.size());
 		el.addAll(t);
-//		System.out.println("xml merge : "+el.size());
+		//		System.out.println("xml merge : "+el.size());
 		t.clear();
 		for (Element element : couchDB_array) {
 			t = merger.merge(element, el);
@@ -210,9 +225,9 @@ public class Search extends Observable{
 				el.addAll(t);
 			}
 		}
-//		System.out.println("t.size : "+t.size());
+		//		System.out.println("t.size : "+t.size());
 		el.addAll(t);
-//		System.out.println("couchDB merge : "+el.size());
+		//		System.out.println("couchDB merge : "+el.size());
 		t.clear();
 		for (Element element : txt_array) {
 			t = merger.merge(element, el);
@@ -220,61 +235,54 @@ public class Search extends Observable{
 				el.addAll(t);
 			}
 		}
-//		System.out.println("t.size : "+t.size());
+		//		System.out.println("t.size : "+t.size());
 		el.addAll(t);
-//		System.out.println("txt merge : "+el.size());
+		//		System.out.println("txt merge : "+el.size());
 		t.clear();
 		for (Element element : sql_array) {
 			t = merger.merge(element, el);
 			if (t.size() > 0) {
 				el.addAll(t);
 			}
-//			else
-//				System.out.println("NULL");
-//			System.out.println("-------------------");
-//			el.addAll(merger.merge(element, el));
+			//			else
+			//				System.out.println("NULL");
+			//			System.out.println("-------------------");
+			//			el.addAll(merger.merge(element, el));
 		}
 		el.addAll(t);
-//		System.out.println("sql merge : "+el.size());
-//		System.out.println("results : \n"+el.toString());
-//		System.out.println("el size : "+el.size());
-//		System.out.println("el avant dup : "+el.size());
+		//		System.out.println("sql merge : "+el.size());
+		//		System.out.println("results : \n"+el.toString());
+		//		System.out.println("el size : "+el.size());
+		//		System.out.println("el avant dup : "+el.size());
 		el = merger.getOutDuplicates(el);
 		mergeProcEnd = true;
 		update();
-//		System.out.println("el size : "+el.size());
+		//		System.out.println("el size : "+el.size());
 		stats.setTotalNumber(el.size());
 		stats.setMergeEnd(GregorianCalendar.getInstance());
 		stats.execute();
-//		try {
-//			this.writer(el, outPath);
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
-//		System.out.println("__ el size : "+el.size());
-		if (el.size() == 0) {
-			try {
-				throw new NotFoundException();
-			} catch (NotFoundException e) {
-				// TODO Auto-generated catch block
-				e.execute();
-			}
-		}
 		update();
-		medic = "";
-		disease = "";
 	}
 	
+	private void searchClear(){
+		el = new ArrayList<Element>();
+		el.clear();
+		txt_array.clear();
+		couchDB_array.clear();
+		xml_array.clear();
+		sql_array.clear();
+	}
+
 	private void nameHelper(){
 		String d = "", m = "";
 		if (disease.contains("*")) {
 			d = disease.replaceAll("\\*", ".*");
 			xml.setDSearch(d);
 			txt.setDsearch(d);
-			
+
 			d = disease.replaceAll("\\*", "%");
 			sql.setDsearch(d);
-			
+
 			if (disease.indexOf("*") > 1) {
 				d = disease.substring(0, disease.indexOf("*")-1);
 				couchDB.setJoker(true);
@@ -292,7 +300,7 @@ public class Search extends Observable{
 		if (medic.contains("*")) {
 			m = medic.replaceAll("\\*", ".*");
 			xml.setMSearch(m);
-			
+
 			m = medic.replaceAll("\\*", "%");
 			sql.setMsearch(m);
 		}else{
@@ -300,7 +308,7 @@ public class Search extends Observable{
 			sql.setMsearch(medic);
 		}
 	}
-	
+
 	private void writer(ArrayList<Element> list, String path) throws IOException{
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(path)));
 		for (Element el: list) {
@@ -312,7 +320,7 @@ public class Search extends Observable{
 		}
 		bw.close();		
 	}
-	
+
 	private void update(){
 		setChanged();
 		notifyObservers();
@@ -500,6 +508,14 @@ public class Search extends Observable{
 
 	public void setMergeProcEnd(boolean mergeProcEnd) {
 		this.mergeProcEnd = mergeProcEnd;
+	}
+
+	public int getMode() {
+		return mode;
+	}
+
+	public void setMode(int mode) {
+		this.mode = mode;
 	}
 
 }
