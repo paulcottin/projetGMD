@@ -41,7 +41,9 @@ public class TextSearch implements Runnable{
 	
 	public ArrayList<Element> getInfos(){
 		list.clear();
+		dList.clear();
 		ArrayList<Element> l = new ArrayList<Element>();
+		l.clear();
 		try {
 			parseCSV();
 			parseTxt();
@@ -72,6 +74,7 @@ public class TextSearch implements Runnable{
 		br = new BufferedReader(new FileReader(new File(CSVpath)));
 		String line = "", nom = "", medicName  ="";
 		ArrayList<String> syns = new ArrayList<String>();
+		syns.clear();
 		String[] tab;
 		while((line = br.readLine()) != null){
 			tab = lineTreatment(line);
