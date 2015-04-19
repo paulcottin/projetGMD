@@ -51,7 +51,7 @@ public class SearchHandler extends Observable {
 			search.setXml_b(xml_b);
 			search.setSql_b(sql_b);
 			search.setTxt_b(txt_b);
-			search.setMode(Search.OR);
+			search.setMode(this.mode);
 			searchList.add(search);
 		}
 	}
@@ -63,10 +63,12 @@ public class SearchHandler extends Observable {
 		
 		ArrayList<Thread> threadList = initThread();
 
+		stats.setTotalBegin(GregorianCalendar.getInstance());
+		System.out.println("thread list : "+threadList.size());
 		for (Thread thread : threadList) {
 			thread.start();
 		}
-		System.out.println("thread list : "+threadList.size());
+		
 //		boolean running = true;
 //		while (running) {
 //			running = false;
@@ -77,7 +79,7 @@ public class SearchHandler extends Observable {
 //			}
 //		}
 		
-		stats.setTotalBegin(GregorianCalendar.getInstance());
+		
 		
 		for (Thread thread : threadList) {
 			thread.join();
@@ -246,30 +248,35 @@ public class SearchHandler extends Observable {
 		System.out.println("type merge : "+mergeType.size());
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void getResults() throws InterruptedException{
 		for (Search search : searchList) {
 			resultList.add(search.getEl());
 		}
 		System.out.println("result list size : "+resultList.size());
+		ArrayList<Element> l1 = new ArrayList<Element>(), l2 = new ArrayList<Element>();
 		for (int i = 0; i < mergeType.size(); i++) {
-			ArrayList<Element> l1 = resultList.get((i*2)%resultList.size());
-			ArrayList<Element> l2 = resultList.get((i*2+1)%resultList.size());
-			System.out.println("l1 : "+(i*2)%resultList.size()+", l2 : "+(i*2+1)%resultList.size());
-			
+			l1.clear();
+			l2.clear();
+			l1 = resultList.get((i*2)%resultList.size());
+			l2 = resultList.get((i*2+1)%resultList.size());
+			System.out.println("l1 ("+(i*2)%resultList.size()+") : "+l1.size()+", l2 ("+(i*2+1)%resultList.size()+") : "+l2.size());
+				
 			Merger m = new Merger();
 			m.setList1(l1);
 			m.setList2(l2);
 			m.setMergeType(mergeType.get(i));
-//			m.setDisease(diseaseList.get(i));
-//			m.setMedic(medicList.get(i));
+			System.out.println("merge type : "+((mergeType.get(i) == 1) ? "Exclusive" : "Inclusive"));
+			m.setDisease(diseaseList.get(i));
+			m.setMedic(medicList.get(i));
+			System.out.println("medic : "+medicList.get(i)+", disease : "+diseaseList.get(i));
 			
 			Thread th = new Thread(m);
 			th.start();
 			th.join();
 			
-			synchronized (resultList) {
-				resultList.set(i%2, m.getList2());
-			}
+			System.out.println("set : "+i%2+", size : "+m.getList2().size());
+			resultList.set(i%2, (ArrayList<Element>) m.getList2().clone());
 		}
 		el.addAll(resultList.get(0));
 	}

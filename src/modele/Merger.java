@@ -51,6 +51,7 @@ public class Merger implements Runnable{
 			t.clear();
 		}
 		else if (mergeType == EXCLUSIVE_MERGE) {
+			System.out.println("exclusive merge !");
 			for (Element element : list1) {
 				t = exclusiveMerge(element, list2);
 				if (t.size() > 0) {
