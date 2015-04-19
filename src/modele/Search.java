@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
+import exceptions.EmptyRequest;
 import exceptions.NotFoundException;
 
 import requests.CouchDBSearch;
@@ -20,7 +21,7 @@ import requests.SQLSearch;
 import requests.TextSearch;
 import requests.XMLSearch;
 
-public class Search extends Observable{
+public class Search extends Observable implements Runnable{
 	
 	public static int AND = 0;
 	public static int OR = 1;
@@ -87,21 +88,31 @@ public class Search extends Observable{
 		this.xml_array = new ArrayList<Element>();
 		this.mode = OR;
 	}
+	
+	@Override
+	public void run() {
+		try {
+			search();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (EmptyRequest e) {
+			e.execute();
+		}
+	}
 
-	public void search() throws InterruptedException{
+	public void search() throws InterruptedException, EmptyRequest{
 		searchClear();
 
 		//On test si c'est une recherche exacte ou un joker (qqchose*)
 		nameHelper();
+		
+		if (mode == AND && (disease.equals("") || medic.equals(""))) {
+			throw new EmptyRequest((medic.equals("") ? "Medic" : "Disease"));
+		}
 
 		executeRequests();
 
-		if (mode == OR) {
-			doMerge();
-		}
-		else if (mode == AND) {
-			System.out.println("merge special");
-		}
+		doMerge();
 
 		if (el.size() == 0) {
 			try {
@@ -229,8 +240,30 @@ public class Search extends Observable{
 		couchDBMerger.setList2(el);
 		Thread couchDBMergeThread = new Thread(couchDBMerger);
 		
-		xmlMergeThread.start();
+		if (mode == OR) {
+			xmlMerger.setMergeType(Merger.INCLUSIVE_MERGE);
+			sqlMerger.setMergeType(Merger.INCLUSIVE_MERGE);
+			couchDBMerger.setMergeType(Merger.INCLUSIVE_MERGE);
+			txtMerger.setMergeType(Merger.INCLUSIVE_MERGE);
+		}
+		else if (mode == AND) {
+			xmlMerger.setMergeType(Merger.EXCLUSIVE_MERGE);
+			sqlMerger.setMergeType(Merger.EXCLUSIVE_MERGE);
+			couchDBMerger.setMergeType(Merger.EXCLUSIVE_MERGE);
+			txtMerger.setMergeType(Merger.EXCLUSIVE_MERGE);
+			
+			xmlMerger.setDisease(disease);
+			xmlMerger.setMedic(medic);
+			sqlMerger.setDisease(disease);
+			sqlMerger.setMedic(medic);
+			couchDBMerger.setDisease(disease);
+			couchDBMerger.setMedic(medic);
+			txtMerger.setDisease(disease);
+			txtMerger.setMedic(medic);
+		}
+		
 		sqlMergeThread.start();
+		xmlMergeThread.start();
 		couchDBMergeThread.start();
 		txtMergeThread.start();
 		
@@ -508,5 +541,4 @@ public class Search extends Observable{
 	public void setMode(int mode) {
 		this.mode = mode;
 	}
-
 }

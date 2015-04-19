@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import modele.Search;
+import modele.SearchHandler;
 
 public class Fenetre extends JFrame implements Observer{
 
@@ -16,12 +17,12 @@ public class Fenetre extends JFrame implements Observer{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Search search;
+	private SearchHandler search;
 	private Selection selection;
 	private ResultsList resultsList;
 	private Statistics stats;
 	
-	public Fenetre(Search search) {
+	public Fenetre(SearchHandler search) {
 		super("Drug Search");
 		this.search = search;
 		this.search.addObserver(this);

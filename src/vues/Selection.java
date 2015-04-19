@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import sun.net.www.content.image.jpeg;
 
 import modele.Search;
+import modele.SearchHandler;
 
 public class Selection extends JPanel{
 	
@@ -21,9 +22,9 @@ public class Selection extends JPanel{
 	private Options options;
 	private Recherche recherche;
 	private Progress progress;
-	private Search search;
+	private SearchHandler search;
 	
-	public Selection(Search s) {
+	public Selection(SearchHandler s) {
 		super();
 		this.search = s;
 		this.setBackground(Selection.BACKGROUND_COLOR);

@@ -8,13 +8,14 @@ import javax.swing.JCheckBox;
 import vues.Options;
 
 import modele.Search;
+import modele.SearchHandler;
 
 public class SelectSourceController implements ActionListener{
 
-	private Search s;
+	private SearchHandler s;
 	private String id;
 	
-	public SelectSourceController(Search s, String id) {
+	public SelectSourceController(SearchHandler s, String id) {
 		this.s = s;
 		this.id = id;
 	}
@@ -43,9 +44,9 @@ public class SelectSourceController implements ActionListener{
 			break;
 		case "couchDB":
 			if (((JCheckBox) arg0.getSource()).isSelected()) 
-				s.setCouch_b(true);
+				s.setCouchDB_b(true);
 			else
-				s.setCouch_b(false);
+				s.setCouchDB_b(false);
 			break;
 		}
 	}

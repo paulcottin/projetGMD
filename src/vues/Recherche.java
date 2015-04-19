@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import modele.Search;
+import modele.SearchHandler;
 import controller.ModeController;
 import controller.SearchController;
 import sun.net.www.content.image.jpeg;
@@ -29,9 +30,9 @@ public class Recherche extends JPanel {
 	private JButton search_button;
 	private JComboBox<String> mode;
 	
-	Search search;
+	SearchHandler search;
 	
-	public Recherche(Search s) {
+	public Recherche(SearchHandler s) {
 		super();
 		this.setBackground(Selection.BACKGROUND_COLOR);
 		this.search = s;

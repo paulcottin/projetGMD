@@ -9,6 +9,7 @@ import javax.print.attribute.standard.Sides;
 import org.omg.PortableServer.ForwardRequestHelper;
 
 import com.sun.org.apache.bcel.internal.generic.LUSHR;
+import com.sun.org.apache.xml.internal.serializer.ToUnknownStream;
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class Merger implements Runnable{
@@ -20,6 +21,7 @@ public class Merger implements Runnable{
 	private ArrayList<Element> list1, list2;
 	private int index;
 	private int mergeType;
+	private String medic, disease;
 
 	public Merger() {
 		init();
@@ -31,6 +33,8 @@ public class Merger implements Runnable{
 		list2 = new ArrayList<Element>();
 		index = 0;
 		mergeType = INCLUSIVE_MERGE;
+		medic = "";
+		disease = "";
 	}
 	
 	@Override
@@ -39,6 +43,16 @@ public class Merger implements Runnable{
 		if (mergeType == INCLUSIVE_MERGE) {
 			for (Element element : list1) {
 				t = merge(element, list2);
+				if (t.size() > 0) {
+					list2.addAll(t);
+				}
+			}
+			list2.addAll(t);
+			t.clear();
+		}
+		else if (mergeType == EXCLUSIVE_MERGE) {
+			for (Element element : list1) {
+				t = exclusiveMerge(element, list2);
 				if (t.size() > 0) {
 					list2.addAll(t);
 				}
@@ -250,6 +264,17 @@ public class Merger implements Runnable{
 		return l;
 	}
 	
+	private ArrayList<Element> exclusiveMerge(Element e, ArrayList<Element> list){
+		ArrayList<Element> l = new ArrayList<Element>();
+		if (e.getName().toUpperCase().contains(medic.toUpperCase()) && arrayContains(disease, e.getTreat())) {
+			if (!haveElement(l, e)) {
+				l.add(e);
+			}
+		}
+		
+		return l;
+	}
+	
 	private boolean sameTreat(ArrayList<String> a, ArrayList<String> b){
 		ArrayList<String> temp = new ArrayList<String>();
 		if (a != null && b != null) {
@@ -283,6 +308,15 @@ public class Merger implements Runnable{
 		for (Element element : list) {
 			if (element.getName().equalsIgnoreCase(e.getName())) {
 				index = list.indexOf(element);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean arrayContains(String s, ArrayList<String> list){
+		for (String string : list) {
+			if (string.toUpperCase().contains(s.toUpperCase())) {
 				return true;
 			}
 		}
@@ -359,5 +393,21 @@ public class Merger implements Runnable{
 
 	public void setMergeType(int mergeType) {
 		this.mergeType = mergeType;
+	}
+
+	public String getMedic() {
+		return medic;
+	}
+
+	public void setMedic(String medic) {
+		this.medic = medic;
+	}
+
+	public String getDisease() {
+		return disease;
+	}
+
+	public void setDisease(String disease) {
+		this.disease = disease;
 	}
 }

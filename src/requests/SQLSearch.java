@@ -81,8 +81,7 @@ public class SQLSearch implements Runnable{
 			e.printStackTrace();
 		}
 
-		ArrayList<String> List1 = new ArrayList<String>();
-		String myQuery1 = "SELECT DISTINCT a.se_name, i.i_name FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 LIKE \"" + Msearch + "\" OR i.label = l.label AND i.label = a.label AND l.drug_name2 LIKE \"" + Msearch + "\" ;";
+		String myQuery1 = "SELECT DISTINCT a.se_name, i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, adverse_effects_raw a, indications_raw i WHERE i.label = l.label AND i.label = a.label AND l.drug_name1 LIKE \"" + Msearch + "\" OR i.label = l.label AND i.label = a.label AND l.drug_name2 LIKE \"" + Msearch + "\" ;";
 		int cpt = 0;
 		try {
 			Connection con = DriverManager.getConnection(DB_SERVER+DB, USER_NAME, USER_PSWD);
@@ -90,14 +89,28 @@ public class SQLSearch implements Runnable{
 
 			ResultSet res1 = st.executeQuery(myQuery1);
 
+			String name1 = "", name2 = "";
 			while(res1.next()){
 				cpt++;
 				medic.getCause().add(res1.getString("se_name"));
 				medic.getTreat().add(res1.getString("i_name"));
+				name1 = res1.getString("drug_name1");
+				name2 = res1.getString("drug_name2");
+				if (!name1.equals("") && ! name2.equals("")) {
+					medic.setName(name1);
+					medic.getSynonyms().add(name2);
+				}
+				else if (!name1.equals("") && name2.equals("")) {
+					medic.setName(name1);
+				}
+				else if (name1.equals("") && !name2.equals("")) {
+					medic.setName(name1);
+				}
+				name1 = "";
+				name2 = "";
 			}
 			res1.close();
 			
-			medic.setName(Msearch);
 			medic.setOrigin("Sider2");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -115,8 +128,7 @@ public class SQLSearch implements Runnable{
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		ArrayList<String> List1 = new ArrayList<String>();		
+	
 		String myQuery1 = "SELECT DISTINCT i.i_name, l.drug_name1, l.drug_name2 FROM label_mapping l, indications_raw i WHERE i.label = l.label AND i.i_name LIKE \"" + Dsearch.toUpperCase() + "\" ORDER BY l.drug_name1;";
 
 		try {

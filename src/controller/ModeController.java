@@ -6,13 +6,14 @@ import java.awt.event.ActionListener;
 import vues.Recherche;
 
 import modele.Search;
+import modele.SearchHandler;
 
 public class ModeController implements ActionListener{
 
-	private Search search;
+	private SearchHandler search;
 	private Recherche r;
 	
-	public ModeController(Search s, Recherche r) {
+	public ModeController(SearchHandler s, Recherche r) {
 		this.search = s;
 		this.r = r;
 	}

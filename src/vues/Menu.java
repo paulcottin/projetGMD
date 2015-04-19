@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import modele.Search;
+import modele.SearchHandler;
 import controller.SearchController;
 import controller.menu.QuitterListener;
 
@@ -22,9 +23,9 @@ public class Menu extends JMenuBar{
 	private JMenu fichier, recherche;
 	private JMenuItem quitter, rechercher;
 	private Recherche r;
-	private Search s;
+	private SearchHandler s;
 	
-	public Menu(Search s, Recherche r) {
+	public Menu(SearchHandler s, Recherche r) {
 		super();
 		this.s = s;
 		this.r = r;

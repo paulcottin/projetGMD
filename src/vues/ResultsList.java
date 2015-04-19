@@ -20,6 +20,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import modele.Search;
+import modele.SearchHandler;
 
 public class ResultsList extends JScrollPane implements Observer{
 
@@ -28,14 +29,14 @@ public class ResultsList extends JScrollPane implements Observer{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Search search;
+	private SearchHandler search;
 	private Vector<Vector<String>> vec;
 	private Vector<String> columnNames;
 	private DefaultTableModel model;
 	private int nbResults;
 	private JTable table;
 	
-	public ResultsList(Search search) {
+	public ResultsList(SearchHandler search) {
 		super();
 		init();
 		this.search = search;

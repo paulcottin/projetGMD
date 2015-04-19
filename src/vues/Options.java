@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import modele.Search;
+import modele.SearchHandler;
 
 import controller.SelectSourceController;
 
@@ -23,11 +24,11 @@ public class Options extends JPanel implements Observer{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Search search;
+	private SearchHandler search;
 	private JLabel selectSources;
 	private JCheckBox sql_case, xml_case, txt_case, couch_case;
 	
-	public Options(Search s) {
+	public Options(SearchHandler s) {
 		super();
 		this.search = s;
 		this.setBackground(Selection.BACKGROUND_COLOR);
@@ -87,7 +88,7 @@ public class Options extends JPanel implements Observer{
 	}
 	
 	private void caseProcessing(){
-		if (search.isCouch_b()) {
+		if (search.isCouchDB_b()) {
 			couch_case.setSelected(true);
 		}else {
 			couch_case.setSelected(false);

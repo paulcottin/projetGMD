@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 
 
 import modele.Search;
+import modele.SearchHandler;
 
 public class Progress extends JPanel implements Observer{
 
@@ -21,10 +22,10 @@ public class Progress extends JPanel implements Observer{
 	public static String PROCESSING = "Processing...";
 	public static String EXECUTED = "Executed";
 	
-	private Search search;
+	private SearchHandler search;
 	private JLabel xml, sql, couchDB, txt, merge;
 	
-	public Progress(Search s) {
+	public Progress(SearchHandler s) {
 		this.search = s;
 		search.addObserver(this);
 		init();
@@ -56,62 +57,62 @@ public class Progress extends JPanel implements Observer{
 	
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		if (!search.isXmlProcBegin()) {
-			xml.setText("DrugBank : "+NOT_EXECUTED);
-		}
-		else if (search.isXmlProcBegin() && !search.isXmlProcEnd()) {
-			xml.setText("DrugBank : "+PROCESSING);
-		}
-		else {
-			xml.setText("DrugBank : "+EXECUTED);
-		}
-		
-		if (!search.isCouchDBProcBegin()) {
-			couchDB.setText("OrphaData : "+NOT_EXECUTED);
-		}
-		else if (search.isCouchDBProcBegin() && !search.isCouchDBProcEnd()) {
-			couchDB.setText("OrphaData : "+PROCESSING);
-		}
-		else {
-			couchDB.setText("OrphaData : "+EXECUTED);
-		}
-		
-		if (!search.isTxtProcBegin()) {
-			txt.setText("OMIM : "+NOT_EXECUTED);
-		}
-		else if (search.isTxtProcBegin() && !search.isTxtProcEnd()) {
-			txt.setText("OMIM : "+PROCESSING);
-		}
-		else {
-			txt.setText("OMIM : "+EXECUTED);
-		}
-		
-		if (!search.isSqlProcBegin()) {
-			sql.setText("Sider 2 : "+NOT_EXECUTED);
-		}
-		else if (search.isSqlProcBegin() && !search.isSqlProcEnd()) {
-			sql.setText("Sider 2 : "+PROCESSING);
-		}
-		else {
-			sql.setText("Sider 2 : "+EXECUTED);
-		}
-		
-		if (!search.isMergeProcBegin()) {
-			merge.setText("Merging : "+NOT_EXECUTED);
-		}
-		else if (search.isMergeProcBegin() && !search.isSqlProcEnd()) {
-			merge.setText("Merging : "+PROCESSING);
-		}
-		else {
-			merge.setText("Merging : "+EXECUTED);
-		}
+//		if (!search.isXmlProcBegin()) {
+//			xml.setText("DrugBank : "+NOT_EXECUTED);
+//		}
+//		else if (search.isXmlProcBegin() && !search.isXmlProcEnd()) {
+//			xml.setText("DrugBank : "+PROCESSING);
+//		}
+//		else {
+//			xml.setText("DrugBank : "+EXECUTED);
+//		}
+//		
+//		if (!search.isCouchDBProcBegin()) {
+//			couchDB.setText("OrphaData : "+NOT_EXECUTED);
+//		}
+//		else if (search.isCouchDBProcBegin() && !search.isCouchDBProcEnd()) {
+//			couchDB.setText("OrphaData : "+PROCESSING);
+//		}
+//		else {
+//			couchDB.setText("OrphaData : "+EXECUTED);
+//		}
+//		
+//		if (!search.isTxtProcBegin()) {
+//			txt.setText("OMIM : "+NOT_EXECUTED);
+//		}
+//		else if (search.isTxtProcBegin() && !search.isTxtProcEnd()) {
+//			txt.setText("OMIM : "+PROCESSING);
+//		}
+//		else {
+//			txt.setText("OMIM : "+EXECUTED);
+//		}
+//		
+//		if (!search.isSqlProcBegin()) {
+//			sql.setText("Sider 2 : "+NOT_EXECUTED);
+//		}
+//		else if (search.isSqlProcBegin() && !search.isSqlProcEnd()) {
+//			sql.setText("Sider 2 : "+PROCESSING);
+//		}
+//		else {
+//			sql.setText("Sider 2 : "+EXECUTED);
+//		}
+//		
+//		if (!search.isMergeProcBegin()) {
+//			merge.setText("Merging : "+NOT_EXECUTED);
+//		}
+//		else if (search.isMergeProcBegin() && !search.isSqlProcEnd()) {
+//			merge.setText("Merging : "+PROCESSING);
+//		}
+//		else {
+//			merge.setText("Merging : "+EXECUTED);
+//		}
 	}
 
-	public Search getSearch() {
+	public SearchHandler getSearch() {
 		return search;
 	}
 
-	public void setSearch(Search search) {
+	public void setSearch(SearchHandler search) {
 		this.search = search;
 	}
 
