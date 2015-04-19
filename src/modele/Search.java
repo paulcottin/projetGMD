@@ -34,7 +34,8 @@ public class Search extends Observable{
 	private TextSearch txt;
 	private CouchDBSearch couchDB;
 	private Merger merger;
-	private ArrayList<Element> el, sql_array, txt_array, xml_array, couchDB_array;
+	private ArrayList<Element> sql_array, txt_array, xml_array, couchDB_array;
+	private ArrayList<Element> el;
 	private Statistics stats;
 	private int mode;
 
@@ -203,61 +204,51 @@ public class Search extends Observable{
 		update();
 	}
 
-	private void doMerge(){
+	private void doMerge() throws InterruptedException{
 		stats.setMergeBegin(GregorianCalendar.getInstance());
 		mergeProcBegin = true;
 		update();
-		ArrayList<Element> t = new ArrayList<Element>();
-		t.clear();
-		for (Element element : xml_array) {
-			t = merger.merge(element, el);
-			if (t.size() > 0) {
-				el.addAll(t);
-			}
+		
+		Merger xmlMerger = new Merger();
+		xmlMerger.setList1(xml_array);
+		xmlMerger.setList2(el);
+		Thread xmlMergeThread = new Thread(xmlMerger);
+		
+		Merger sqlMerger = new Merger();
+		sqlMerger.setList1(sql_array);
+		sqlMerger.setList2(el);
+		Thread sqlMergeThread = new Thread(sqlMerger);
+		
+		Merger txtMerger = new Merger();
+		txtMerger.setList1(txt_array);
+		txtMerger.setList2(el);
+		Thread txtMergeThread = new Thread(txtMerger);
+		
+		Merger couchDBMerger = new Merger();
+		couchDBMerger.setList1(couchDB_array);
+		couchDBMerger.setList2(el);
+		Thread couchDBMergeThread = new Thread(couchDBMerger);
+		
+		xmlMergeThread.start();
+		sqlMergeThread.start();
+		couchDBMergeThread.start();
+		txtMergeThread.start();
+		
+		txtMergeThread.join();
+		couchDBMergeThread.join();
+		xmlMergeThread.join();
+		sqlMergeThread.join();
+		synchronized (el) {
+			el.addAll(txtMerger.getList2());
+			el.addAll(couchDBMerger.getList2());
+			el.addAll(xmlMerger.getList2());
+			el.addAll(sqlMerger.getList2());
 		}
-		//		System.out.println("t.size : "+t.size());
-		el.addAll(t);
-		//		System.out.println("xml merge : "+el.size());
-		t.clear();
-		for (Element element : couchDB_array) {
-			t = merger.merge(element, el);
-			if (t.size() > 0) {
-				el.addAll(t);
-			}
-		}
-		//		System.out.println("t.size : "+t.size());
-		el.addAll(t);
-		//		System.out.println("couchDB merge : "+el.size());
-		t.clear();
-		for (Element element : txt_array) {
-			t = merger.merge(element, el);
-			if (t.size() > 0) {
-				el.addAll(t);
-			}
-		}
-		//		System.out.println("t.size : "+t.size());
-		el.addAll(t);
-		//		System.out.println("txt merge : "+el.size());
-		t.clear();
-		for (Element element : sql_array) {
-			t = merger.merge(element, el);
-			if (t.size() > 0) {
-				el.addAll(t);
-			}
-			//			else
-			//				System.out.println("NULL");
-			//			System.out.println("-------------------");
-			//			el.addAll(merger.merge(element, el));
-		}
-		el.addAll(t);
-		//		System.out.println("sql merge : "+el.size());
-		//		System.out.println("results : \n"+el.toString());
-		//		System.out.println("el size : "+el.size());
-		//		System.out.println("el avant dup : "+el.size());
+		
 		el = merger.getOutDuplicates(el);
 		mergeProcEnd = true;
 		update();
-		//		System.out.println("el size : "+el.size());
+		
 		stats.setTotalNumber(el.size());
 		stats.setMergeEnd(GregorianCalendar.getInstance());
 		stats.execute();

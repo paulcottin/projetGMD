@@ -8,12 +8,18 @@ import javax.print.attribute.standard.Sides;
 
 import org.omg.PortableServer.ForwardRequestHelper;
 
+import com.sun.org.apache.bcel.internal.generic.LUSHR;
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
-public class Merger {
+public class Merger implements Runnable{
+	
+	public static int INCLUSIVE_MERGE = 0;
+	public static int EXCLUSIVE_MERGE = 1;
 
 	private ArrayList<Element> list;
+	private ArrayList<Element> list1, list2;
 	private int index;
+	private int mergeType;
 
 	public Merger() {
 		init();
@@ -21,7 +27,25 @@ public class Merger {
 	
 	private void init(){
 		list = new ArrayList<Element>();
+		list1 = new ArrayList<Element>();
+		list2 = new ArrayList<Element>();
 		index = 0;
+		mergeType = INCLUSIVE_MERGE;
+	}
+	
+	@Override
+	public void run() {
+		ArrayList<Element> t = new ArrayList<Element>();
+		if (mergeType == INCLUSIVE_MERGE) {
+			for (Element element : list1) {
+				t = merge(element, list2);
+				if (t.size() > 0) {
+					list2.addAll(t);
+				}
+			}
+			list2.addAll(t);
+			t.clear();
+		}
 	}
 
 	public ArrayList<Element> testMerge(ArrayList<Medic> medics, ArrayList<Disease> diseases){
@@ -166,31 +190,11 @@ public class Merger {
 	public ArrayList<Element> merge(Element e, ArrayList<Element> list){
 		ArrayList<Element> l = new ArrayList<Element>();
 		if (list.size() == 0) {
-//			System.out.println("init : "+e.getName()+", "+e.getTreat());
-//			System.out.println("e origin : "+e.getOrigin());
 			l.add(e);
 		}
-//		else if (list.size() > 15) {
-//			return new ArrayList<Element>();
-//		}
 		else {
 			for (int i = 0; i < list.size(); i++) {
-//				System.out.println("list size : "+list.size());
-				//Si mm noms et mm disease
-//				System.out.println(" i : "+i+", noms : "+e.getName()+" - "+list.get(i).getName()+" same treat : "+sameTreat(e.getTreat(), list.get(i).getTreat()));
-				if (e.getName().equalsIgnoreCase(list.get(i).getName()) && sameTreat(e.getTreat(), list.get(i).getTreat())) {
-					//Si mm disease (à revoir)
-//					if (e.getTreat().equals(list.get(i).getTreat())) {
-//						System.out.println("\tadd mm disease : "+list.get(i).getTreat().toString()+" (nom : "+e.getName()+") - SIZE : "+l.size());
-//						Element temp = mergeElement(e, list.get(i));
-//						System.out.println("\t\t"+temp.toString());
-//						l.add(temp);
-//					}
-//					else{
-//						System.out.println("\tadd mm noms != diseases : "+e.getName()+", "+e.getTreat().toString());
-//						l.add(e);
-//					}
-//					System.out.println("\t SAME : "+e.getName());
+					if (e.getName().equalsIgnoreCase(list.get(i).getName()) && sameTreat(e.getTreat(), list.get(i).getTreat())) {
 					return new ArrayList<Element>();
 				}
 				//Si seulement mm noms
@@ -205,11 +209,6 @@ public class Merger {
 							list.get(i).getCause().add(s);
 						}
 					}
-//					for (String s : e.getSymptoms()) {
-//						if (!list.get(i).getSymptoms().contains(s)) {
-//							list.get(i).getSymptoms().add(s);
-//						}
-//					}
 					for (String s : e.getSynonyms()) {
 						if (!list.get(i).getSynonyms().contains(s)) {
 							list.get(i).getSynonyms().add(s);
@@ -328,5 +327,37 @@ public class Merger {
 			find = false;
 		}
 		return l;
+	}
+
+	public ArrayList<Element> getList() {
+		return list;
+	}
+
+	public void setList(ArrayList<Element> list) {
+		this.list = list;
+	}
+
+	public ArrayList<Element> getList1() {
+		return list1;
+	}
+
+	public void setList1(ArrayList<Element> list1) {
+		this.list1 = list1;
+	}
+
+	public ArrayList<Element> getList2() {
+		return list2;
+	}
+
+	public void setList2(ArrayList<Element> list2) {
+		this.list2 = list2;
+	}
+
+	public int getMergeType() {
+		return mergeType;
+	}
+
+	public void setMergeType(int mergeType) {
+		this.mergeType = mergeType;
 	}
 }
