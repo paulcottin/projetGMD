@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import exceptions.EmptyRequest;
 import exceptions.NotFoundException;
@@ -26,21 +27,25 @@ public class SearchController implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		booleanInit();
-		s.setMedic(r.getName());
-		s.setDisease(r.getDisease());
-		r.getMode().setEnabled(false);
-		r.getSearch_button().setEnabled(false);
-		try {
+		if (checkText(r.getDrugName().getText()) && checkText(r.getDiseaseName().getText())) {
+			s.setMedic(r.getDrugName().getText());
+			s.setDisease(r.getDiseaseName().getText());
+			r.getMode().setEnabled(false);
+			r.getSearch_button().setEnabled(false);
 			try {
-				s.search();
-			} catch (NotFoundException e1) {
-				e1.execute();
+				try {
+					s.search();
+				} catch (NotFoundException e1) {
+					e1.execute();
+				}
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
 			}
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
+			r.getMode().setEnabled(true);
+			r.getSearch_button().setEnabled(true);
+		}else{
+			JOptionPane.showMessageDialog(null, "You have to write *' AND/OR '* !", "ERROR !", JOptionPane.ERROR_MESSAGE);
 		}
-		r.getMode().setEnabled(true);
-		r.getSearch_button().setEnabled(true);
 	}
 	
 	private void booleanInit(){
@@ -54,5 +59,21 @@ public class SearchController implements ActionListener{
 //		s.setTxtProcBegin(false);
 //		s.setMergeProcEnd(false);
 //		s.setMergeProcBegin(false);
+	}
+	
+	private boolean checkText(String s){
+		if (s.contains("AND")) {
+			if (!s.contains(" AND ")) {
+				return false;
+			}else
+				return true;
+		}
+		else if (s.contains("OR")) {
+			if (!s.contains(" OR ")) {
+				return false;
+			}else
+				return true;
+		}else
+			return true;
 	}
 }
