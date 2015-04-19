@@ -114,13 +114,13 @@ public class Search extends Observable implements Runnable{
 
 		doMerge();
 
-		if (el.size() == 0) {
-			try {
-				throw new NotFoundException();
-			} catch (NotFoundException e) {
-				e.execute();
-			}
-		}
+//		if (el.size() == 0) {
+//			try {
+//				throw new NotFoundException();
+//			} catch (NotFoundException e) {
+//				e.execute();
+//			}
+//		}
 		medic = "";
 		disease = "";
 	}
@@ -133,7 +133,7 @@ public class Search extends Observable implements Runnable{
 		Thread txt_t = new Thread(txt);
 
 		//Lancement des requêtes
-		stats.setTotalBegin(GregorianCalendar.getInstance());
+		
 		if (xml_b) {
 			stats.setXmlBegin(GregorianCalendar.getInstance());
 			xmlProcBegin = true;
@@ -210,7 +210,7 @@ public class Search extends Observable implements Runnable{
 		}
 		stats.setTxtEnd(GregorianCalendar.getInstance());
 		stats.setTxtNumber(txt_array.size());
-		stats.setTotalEnd(GregorianCalendar.getInstance());
+		
 		stats.execute();
 		update();
 	}

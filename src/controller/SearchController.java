@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 
 import exceptions.EmptyRequest;
+import exceptions.NotFoundException;
 
 import vues.Progress;
 import vues.Recherche;
@@ -29,7 +30,15 @@ public class SearchController implements ActionListener{
 		s.setDisease(r.getDisease());
 		r.getMode().setEnabled(false);
 		r.getSearch_button().setEnabled(false);
-		s.search();
+		try {
+			try {
+				s.search();
+			} catch (NotFoundException e1) {
+				e1.execute();
+			}
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		r.getMode().setEnabled(true);
 		r.getSearch_button().setEnabled(true);
 	}
