@@ -203,15 +203,12 @@ public class Merger implements Runnable{
 					list.add(e);
 				}
 				else if (names.contains(e.getName())){
-					int cpt = 0;
 					for (int i = 0; i < diseases.size(); i++) {
 //						System.out.println("e treat : "+e.getTreat().toString()+"\n element treat : "+element.getTreat().toString());
 						if (sameTreat(element.getTreat(), diseases.get(i))) {
-							cpt++;
-							list.get(names.indexOf(e.getName())).setScore(list.get(names.indexOf(e.getName())).getScore()+SAME_SOURCE_SCORE);
+//							list.get(names.indexOf(e.getName())).setScore(list.get(names.indexOf(e.getName())).getScore()+SAME_SOURCE_SCORE);
 						}
 					}
-					System.out.println("cpt : "+cpt);
 				}
 //				else{
 //					System.out.println("e treat : "+e.getTreat().toString()+"\n element treat : "+element.getTreat().toString());

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Observable;
 
+import com.mysql.jdbc.Util;
+import com.sun.swing.internal.plaf.synth.resources.synth;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 import exceptions.NotFoundException;
 
 public class SearchHandler extends Observable {
@@ -11,9 +15,11 @@ public class SearchHandler extends Observable {
 	private ArrayList<Element> el;
 	private ArrayList<ArrayList<Element>> resultList;
 	private ArrayList<String> medicList, diseaseList;
+	private ArrayList<Synonyms> synonymList;
 	private String medic, disease;
 	private ArrayList<Search> searchList;
 	private boolean xml_b, sql_b, txt_b, couchDB_b;
+	private boolean useSynonyms;
 	private int mode;
 	private Statistics stats;
 	private Merger merger;
@@ -29,6 +35,8 @@ public class SearchHandler extends Observable {
 		this.resultList = new ArrayList<ArrayList<Element>>();
 		this.medicList = new ArrayList<String>();
 		this.diseaseList = new ArrayList<String>();
+		this.synonymList = new ArrayList<Synonyms>();
+		this.synonymList.add(new Synonyms());
 		this.medic = "";
 		this.disease = "";
 		this.searchList = new ArrayList<Search>();
@@ -40,7 +48,8 @@ public class SearchHandler extends Observable {
 		this.mode = Search.OR;
 		this.merger = new Merger();
 		this.mergeType = new ArrayList<Integer>();
-		sortBy = -1;
+		this.sortBy = -1;
+		this.useSynonyms = false;
 	}
 	
 	private void initSearch(){
@@ -67,7 +76,7 @@ public class SearchHandler extends Observable {
 		ArrayList<Thread> threadList = initThread();
 
 		stats.setTotalBegin(GregorianCalendar.getInstance());
-		System.out.println("thread list : "+threadList.size());
+
 		for (Thread thread : threadList) {
 			thread.start();
 		}
@@ -236,7 +245,24 @@ public class SearchHandler extends Observable {
 		}
 		else
 			System.out.println("erreur");
-		System.out.println("type merge : "+mergeType.size());
+
+		//Si utilisation de synonym
+		if (useSynonyms) {
+			ArrayList<String> dList = getSynonyms(disease);
+			ArrayList<String> mList = getSynonyms(medic);
+			
+			for (int i = 0; i < dList.size(); i++) {
+				diseaseList.add(dList.get(i));
+				medicList.add("");
+			}
+			for (int i = 0; i < mList.size(); i++) {
+				diseaseList.add("");
+				medicList.add(mList.get(i));
+			}
+			for (int i = 0; i < dList.size()+mList.size(); i++) {
+				mergeType.add(Merger.INCLUSIVE_MERGE);
+			}
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -244,29 +270,29 @@ public class SearchHandler extends Observable {
 		for (Search search : searchList) {
 			resultList.add(search.getEl());
 		}
-		System.out.println("result list size : "+resultList.size());
+//		System.out.println("result list size : "+resultList.size());
 		ArrayList<Element> l1 = new ArrayList<Element>(), l2 = new ArrayList<Element>();
 		for (int i = 0; i < mergeType.size(); i++) {
 			l1.clear();
 			l2.clear();
 			l1 = resultList.get((i*2)%resultList.size());
 			l2 = resultList.get((i*2+1)%resultList.size());
-			System.out.println("l1 ("+(i*2)%resultList.size()+") : "+l1.size()+", l2 ("+(i*2+1)%resultList.size()+") : "+l2.size());
+//			System.out.println("l1 ("+(i*2)%resultList.size()+") : "+l1.size()+", l2 ("+(i*2+1)%resultList.size()+") : "+l2.size());
 				
 			Merger m = new Merger();
 			m.setList1(l1);
 			m.setList2(l2);
 			m.setMergeType(mergeType.get(i));
-			System.out.println("merge type : "+((mergeType.get(i) == 1) ? "Exclusive" : "Inclusive"));
+//			System.out.println("merge type : "+((mergeType.get(i) == 1) ? "Exclusive" : "Inclusive"));
 			m.setDisease(diseaseList.get(i));
 			m.setMedic(medicList.get(i));
-			System.out.println("medic : "+medicList.get(i)+", disease : "+diseaseList.get(i));
+//			System.out.println("medic : "+medicList.get(i)+", disease : "+diseaseList.get(i));
 			
 			Thread th = new Thread(m);
 			th.start();
 			th.join();
 			
-			System.out.println("set : "+i%2+", size : "+m.getList2().size());
+//			System.out.println("set : "+i%2+", size : "+m.getList2().size());
 			resultList.set(i%2, (ArrayList<Element>) m.getList2().clone());
 		}
 		el.addAll(resultList.get(0));
@@ -301,6 +327,18 @@ public class SearchHandler extends Observable {
 		stats.setTotalNumber(el.size());
 		
 		stats.execute();
+	}
+	
+	private ArrayList<String> getSynonyms(String s){
+		ArrayList<String> list = new ArrayList<String>();
+		for (Synonyms string : synonymList) {
+			ArrayList<String> l = string.getSynonyms(s);
+			
+			if (l.size() > 0) {
+				list.addAll(l);
+			}
+		}
+		return list;
 	}
 	
 	private void update(){
@@ -386,5 +424,13 @@ public class SearchHandler extends Observable {
 
 	public void setSortBy(int sortBy) {
 		this.sortBy = sortBy;
+	}
+
+	public boolean isUseSynonyms() {
+		return useSynonyms;
+	}
+
+	public void setUseSynonyms(boolean useSynonyms) {
+		this.useSynonyms = useSynonyms;
 	}
 }

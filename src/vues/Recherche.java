@@ -1,6 +1,7 @@
 package vues;
 
 import java.awt.BorderLayout;
+import java.awt.Checkbox;
 import java.awt.GridLayout;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
@@ -17,6 +18,7 @@ import modele.SearchHandler;
 import controller.ButtonHelperController;
 import controller.ModeController;
 import controller.SearchController;
+import controller.SynonymController;
 import sun.net.www.content.image.jpeg;
 
 public class Recherche extends JPanel {
@@ -26,10 +28,11 @@ public class Recherche extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private JLabel name_l, disease_l;
+	private JLabel name_l, disease_l, useSyns;
 	private TextField drugName, diseaseName;
 	private JButton search_button;
 	private JComboBox<String> mode;
+	private Checkbox synonyms;
 	private JButton andName, orName, andDisease, orDisease, eraseDrug, eraseDisease;
 	
 	SearchHandler search;
@@ -69,6 +72,9 @@ public class Recherche extends JPanel {
 		orDisease.addActionListener(new ButtonHelperController(this));
 		eraseDrug.addActionListener(new ButtonHelperController(this));
 		eraseDisease.addActionListener(new ButtonHelperController(this));
+		useSyns = new JLabel("Use synonyms");
+		synonyms = new Checkbox();
+		synonyms.addItemListener(new SynonymController(search, this));
 	}
 	
 	private void creerRecherche(){
@@ -87,8 +93,17 @@ public class Recherche extends JPanel {
 		name_p.setBackground(Selection.BACKGROUND_COLOR);
 		cases.add(name_p);
 		JPanel mode_p = new JPanel();
-		mode_p.add(mode);
+		mode_p.setLayout(new GridLayout(2,1));
+		JPanel mod = new JPanel();
+		mod.setBackground(getBackground());
+		mod.add(mode);
+		mode_p.add(mod);
 		mode_p.setBackground(Selection.BACKGROUND_COLOR);
+		JPanel syns = new JPanel();
+		syns.setBackground(getBackground());
+		syns.add(useSyns);
+		syns.add(synonyms);
+		mode_p.add(syns);
 		cases.add(mode_p);
 		JPanel disease_p = new JPanel();
 		disease_p.setLayout(new GridLayout(3,1));
@@ -207,6 +222,22 @@ public class Recherche extends JPanel {
 
 	public void setEraseDisease(JButton eraseDisease) {
 		this.eraseDisease = eraseDisease;
+	}
+
+	public JLabel getUseSyns() {
+		return useSyns;
+	}
+
+	public void setUseSyns(JLabel useSyns) {
+		this.useSyns = useSyns;
+	}
+
+	public Checkbox getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(Checkbox synonyms) {
+		this.synonyms = synonyms;
 	}
 
 }

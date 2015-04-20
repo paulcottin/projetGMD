@@ -43,6 +43,11 @@ public class ResultsList extends JScrollPane implements Observer{
 	public static int DISEASE_SYNS_COLUMN = 5;
 	public static int ORIGIN_COLUMN = 6;
 	public static int SCORE_COLUMN = 7;
+	public static Color SQL_COLOR = new Color(23, 151, 255);
+	public static Color TXT_COLOR = new Color(0, 186, 13);
+	public static Color COUCDB_COLOR = new Color(255, 129, 12);
+	public static Color XML_COLOR = new Color(255, 255, 0);
+	
 	
 	private SearchHandler search;
 	private Vector<Vector<String>> vec;
@@ -169,9 +174,18 @@ public class ResultsList extends JScrollPane implements Observer{
 		@Override
 		  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		    setText(value.toString());
-//		    if (getText().equals("Sider2")) {
-//		    	setBackground(Color.red);
-//			}
+		    if (getText().equals("Sider2")) {
+		    	setBackground(SQL_COLOR);
+			}
+		    else if (getText().equals("OMIM")) {
+				setBackground(TXT_COLOR);
+			}
+		    else if (getText().equals("OrphaData")) {
+				setBackground(COUCDB_COLOR);
+			}
+		    else if (getText().equals("DrugBank")) {
+				setBackground(XML_COLOR);
+			}
 		    return this;
 		  }
 		}
