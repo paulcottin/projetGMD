@@ -3,6 +3,7 @@ package vues;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
+import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
@@ -11,13 +12,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import modele.Search;
 import modele.SearchHandler;
@@ -28,6 +34,15 @@ public class ResultsList extends JScrollPane implements Observer{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public static int MEDIC_NAME_COLUMN = 0;
+	public static int DISEASE_NAME_COLUMN = 1;
+	public static int SYMPTOMS_COLUMNS = 2;
+	public static int CAUSES_COLUMNS = 3;
+	public static int MEDIC_SYNS_COLUMN = 4;
+	public static int DISEASE_SYNS_COLUMN = 5;
+	public static int ORIGIN_COLUMN = 6;
+	public static int SCORE_COLUMN = 7;
 	
 	private SearchHandler search;
 	private Vector<Vector<String>> vec;
@@ -54,22 +69,22 @@ public class ResultsList extends JScrollPane implements Observer{
 	
 	private void init(){
 		columnNames = new Vector<String>();
-		columnNames.addElement(("Medic name"));
-		columnNames.addElement(("Disease name"));
-		columnNames.addElement(("Symptoms"));
-		columnNames.addElement(("Cause"));
-		columnNames.addElement(("Synonyms"));
-		columnNames.addElement(("Disease Synonyms"));
-		columnNames.addElement(("Origin"));
+		columnNames.add(("Medic name"));
+		columnNames.add(("Disease name"));
+		columnNames.add(("Symptoms"));
+		columnNames.add(("Cause"));
+		columnNames.add(("Synonyms"));
+		columnNames.add(("Disease Synonyms"));
+		columnNames.add(("Origin"));
+		columnNames.add("Score");
 		
 		vec = new Vector<Vector<String>>();
 		model = new DefaultTableModel(vec, columnNames);
 		table = new JTable(model);
 		
 		table.setEnabled(false);
-		table.getColumnModel().addColumnModelListener( new WrapColListener( table ) );
-		table.setDefaultRenderer( Object.class, new JTPRenderer() );
-		table.getColumn("Origin").setPreferredWidth(0);
+		table.getTableHeader().setReorderingAllowed(false);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		this.setViewportView(table);
 	}
@@ -112,11 +127,34 @@ public class ResultsList extends JScrollPane implements Observer{
 			v.addElement(symptoms);
 			v.addElement(synonyms);
 			v.addElement(diseaseSynonyms);
-			v.addElement(search.getEl().get(i).getOrigin());
+			v.addElement(search.getEl().get(i).getOrigin().replaceAll("/", "\n"));
+			v.addElement(String.valueOf(search.getEl().get(i).getScore()));
 			vec.addElement(v);
 		}
 		model.setDataVector(vec, columnNames);
 		table.setModel(model);
+		
+		if (search.getSortBy() > 0) {
+			FiltreTriModel filtre = new FiltreTriModel(model);
+			table = new JTable(filtre);
+			filtre.sort(search.getSortBy());
+		}
+		
+		
+		table.getColumnModel().addColumnModelListener( new WrapColListener( table ) );
+		table.setDefaultRenderer( Object.class, new JTPRenderer() );
+		
+		TableColumnModel cs = table.getColumnModel();
+		TableColumn c1 = (TableColumn) cs.getColumn(6);
+		((TableColumn) c1).setMinWidth(70);
+		((TableColumn) c1).setMaxWidth(70);
+		c1 = (TableColumn) cs.getColumn(7);
+		((TableColumn) c1).setMinWidth(40);
+		((TableColumn) c1).setMaxWidth(40);
+		
+		
+		
+	
 		this.setViewportView(table);
 	}
 	
@@ -194,5 +232,51 @@ public class ResultsList extends JScrollPane implements Observer{
 		  @Override
 		  public void columnSelectionChanged(ListSelectionEvent e) {
 		  }
+	}
+	
+	class FiltreTriModel extends AbstractTableModel{
+		   TableModel model;
+		   Ligne [] lignes;
+		   int colonneTri;
+		   FiltreTriModel ( TableModel m){
+		      model = m;
+		      lignes = new Ligne[model.getRowCount()];
+		      for( int i = 0; i < lignes.length; ++i)
+		         lignes[i] = new Ligne(i);
+		   }
+		   public int getRowCount() {
+		      return model.getRowCount();
+		   }
+		   public int getColumnCount() {
+		      return model.getColumnCount();
+		   }
+		   public Object getValueAt(int rowIndex, int columnIndex) {
+		      return model.getValueAt(lignes[lignes.length-1-rowIndex].index,  columnIndex);
+		   }
+		   public Class<?> getColumnClass( int i){
+		      return model.getColumnClass(i);
+		   }
+		   public String getColumnName(int i){
+		      return model.getColumnName(i);
+		   }
+		   
+		   public void sort(int c){
+		      colonneTri = c; 
+		      try{
+		          Arrays.sort(lignes);
+		          fireTableDataChanged();
+		      }catch (RuntimeException e){e.printStackTrace();}  // les données ne sont pas comparables !
+		   }
+		   //------- la classe Ligne -------
+		   private class Ligne implements Comparable{
+		      int index;
+		      public Ligne (int i){index = i;}
+		      public int compareTo(Object o) {
+	            Ligne autreLigne = (Ligne)o;
+	            Object cellule = model.getValueAt(index, colonneTri);
+	            Object autreCellule = model.getValueAt(autreLigne.index, colonneTri);
+	            return((Comparable)cellule).compareTo(autreCellule);
+		      }
+		   }
 	}
 }

@@ -16,6 +16,8 @@ public class Merger implements Runnable{
 	
 	public static int INCLUSIVE_MERGE = 0;
 	public static int EXCLUSIVE_MERGE = 1;
+	public static int OTHER_SOURCE_SCORE = 100;
+	public static int SAME_SOURCE_SCORE = 1;
 
 	private ArrayList<Element> list;
 	private ArrayList<Element> list1, list2;
@@ -116,7 +118,7 @@ public class Merger implements Runnable{
 //				treat.clear();
 //				treat.add(t);
 //			}
-			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), synonym, di.getSynonyms(), di.getOrigin()));
+			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), synonym, di.getSynonyms(), di.getOrigin(), 0));
 		}
 		return e;
 	}
@@ -124,7 +126,7 @@ public class Merger implements Runnable{
 	public ArrayList<Element> MedicToElement(ArrayList<Medic> medic){
 		ArrayList<Element> e = new ArrayList<Element>();
 		for (Medic m : medic) {
-			e.add(new Element(m.getName(), m.getTreat(), new ArrayList<String>(), m.getCause(), m.getSynonyms(), new ArrayList<String>(), m.getOrigin()));
+			e.add(new Element(m.getName(), m.getTreat(), new ArrayList<String>(), m.getCause(), m.getSynonyms(), new ArrayList<String>(), m.getOrigin(), 0));
 		}
 		return e;
 	}
@@ -132,11 +134,13 @@ public class Merger implements Runnable{
 	public ArrayList<Element> getOutDuplicates(ArrayList<Element> l){
 		ArrayList<Element> list = new ArrayList<Element>();
 		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<ArrayList<String>> diseases = new ArrayList<ArrayList<String>>();
 		boolean find = false;
 		for (Element element : l) {
 			Element e = new Element();
 			e.setName(element.getName());
 			e.setOrigin(element.getOrigin());
+			e.setScore(element.getScore());
 			if (!e.getName().equals("") || element.getTreat() != null) {
 				if(!names.contains(e.getName())){
 					names.add(e.getName());
@@ -150,6 +154,7 @@ public class Merger implements Runnable{
 							e.getTreat().add(element.getTreat().get(i));
 						}
 						find = false;
+						diseases.add(e.getTreat());
 					}
 					for (int i = 0; i < element.getCause().size(); i++) {
 						for (int j = i+1; j < element.getCause().size(); j++) {
@@ -197,6 +202,21 @@ public class Merger implements Runnable{
 					}
 					list.add(e);
 				}
+				else if (names.contains(e.getName())){
+					int cpt = 0;
+					for (int i = 0; i < diseases.size(); i++) {
+//						System.out.println("e treat : "+e.getTreat().toString()+"\n element treat : "+element.getTreat().toString());
+						if (sameTreat(element.getTreat(), diseases.get(i))) {
+							cpt++;
+							list.get(names.indexOf(e.getName())).setScore(list.get(names.indexOf(e.getName())).getScore()+SAME_SOURCE_SCORE);
+						}
+					}
+					System.out.println("cpt : "+cpt);
+				}
+//				else{
+//					System.out.println("e treat : "+e.getTreat().toString()+"\n element treat : "+element.getTreat().toString());
+////					list.get(names.indexOf(e.getName())).setScore(list.get(names.indexOf(e.getName())).getScore()+SAME_SOURCE_SCORE);
+//				}
 			}
 		}
 		return list;
@@ -236,6 +256,10 @@ public class Merger implements Runnable{
 					}
 					if (!e.getOrigin().equals(list.get(i).getOrigin()) && !list.get(i).getOrigin().matches(".*"+e.getOrigin()+".*")) {
 						list.get(i).setOrigin(list.get(i).getOrigin()+"/"+e.getOrigin());
+						list.get(i).setScore(list.get(i).getScore()+OTHER_SOURCE_SCORE);
+					}
+					else{
+						list.get(i).setScore(list.get(i).getScore()+SAME_SOURCE_SCORE);
 					}
 				}
 				//Si seulement mm disease
@@ -243,6 +267,7 @@ public class Merger implements Runnable{
 //					System.out.println("seulement mm disease");
 					if (e.getName().equals("") && !e.getOrigin().equals(list.get(i).getOrigin()) && !list.get(i).getOrigin().matches(".*"+e.getOrigin()+".*")) {
 						list.get(i).setOrigin(list.get(i).getOrigin()+"/"+e.getOrigin());
+						list.get(i).setScore(list.get(i).getScore()+OTHER_SOURCE_SCORE);
 					}
 					else if(!haveElement(l, e)) {
 						l.add(e);
@@ -256,7 +281,9 @@ public class Merger implements Runnable{
 						Element element = l.get(index);
 						if (!e.getOrigin().equals(element.getOrigin())) {
 							element.setOrigin(element.getOrigin()+"/"+e.getOrigin());
+							list.get(i).setScore(list.get(i).getScore()+OTHER_SOURCE_SCORE);
 						}
+						element.setScore(element.getScore()+SAME_SOURCE_SCORE);
 						l.set(index, element);
 					}
 				}
@@ -325,7 +352,6 @@ public class Merger implements Runnable{
 	}
 	
 	private Element mergeElement(Element e1, Element e2){
-//		System.out.println("coucou");
 		Element e = new Element();
 		e.setName(e1.getName());
 		e.setTreat(e1.getTreat());

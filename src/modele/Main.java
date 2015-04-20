@@ -1,4 +1,6 @@
 package modele;
+import exceptions.EmptyRequest;
+import exceptions.NotFoundException;
 import requests.CouchDBSearch;
 import requests.TextSearch;
 import vues.Fenetre;
@@ -14,10 +16,21 @@ import vues.Fenetre;
 
 public class Main {
 	public static void main(String args[]){
-		Search search = new Search();
+		SearchHandler search = new SearchHandler();
 		Fenetre fen = new Fenetre(search);
-		search.setDisease("HYPERCHOLESTEROLEMIA");
-		search.search();
+		search.setDisease("fever");
+//		search.setMedic("Lepirudin");
+//		search.setMode(Search.AND);
+//		try {
+//			try {
+//				search.search();
+//			} catch (NotFoundException e) {
+//				e.execute();
+//			}
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 }

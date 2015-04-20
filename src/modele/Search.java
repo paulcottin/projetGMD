@@ -277,7 +277,6 @@ public class Search extends Observable implements Runnable{
 			el.addAll(xmlMerger.getList2());
 			el.addAll(sqlMerger.getList2());
 		}
-		
 		el = merger.getOutDuplicates(el);
 		mergeProcEnd = true;
 		update();

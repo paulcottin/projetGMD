@@ -81,7 +81,7 @@ public class CouchDBSearch implements Runnable{
 	private String getDisease(){
 		String ligne = "";
 		URL url = null;
-		String cle_bis = dSearch.replace(" ","%20");
+		String cle_bis = dSearch.replaceAll(" ","%20");
 
 		try {
 			if (joker) {
@@ -177,7 +177,6 @@ public class CouchDBSearch implements Runnable{
 				res+=ligne;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return res;

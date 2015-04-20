@@ -19,6 +19,7 @@ public class ButtonHelperController implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(r.getAndName())) {
 			r.getDrugName().setText(r.getDrugName().getText()+" AND ");
+//			r.getDrugName().requestFocus();
 		}
 		else if (e.getSource().equals(r.getOrName())) {
 			r.getDrugName().setText(r.getDrugName().getText()+ " OR ");
@@ -31,9 +32,11 @@ public class ButtonHelperController implements ActionListener{
 		}
 		else if (e.getSource().equals(r.getEraseDrug())) {
 			r.getDrugName().setText("");
+			r.getDrugName().requestFocus();
 		}
 		else if (e.getSource().equals(r.getEraseDisease())) {
 			r.getDiseaseName().setText("");
+			r.getDiseaseName().requestFocus();
 		}
 	}
 

@@ -33,12 +33,12 @@ public class Fenetre extends JFrame implements Observer{
 	}
 	
 	private void initFen(){
-		this.setSize(1000, 600);
+		this.setSize(1200, 600);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setLayout(new BorderLayout());
-		this.selection = new Selection(search);
 		this.resultsList = new ResultsList(search);
+		this.selection = new Selection(search);
 		this.stats = new Statistics(search.getStats());
 	}
 	
@@ -54,6 +54,14 @@ public class Fenetre extends JFrame implements Observer{
 		resultsList = new ResultsList(search);
 		this.add(resultsList, BorderLayout.CENTER);
 		this.revalidate();
+	}
+
+	public ResultsList getResultsList() {
+		return resultsList;
+	}
+
+	public void setResultsList(ResultsList resultsList) {
+		this.resultsList = resultsList;
 	}
 
 }

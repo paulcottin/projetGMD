@@ -23,6 +23,7 @@ public class Selection extends JPanel{
 	private Recherche recherche;
 	private Progress progress;
 	private SearchHandler search;
+	private Sort sort;
 	
 	public Selection(SearchHandler s) {
 		super();
@@ -31,21 +32,26 @@ public class Selection extends JPanel{
 		JPanel opt = new JPanel();
 		JPanel rech = new JPanel();
 		JPanel prog = new JPanel();
+		JPanel sort = new JPanel();
 		opt.setBackground(Selection.BACKGROUND_COLOR);
 		rech.setBackground(Selection.BACKGROUND_COLOR);
 		prog.setBackground(Selection.BACKGROUND_COLOR);
+		sort.setBackground(Selection.BACKGROUND_COLOR);
 		
 		options = new Options(this.search);
 		recherche = new Recherche(this.search);
 		progress = new Progress(this.search);
+		this.sort = new Sort(this.search);
 		
 		opt.add(options);
 		rech.add(recherche);
 		prog.add(progress);
+		sort.add(this.sort);
 		
 		this.add(opt);
 		this.add(rech);
-		this.add(prog);
+//		this.add(prog);
+		this.add(sort);
 	}
 
 	public Options getOptions() {

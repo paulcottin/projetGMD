@@ -18,6 +18,7 @@ public class SearchHandler extends Observable {
 	private Statistics stats;
 	private Merger merger;
 	private ArrayList<Integer> mergeType;
+	private int sortBy;
 	
 	public SearchHandler() {
 		init();
@@ -39,9 +40,11 @@ public class SearchHandler extends Observable {
 		this.mode = Search.OR;
 		this.merger = new Merger();
 		this.mergeType = new ArrayList<Integer>();
+		sortBy = -1;
 	}
 	
 	private void initSearch(){
+		searchList.clear();
 		for (int i = 0; i < medicList.size(); i++) {
 			Search search = new Search();
 			search.setMedic(medicList.get(i));
@@ -68,18 +71,6 @@ public class SearchHandler extends Observable {
 		for (Thread thread : threadList) {
 			thread.start();
 		}
-		
-//		boolean running = true;
-//		while (running) {
-//			running = false;
-//			for (Thread thread : threadList) {
-//				if (thread.isAlive()) {
-//					running = true;
-//				}
-//			}
-//		}
-		
-		
 		
 		for (Thread thread : threadList) {
 			thread.join();
@@ -121,7 +112,7 @@ public class SearchHandler extends Observable {
 		// 0 - 0
 		if (!medic.contains(" AND ") && !medic.contains(" OR ")&& !disease.contains(" AND ") && !disease.contains(" OR ")) {
 			medicList.add(medic);
-			diseaseList.add(medic);
+			diseaseList.add(disease);
 		}
 		// && - 0
 		else if (medic.contains(" AND ") && !disease.contains(" OR ") && !disease.contains(" AND ")) {
@@ -387,5 +378,13 @@ public class SearchHandler extends Observable {
 
 	public void setStats(Statistics stats) {
 		this.stats = stats;
+	}
+
+	public int getSortBy() {
+		return sortBy;
+	}
+
+	public void setSortBy(int sortBy) {
+		this.sortBy = sortBy;
 	}
 }

@@ -39,7 +39,7 @@ public class Statistics extends JPanel implements Observer{
 		this.couchDB = new JLabel("("+s.getCouchDbNumber()+") CouchDB : "+s.getCouchDbTimeTxt());
 		this.txt = new JLabel("("+s.getTxtNumber()+") Texte : "+s.getTxtTimeTxt());
 		this.nbresults = new JLabel("Number of results : "+s.getTotalNumber());
-		this.tpsTotal = new JLabel("Total Time : "+s.getTotalTimeTxt());
+		this.tpsTotal = new JLabel("Search Time : "+s.getTotalTimeTxt());
 		this.tpsMerge = new JLabel("Merge time : "+s.getMergeTimeTxt());
 		
 		this.xml.setBackground(Selection.BACKGROUND_COLOR);
@@ -56,7 +56,7 @@ public class Statistics extends JPanel implements Observer{
 		this.couchDB.setText("("+s.getCouchDbNumber()+") CouchDB : "+s.getCouchDbTimeTxt());
 		this.txt.setText("("+s.getTxtNumber()+") Texte : "+s.getTxtTimeTxt());
 		this.nbresults.setText("Number of results : "+s.getTotalNumber());
-		this.tpsTotal.setText("Total Time : "+s.getTotalTimeTxt());
+		this.tpsTotal.setText("Search Time : "+s.getTotalTimeTxt());
 		this.tpsMerge.setText("Merge time : "+s.getMergeTimeTxt());
 	}
 	

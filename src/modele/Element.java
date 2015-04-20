@@ -17,6 +17,7 @@ public class Element {
 
 	String name, origin;
 	ArrayList<String> synonyms, treat, cause, symptoms, diseaseSynonyms;
+	int score;
 	
 	public Element() {
 		name = "";
@@ -25,9 +26,11 @@ public class Element {
 		symptoms = new ArrayList<String>();
 		synonyms = new ArrayList<String>();
 		diseaseSynonyms = new ArrayList<String>();
+		origin = "";
+		score = 0;
 	}
 	
-	public Element(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms, ArrayList<String> diseaseSynonyms, String origin){
+	public Element(String name, ArrayList<String> treat, ArrayList<String> cause, ArrayList<String> symptoms, ArrayList<String> synonyms, ArrayList<String> diseaseSynonyms, String origin, int note){
 		this.name = name;
 		this.treat = treat;
 		this.cause = cause;
@@ -35,6 +38,7 @@ public class Element {
 		this.synonyms = synonyms;
 		this.diseaseSynonyms = diseaseSynonyms;
 		this.origin = origin;
+		this.score = score;
 	}
 	
 	public String toString(){
@@ -55,7 +59,7 @@ public class Element {
 		for (String s : this.diseaseSynonyms) {
 			diseaseSynonyms += "\t\t"+s+"\n";
 		}
-		return "name : "+name+"\n\ttreatment: "+treat+"\n\tcause : "+cause+"\n\tsymptoms : "+symptoms+"\n\t"+syn+"\n\t"+diseaseSynonyms+"\n\torigin : "+origin;
+		return "name : "+name+"\n\ttreatment: "+treat+"\n\tcause : "+cause+"\n\tsymptoms : "+symptoms+"\n\t"+syn+"\n\t"+diseaseSynonyms+"\n\torigin : "+origin+"\n score : "+score;
 	}
 
 	public String getName() {
@@ -112,6 +116,14 @@ public class Element {
 
 	public void setOrigin(String origin) {
 		this.origin = origin;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 	
 	
