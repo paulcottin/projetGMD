@@ -139,7 +139,8 @@ public class ResultsList extends JScrollPane implements Observer{
 		model.setDataVector(vec, columnNames);
 		table.setModel(model);
 		
-		if (search.getSortBy() > 0) {
+		if (search.getSortBy() >= 0) {
+			
 			FiltreTriModel filtre = new FiltreTriModel(model);
 			table = new JTable(filtre);
 			filtre.sort(search.getSortBy());
@@ -185,6 +186,9 @@ public class ResultsList extends JScrollPane implements Observer{
 			}
 		    else if (getText().equals("DrugBank")) {
 				setBackground(XML_COLOR);
+			}
+		    else {
+				setBackground(getBackground());
 			}
 		    return this;
 		  }
@@ -265,7 +269,7 @@ public class ResultsList extends JScrollPane implements Observer{
 		      return model.getColumnCount();
 		   }
 		   public Object getValueAt(int rowIndex, int columnIndex) {
-		      return model.getValueAt(lignes[lignes.length-1-rowIndex].index,  columnIndex);
+		      return model.getValueAt(lignes[rowIndex].index,  columnIndex);
 		   }
 		   public Class<?> getColumnClass( int i){
 		      return model.getColumnClass(i);
@@ -289,7 +293,17 @@ public class ResultsList extends JScrollPane implements Observer{
 	            Ligne autreLigne = (Ligne)o;
 	            Object cellule = model.getValueAt(index, colonneTri);
 	            Object autreCellule = model.getValueAt(autreLigne.index, colonneTri);
-	            return((Comparable)cellule).compareTo(autreCellule);
+	            if (cellule instanceof Integer) {
+					if ((int) cellule > (int) autreCellule)
+						return 1;
+					else if ((int) cellule < (int) autreCellule)
+						return -1;
+					else
+						return 0;
+				}
+	            else {
+					return ((String) cellule).compareTo((String) autreCellule);
+				}
 		      }
 		   }
 	}

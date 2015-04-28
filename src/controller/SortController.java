@@ -26,10 +26,12 @@ public class SortController implements ItemListener{
 		if (!ok) {
 			ok = true;
 			panel.getChoice().setEnabled(true);
-			search.setSortBy(panel.getChoice().getSelectedIndex());
+			panel.getSort_c().setState(true);
 		}else {
 			ok = false;
 			panel.getChoice().setEnabled(false);
+			panel.getSort_c().setState(false);
+			panel.getSort_c().revalidate();
 			search.setSortBy(-1);
 		}
 	}

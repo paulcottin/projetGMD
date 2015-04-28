@@ -8,6 +8,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import controller.SortChoiceController;
 import controller.SortController;
 
 import modele.SearchHandler;
@@ -40,6 +41,7 @@ public class Sort extends JPanel implements Observer{
 		sort_c = new Checkbox();
 		sort_c.addItemListener(new SortController(search, this));
 		choice = new JComboBox<String>(new String[]{"Drug Name", "Disease Name", "Symptoms", "Cause", "Synonyms", "Diseases Synonyms", "Origin", "Score"});
+		choice.addActionListener(new SortChoiceController(search, this));
 		choice.setEnabled(choiceEnabled);
 	}
 

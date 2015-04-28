@@ -18,8 +18,8 @@ public class Main {
 	public static void main(String args[]){
 		SearchHandler search = new SearchHandler();
 		Fenetre fen = new Fenetre(search);
-		search.setDisease("fever");
-//		search.setMedic("Lepirudin");
+//		search.setDisease("hirudin");
+		search.setMedic("Lepirudin");
 //		search.setMode(Search.AND);
 //		try {
 //			try {
