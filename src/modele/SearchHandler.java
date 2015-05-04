@@ -87,9 +87,9 @@ public class SearchHandler extends Observable {
 		
 		stats.setTotalEnd(GregorianCalendar.getInstance());
 		stats.execute();
-		
+		stats.setMergeBegin(GregorianCalendar.getInstance());
 		getResults();
-		
+		stats.setMergeEnd(GregorianCalendar.getInstance());
 		
 		el = merger.getOutDuplicates(el);
 		
