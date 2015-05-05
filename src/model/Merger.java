@@ -13,7 +13,7 @@ import com.sun.org.apache.xml.internal.serializer.ToUnknownStream;
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class Merger implements Runnable{
-	
+
 	public static int INCLUSIVE_MERGE = 0;
 	public static int EXCLUSIVE_MERGE = 1;
 	public static int OTHER_SOURCE_SCORE = 100;
@@ -28,7 +28,7 @@ public class Merger implements Runnable{
 	public Merger() {
 		init();
 	}
-	
+
 	private void init(){
 		list = new ArrayList<Element>();
 		list1 = new ArrayList<Element>();
@@ -38,7 +38,7 @@ public class Merger implements Runnable{
 		drug = "";
 		disease = "";
 	}
-	
+
 	@Override
 	public void run() {
 		ArrayList<Element> t = new ArrayList<Element>();
@@ -118,7 +118,7 @@ public class Merger implements Runnable{
 		}
 		return e;
 	}
-	
+
 	public ArrayList<Element> getOutDuplicates(ArrayList<Element> l){
 		ArrayList<Element> list = new ArrayList<Element>();
 		ArrayList<String> names = new ArrayList<String>();
@@ -191,7 +191,7 @@ public class Merger implements Runnable{
 					list.add(e);
 				}
 				else if (names.contains(e.getName())){
-					
+
 				}
 			}
 		}
@@ -200,72 +200,76 @@ public class Merger implements Runnable{
 
 	public ArrayList<Element> merge(Element e, ArrayList<Element> list){
 		ArrayList<Element> l = new ArrayList<Element>();
-		if (list.size() == 0) {
+		if (list.size() == 0 && !e.getName().equals("") && !sameTreat(new ArrayList<String>(), e.getTreat())) {
 			l.add(e);
 		}
 		else {
 			for (int i = 0; i < list.size(); i++) {
-					if (e.getName().equalsIgnoreCase(list.get(i).getName()) && sameTreat(e.getTreat(), list.get(i).getTreat())) {
+				if (e.getName() == null || list.get(i).getName() == null || e.getTreat() == null || list.get(i).getTreat() == null) {
 					return new ArrayList<Element>();
-				}
-				//If same name only
-				else if (e.getName().equalsIgnoreCase(list.get(i).getName()) && (!e.getName().equals("") || !list.get(i).getName().equals(""))) {
-					for (String s : e.getTreat()) {
-						if (!list.get(i).getTreat().contains(s)) {
-							list.get(i).getDiseaseSynonyms().add(s);
+				}else{
+					if (e.getName().equalsIgnoreCase(list.get(i).getName()) && sameTreat(e.getTreat(), list.get(i).getTreat())) {
+						return new ArrayList<Element>();
+					}
+					//If same name only
+					else if (e.getName().equalsIgnoreCase(list.get(i).getName()) && (!e.getName().equals("") || !list.get(i).getName().equals(""))) {
+						for (String s : e.getTreat()) {
+							if (!list.get(i).getTreat().contains(s)) {
+								list.get(i).getDiseaseSynonyms().add(s);
+							}
 						}
-					}
-					for (String s : e.getCause()) {
-						if (!list.get(i).getCause().contains(s)) {
-							list.get(i).getCause().add(s);
+						for (String s : e.getCause()) {
+							if (!list.get(i).getCause().contains(s)) {
+								list.get(i).getCause().add(s);
+							}
 						}
-					}
-					for (String s : e.getSynonyms()) {
-						if (!list.get(i).getSynonyms().contains(s)) {
-							list.get(i).getSynonyms().add(s);
+						for (String s : e.getSynonyms()) {
+							if (!list.get(i).getSynonyms().contains(s)) {
+								list.get(i).getSynonyms().add(s);
+							}
 						}
-					}
-					for (String s : e.getDiseaseSynonyms()) {
-						if (!list.get(i).getDiseaseSynonyms().contains(s)) {
-							list.get(i).getDiseaseSynonyms().add(s);
+						for (String s : e.getDiseaseSynonyms()) {
+							if (!list.get(i).getDiseaseSynonyms().contains(s)) {
+								list.get(i).getDiseaseSynonyms().add(s);
+							}
 						}
-					}
-					if (!e.getOrigin().equals(list.get(i).getOrigin()) && !list.get(i).getOrigin().matches(".*"+e.getOrigin()+".*")) {
-						list.get(i).setOrigin(list.get(i).getOrigin()+"/"+e.getOrigin());
-						list.get(i).setScore(list.get(i).getScore()+OTHER_SOURCE_SCORE);
-					}
-					else{
-						list.get(i).setScore(list.get(i).getScore()+SAME_SOURCE_SCORE);
-					}
-				}
-				//If same disease only
-				else if (sameTreat(e.getTreat(), list.get(i).getTreat())) {
-					if (e.getName().equals("") && !e.getOrigin().equals(list.get(i).getOrigin()) && !list.get(i).getOrigin().matches(".*"+e.getOrigin()+".*")) {
-						list.get(i).setOrigin(list.get(i).getOrigin()+"/"+e.getOrigin());
-						list.get(i).setScore(list.get(i).getScore()+OTHER_SOURCE_SCORE);
-					}
-					else if(!haveElement(l, e)) {
-						l.add(e);
-					}
-				}
-				else{
-					if (!haveElement(l, e)) {
-						l.add(e);
-					}else{
-						Element element = l.get(index);
-						if (!e.getOrigin().equals(element.getOrigin())) {
-							element.setOrigin(element.getOrigin()+"/"+e.getOrigin());
+						if (!e.getOrigin().equals(list.get(i).getOrigin()) && !list.get(i).getOrigin().matches(".*"+e.getOrigin()+".*")) {
+							list.get(i).setOrigin(list.get(i).getOrigin()+"/"+e.getOrigin());
 							list.get(i).setScore(list.get(i).getScore()+OTHER_SOURCE_SCORE);
 						}
-						element.setScore(element.getScore()+SAME_SOURCE_SCORE);
-						l.set(index, element);
+						else{
+							list.get(i).setScore(list.get(i).getScore()+SAME_SOURCE_SCORE);
+						}
+					}
+					//If same disease only
+					else if (sameTreat(e.getTreat(), list.get(i).getTreat())) {
+						if (e.getName().equals("") && !e.getOrigin().equals(list.get(i).getOrigin()) && !list.get(i).getOrigin().matches(".*"+e.getOrigin()+".*")) {
+							list.get(i).setOrigin(list.get(i).getOrigin()+"/"+e.getOrigin());
+							list.get(i).setScore(list.get(i).getScore()+OTHER_SOURCE_SCORE);
+						}
+						else if(!haveElement(l, e)) {
+							l.add(e);
+						}
+					}
+					else{
+						if (!haveElement(l, e)) {
+							l.add(e);
+						}else{
+							Element element = l.get(index);
+							if (!e.getOrigin().equals(element.getOrigin())) {
+								element.setOrigin(element.getOrigin()+"/"+e.getOrigin());
+								list.get(i).setScore(list.get(i).getScore()+OTHER_SOURCE_SCORE);
+							}
+							element.setScore(element.getScore()+SAME_SOURCE_SCORE);
+							l.set(index, element);
+						}
 					}
 				}
 			}
 		}
 		return l;
 	}
-	
+
 	private ArrayList<Element> exclusiveMerge(Element e, ArrayList<Element> list){
 		ArrayList<Element> l = new ArrayList<Element>();
 		if (e.getName().toUpperCase().contains(drug.toUpperCase()) && arrayContains(disease, e.getTreat())) {
@@ -273,10 +277,10 @@ public class Merger implements Runnable{
 				l.add(e);
 			}
 		}
-		
+
 		return l;
 	}
-	
+
 	private boolean sameTreat(ArrayList<String> a, ArrayList<String> b){
 		ArrayList<String> temp = new ArrayList<String>();
 		if (a != null && b != null) {
@@ -304,7 +308,7 @@ public class Merger implements Runnable{
 		}else
 			return false;
 	}
-	
+
 	private boolean haveElement(ArrayList<Element> list, Element e){
 		for (Element element : list) {
 			if (element.getName().equalsIgnoreCase(e.getName())) {
@@ -314,7 +318,7 @@ public class Merger implements Runnable{
 		}
 		return false;
 	}
-	
+
 	private boolean arrayContains(String s, ArrayList<String> list){
 		for (String string : list) {
 			if (string.toUpperCase().contains(s.toUpperCase())) {
@@ -323,7 +327,7 @@ public class Merger implements Runnable{
 		}
 		return false;
 	}
-	
+
 	private Element mergeElement(Element e1, Element e2){
 		Element e = new Element();
 		e.setName(e1.getName());
@@ -345,7 +349,7 @@ public class Merger implements Runnable{
 		}
 		return e;
 	}
-	
+
 	private ArrayList<String> mergeList(String s, ArrayList<String> list){
 		ArrayList<String> l = new ArrayList<String>();
 		boolean find = false;

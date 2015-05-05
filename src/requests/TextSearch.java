@@ -171,7 +171,7 @@ public class TextSearch implements Runnable{
 						end = line.substring(line.indexOf(",")+1).indexOf(",")+line.indexOf(",")+1;
 					}
 					name = line.substring(line.indexOf(" ")+1, end);
-					if (name.contains(",")) {
+					if (name.contains(",") && name.indexOf(",") != name.length()-1) {
 						String[] tab = name.split(",");
 						name = tab[1]+" "+tab[0];
 					}

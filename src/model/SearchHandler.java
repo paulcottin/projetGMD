@@ -1,15 +1,10 @@
 package model;
 
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Observable;
 
-import com.mysql.jdbc.Util;
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
-import com.sun.swing.internal.plaf.synth.resources.synth;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-
 import exceptions.NotFoundException;
 
 public class SearchHandler extends Observable {
@@ -26,19 +21,19 @@ public class SearchHandler extends Observable {
 	private Statistics stats;
 	private Merger merger;
 	private ArrayList<Integer> mergeType;
-	private int sortBy;
-	
+	private int sortBy, synonymAdvancement, drugSyn, diseaseSyn;
+	private Thread synonymsThread;
+
 	public SearchHandler() {
 		init();
 	}
-	
+
 	private void init(){
 		this.el = new ArrayList<Element>();
 		this.resultList = new ArrayList<ArrayList<Element>>();
 		this.drugList = new ArrayList<String>();
 		this.diseaseList = new ArrayList<String>();
 		this.synonymList = new ArrayList<Synonyms>();
-		this.synonymList.add(new Synonyms());
 		this.drug = "";
 		this.disease = "";
 		this.searchList = new ArrayList<Search>();
@@ -52,9 +47,11 @@ public class SearchHandler extends Observable {
 		this.mergeType = new ArrayList<Integer>();
 		this.sortBy = -1;
 		this.useSynonyms = false;
-		this.initSynonyms();
+		this.synonymAdvancement = 0;
+		this.drugSyn = 0;
+		this.diseaseSyn = 0;
 	}
-	
+
 	private void initSearch(){
 		searchList.clear();
 		for (int i = 0; i < drugList.size(); i++) {
@@ -71,12 +68,12 @@ public class SearchHandler extends Observable {
 			searchList.add(search);
 		}
 	}
-	
+
 	public void search() throws InterruptedException, NotFoundException, CommunicationsException{
 		initRequests();
-		
+
 		initSearch();
-		
+
 		ArrayList<Thread> threadList = initThread();
 
 		stats.setTotalBegin(GregorianCalendar.getInstance());
@@ -84,28 +81,27 @@ public class SearchHandler extends Observable {
 		for (Thread thread : threadList) {
 			thread.start();
 		}
-		
+
 		for (Thread thread : threadList) {
 			thread.join();
 		}
-		
+
 		stats.setTotalEnd(GregorianCalendar.getInstance());
 		stats.execute();
 		stats.setMergeBegin(GregorianCalendar.getInstance());
 		getResults();
 		stats.setMergeEnd(GregorianCalendar.getInstance());
-		
 		el = merger.getOutDuplicates(el);
-		
+
 		executeStats();
-		
+
 		update();
-		
+
 		if (el.size() == 0) {
 			throw new NotFoundException();
 		}
 	}
-	
+
 	private ArrayList<Thread> initThread(){
 		ArrayList<Thread> t = new ArrayList<Thread>();
 		for (Search s : searchList) {
@@ -113,7 +109,7 @@ public class SearchHandler extends Observable {
 		}
 		return t;
 	}
-	
+
 	private void initRequests(){
 		el.clear();
 		resultList.clear();
@@ -121,7 +117,7 @@ public class SearchHandler extends Observable {
 		diseaseList.clear();
 		searchList.clear();
 		mergeType.clear();
-		
+
 		// 0 - 0
 		if (!drug.contains(" AND ") && !drug.contains(" OR ")&& !disease.contains(" AND ") && !disease.contains(" OR ")) {
 			drugList.add(drug);
@@ -131,7 +127,7 @@ public class SearchHandler extends Observable {
 		else if (drug.contains(" AND ") && !disease.contains(" OR ") && !disease.contains(" AND ")) {
 			String[] t = drug.split(" AND ");
 			for (int i = 0; i < t.length; i++) {
-				System.out.println("drug : "+t[i]+", disease : "+disease);
+//				System.out.println("drug : "+t[i]+", disease : "+disease);
 				drugList.add(t[i]);
 				diseaseList.add(disease);
 				if (i+1 < t.length) {
@@ -143,7 +139,7 @@ public class SearchHandler extends Observable {
 		else if (drug.contains(" OR ") && !disease.contains(" OR ") && !disease.contains(" AND ")) {
 			String[] t = drug.split(" OR ");
 			for (int i = 0; i < t.length; i++) {
-				System.out.println("drug : "+t[i]+", disease : "+disease);
+//				System.out.println("drug : "+t[i]+", disease : "+disease);
 				drugList.add(t[i]);
 				diseaseList.add(disease);
 				if (i+1 < t.length) {
@@ -155,7 +151,7 @@ public class SearchHandler extends Observable {
 		else if (!drug.contains(" AND ") && !drug.contains(" OR ")&& disease.contains(" AND ")) {
 			String[] t = disease.split(" AND ");
 			for (int i = 0; i < t.length; i++) {
-				System.out.println("disease : "+t[i]+", drug : "+drug);
+//				System.out.println("disease : "+t[i]+", drug : "+drug);
 				drugList.add(drug);
 				diseaseList.add(t[i]);
 				if (i+1 < t.length) {
@@ -167,7 +163,7 @@ public class SearchHandler extends Observable {
 		else if (!drug.contains(" AND ") && !drug.contains(" OR ") && disease.contains(" OR ")) {
 			String[] t = disease.split(" OR ");
 			for (int i = 0; i < t.length; i++) {
-				System.out.println("disease : "+t[i]+", drug : "+drug);
+//				System.out.println("disease : "+t[i]+", drug : "+drug);
 				drugList.add(drug);
 				diseaseList.add(t[i]);
 				if (i+1 < t.length) {
@@ -181,7 +177,7 @@ public class SearchHandler extends Observable {
 			String[] d = disease.split(" AND ");
 			for (int i = 0; i < m.length; i++) {
 				for (int j = 0; j < d.length; j++) {
-					System.out.println("disease : "+m[i]+", drug : "+d[j]);
+//					System.out.println("disease : "+m[i]+", drug : "+d[j]);
 					drugList.add(m[i]);
 					diseaseList.add(d[j]);
 					if (i+1 < d.length) {
@@ -199,7 +195,7 @@ public class SearchHandler extends Observable {
 			String[] d = disease.split(" OR ");
 			for (int i = 0; i < m.length; i++) {
 				for (int j = 0; j < d.length; j++) {
-					System.out.println("disease : "+m[i]+", drug : "+d[j]);
+//					System.out.println("disease : "+m[i]+", drug : "+d[j]);
 					drugList.add(m[i]);
 					diseaseList.add(d[j]);
 					if (i+1 < d.length) {
@@ -217,7 +213,7 @@ public class SearchHandler extends Observable {
 			String[] d = disease.split(" OR ");
 			for (int i = 0; i < m.length; i++) {
 				for (int j = 0; j < d.length; j++) {
-					System.out.println("disease : "+m[i]+", drug : "+d[j]);
+//					System.out.println("disease : "+m[i]+", drug : "+d[j]);
 					drugList.add(m[i]);
 					diseaseList.add(d[j]);
 					if (i+1 < d.length) {
@@ -235,7 +231,7 @@ public class SearchHandler extends Observable {
 			String[] d = disease.split(" AND ");
 			for (int i = 0; i < m.length; i++) {
 				for (int j = 0; j < d.length; j++) {
-					System.out.println("disease : "+m[i]+", drug : "+d[j]);
+//					System.out.println("disease : "+m[i]+", drug : "+d[j]);
 					drugList.add(m[i]);
 					diseaseList.add(d[j]);
 					if (i+1 < d.length) {
@@ -254,7 +250,9 @@ public class SearchHandler extends Observable {
 		if (useSynonyms) {
 			ArrayList<String> dList = getSynonyms(disease);
 			ArrayList<String> mList = getSynonyms(drug);
-			
+			this.drugSyn = mList.size();
+			this.diseaseSyn = dList.size();
+
 			for (int i = 0; i < dList.size(); i++) {
 				diseaseList.add(dList.get(i));
 				drugList.add("");
@@ -263,35 +261,75 @@ public class SearchHandler extends Observable {
 				diseaseList.add("");
 				drugList.add(mList.get(i));
 			}
-			for (int i = 0; i < dList.size()+mList.size(); i++) {
+			for (int i = 0; i < dList.size()+mList.size()+1; i++) {
 				mergeType.add(Merger.INCLUSIVE_MERGE);
 			}
 		}
 	}
-	
+
 	private ArrayList<String> getSynonyms(String s){
+		if (s.equals(""))
+			return new ArrayList<String>();
 		ArrayList<String> list = new ArrayList<String>();
 		for (Synonyms string : synonymList) {
-			ArrayList<String> l = string.getSynonyms(s);
+			ArrayList<String> l = string.getSyns(s);
 			if (l.size() > 0) {
 				list.addAll(l);
 			}
 		}
 		return list;
 	}
-	
-	private void initSynonyms(){
-		initCouchDBSynonyms();
+
+	public void initSynonyms(){
+		synonymsThread = new Thread(){
+			public void run(){
+				Starter xml = new Starter("XML");
+				Thread xml_thread = new Thread(xml);
+				Starter sql = new Starter("SQL");
+				Thread sql_thread = new Thread(sql);
+				Starter csv = new Starter("CSV");
+				Thread csv_thread = new Thread(csv);
+				Starter couchDB = new Starter("CouchDB");
+				Thread couchDB_thread = new Thread(couchDB);
+
+//				couchDB_thread.start();
+				xml_thread.start();
+				csv_thread.start();
+				sql_thread.start();
+
+				try {
+					xml_thread.join();
+					synonymAdvancement++;
+					update();
+					sql_thread.join();
+					synonymAdvancement++;
+					update();
+					csv_thread.join();
+					synonymAdvancement++;
+					update();
+//					couchDB_thread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				synonymList.addAll(xml.getSynsList());
+				synonymList.addAll(sql.getSynsList());
+				synonymList.addAll(csv.getSynsList());
+//				synonymList.addAll(couchDB.getSynsList());
+				
+				synonymAdvancement++;
+				update();
+			}
+		};
+		synonymsThread.start();
 	}
-	
-	private void initCouchDBSynonyms(){
-		
-	}
-	
+
+
+
 	@SuppressWarnings("unchecked")
 	private void getResults() throws InterruptedException{
 		for (Search search : searchList) {
 			resultList.add(search.getEl());
+//			System.out.println("results : "+search.getEl().size());
 		}
 		ArrayList<Element> l1 = new ArrayList<Element>(), l2 = new ArrayList<Element>();
 		for (int i = 0; i < mergeType.size(); i++) {
@@ -299,54 +337,53 @@ public class SearchHandler extends Observable {
 			l2.clear();
 			l1 = resultList.get((i*2)%resultList.size());
 			l2 = resultList.get((i*2+1)%resultList.size());
-				
+//			System.out.println("l1 : \n\t"+l1.toString()+"\nl2 : \n\t"+l2.toString());
+
 			Merger m = new Merger();
 			m.setList1(l1);
 			m.setList2(l2);
 			m.setMergeType(mergeType.get(i));
 			m.setDisease(diseaseList.get(i));
 			m.setDrug(drugList.get(i));
-			
-			Thread th = new Thread(m);
-			th.start();
-			th.join();
-			
-			resultList.set(i%2, (ArrayList<Element>) m.getList2().clone());
+
+			m.run();
+//			System.out.println("list2 : "+m.getList2().toString());
+			resultList.set(i%(resultList.size()/(2)), (ArrayList<Element>) m.getList2().clone());
 		}
 		el.addAll(resultList.get(0));
 	}
-	
+
 	private void executeStats(){
 		int xmlNumber = 0, couchDbNumber = 0, sqlNumber = 0, txtNumber = 0;
 		int xmlTime = 0, couchDbTime = 0, sqlTime = 0, txtTime = 0;
-		
+
 		for (Search search : searchList) {
 			xmlNumber += search.getStats().getXmlNumber();
 			couchDbNumber += search.getStats().getCouchDbNumber();
 			sqlNumber += search.getStats().getSqlNumber();
 			txtNumber += search.getStats().getSqlNumber();
-			
+
 			xmlTime += search.getStats().getXmlTime();
 			couchDbTime += search.getStats().getCouchDbTime();
 			sqlTime += search.getStats().getSqlTime();
 			txtTime += search.getStats().getTxtTime();
 		}
-		
+
 		stats.setXmlNumber(xmlNumber);
 		stats.setCouchDbNumber(couchDbNumber);
 		stats.setSqlNumber(sqlNumber);
 		stats.setTxtNumber(txtNumber);
-		
+
 		stats.setXmlTime(xmlTime);
 		stats.setCouchDbTime(couchDbTime);
 		stats.setTxtTime(txtTime);
 		stats.setSqlTime(sqlTime);
-		
+
 		stats.setTotalNumber(el.size());
-		
+
 		stats.execute();
 	}
-	
+
 	public void update(){
 		setChanged();
 		notifyObservers();
@@ -438,5 +475,37 @@ public class SearchHandler extends Observable {
 
 	public void setUseSynonyms(boolean useSynonyms) {
 		this.useSynonyms = useSynonyms;
+	}
+
+	public Thread getSynonymsThread() {
+		return synonymsThread;
+	}
+
+	public void setSynonymsThread(Thread synonymsThread) {
+		this.synonymsThread = synonymsThread;
+	}
+
+	public int getSynonymAdvancement() {
+		return synonymAdvancement;
+	}
+
+	public void setSynonymAdvancement(int synonymAdvancement) {
+		this.synonymAdvancement = synonymAdvancement;
+	}
+
+	public int getDrugSyn() {
+		return drugSyn;
+	}
+
+	public void setDrugSyn(int drugSyn) {
+		this.drugSyn = drugSyn;
+	}
+
+	public int getDiseaseSyn() {
+		return diseaseSyn;
+	}
+
+	public void setDiseaseSyn(int diseaseSyn) {
+		this.diseaseSyn = diseaseSyn;
 	}
 }

@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,14 +23,14 @@ import controller.SearchController;
 import controller.SynonymController;
 import sun.net.www.content.image.jpeg;
 
-public class Searcher extends JPanel {
+public class Searcher extends JPanel implements Observer{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private JLabel name_l, disease_l, useSyns;
+	private JLabel name_l, disease_l, useSyns, synAdvancement, numberOfDrugSyn, numberOfDiseaseSyn;
 	private TextField drugName, diseaseName;
 	private JButton search_button;
 	private JComboBox<String> mode;
@@ -41,6 +43,7 @@ public class Searcher extends JPanel {
 		super();
 		this.setBackground(Selection.BACKGROUND_COLOR);
 		this.search = s;
+		this.search.addObserver(this);
 		this.setLayout(new BorderLayout());
 		initSearcher();
 		createSearcher();
@@ -75,13 +78,16 @@ public class Searcher extends JPanel {
 		useSyns = new JLabel("Use synonyms");
 		synonyms = new Checkbox();
 		synonyms.addItemListener(new SynonymController(search, this));
+		synAdvancement = new JLabel("(0/4)");
+		numberOfDrugSyn = new JLabel();
+		numberOfDiseaseSyn = new JLabel();
 	}
 	
 	private void createSearcher(){
 		JPanel cases = new JPanel();
 		cases.setLayout(new GridLayout(1,3));
 		JPanel name_p = new JPanel();
-		name_p.setLayout(new GridLayout(3,1));
+		name_p.setLayout(new GridLayout(4,1));
 		name_p.add(name_l);
 		name_p.add(drugName);
 		JPanel buttons_p = new JPanel();
@@ -91,14 +97,22 @@ public class Searcher extends JPanel {
 		buttons_p.setBackground(Selection.BACKGROUND_COLOR);
 		name_p.add(buttons_p);
 		name_p.setBackground(Selection.BACKGROUND_COLOR);
+		JPanel drugSyn = new JPanel();
+		drugSyn.setBackground(getBackground());
+		drugSyn.add(numberOfDrugSyn);
+		name_p.add(drugSyn);
 		cases.add(name_p);
 		JPanel mode_p = new JPanel();
-		mode_p.setLayout(new GridLayout(2,1));
+		mode_p.setLayout(new GridLayout(3,1));
 		JPanel mod = new JPanel();
 		mod.setBackground(getBackground());
 		mod.add(mode);
 		mode_p.add(mod);
 		mode_p.setBackground(Selection.BACKGROUND_COLOR);
+		JPanel synCount = new JPanel();
+		synCount.setBackground(getBackground());
+		synCount.add(synAdvancement);
+		mode_p.add(synCount);
 		JPanel syns = new JPanel();
 		syns.setBackground(getBackground());
 		syns.add(useSyns);
@@ -106,7 +120,7 @@ public class Searcher extends JPanel {
 		mode_p.add(syns);
 		cases.add(mode_p);
 		JPanel disease_p = new JPanel();
-		disease_p.setLayout(new GridLayout(3,1));
+		disease_p.setLayout(new GridLayout(4,1));
 		disease_p.add(disease_l);
 		disease_p.add(diseaseName);
 		JPanel buttons = new JPanel();
@@ -116,6 +130,10 @@ public class Searcher extends JPanel {
 		buttons.setBackground(Selection.BACKGROUND_COLOR);
 		disease_p.add(buttons);
 		disease_p.setBackground(Selection.BACKGROUND_COLOR);
+		JPanel diseaseSyn = new JPanel();
+		diseaseSyn.setBackground(getBackground());
+		diseaseSyn.add(numberOfDiseaseSyn);
+		disease_p.add(diseaseSyn);
 		cases.add(disease_p);
 		
 		JPanel search_p = new JPanel();
@@ -126,6 +144,23 @@ public class Searcher extends JPanel {
 		
 		this.add(cases, BorderLayout.CENTER);
 		this.add(search_p, BorderLayout.SOUTH);
+	}
+	
+	@Override
+	public void update(Observable o, Object arg) {
+		if (search.getSynonymAdvancement() < 4)
+			synAdvancement.setText("("+search.getSynonymAdvancement()+"/4) running...");
+		else
+			synAdvancement.setText("("+search.getSynonymAdvancement()+"/4) ok");
+		
+		if (!search.getDrug().equals("") && search.isUseSynonyms())
+			numberOfDrugSyn.setText(search.getDrugSyn()+" synonyms");
+		else 
+			numberOfDrugSyn.setText("");
+		if (!search.getDisease().equals("") && search.isUseSynonyms())
+			numberOfDiseaseSyn.setText(search.getDiseaseSyn()+" synonyms");
+		else
+			numberOfDiseaseSyn.setText("");
 	}
 
 	public JComboBox<String> getMode() {
@@ -240,4 +275,11 @@ public class Searcher extends JPanel {
 		this.synonyms = synonyms;
 	}
 
+	public JLabel getSynAdvancement() {
+		return synAdvancement;
+	}
+
+	public void setSynAdvancement(JLabel synAdvancement) {
+		this.synAdvancement = synAdvancement;
+	}
 }

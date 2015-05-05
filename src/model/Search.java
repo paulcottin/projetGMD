@@ -25,6 +25,9 @@ public class Search extends Observable implements Runnable{
 	
 	public static int AND = 0;
 	public static int OR = 1;
+	public static String XML_PATH = "drugbankTest.xml";
+	public static String CSV_PATH = "omim_onto.csv";
+	public static String TXT_PATH = "omim.txt";
 
 	private String drug, disease, xmlPath, txtPath, csvPath, outPath;
 	private boolean xml_b, txt_b, couch_b, sql_b;
@@ -66,9 +69,9 @@ public class Search extends Observable implements Runnable{
 		this.txt_b = true;
 		this.sql_b = true;
 		this.xml_b = true;
-		this.xmlPath = "drugbankTest.xml";
-		this.txtPath = "_text.txt";
-		this.csvPath = "omim_onto.csv";
+		this.xmlPath = XML_PATH;
+		this.txtPath = TXT_PATH;
+		this.csvPath = CSV_PATH;
 		this.outPath = "out.txt";
 		this.el = new ArrayList<Element>();
 		this.merger = new Merger();
@@ -121,7 +124,7 @@ public class Search extends Observable implements Runnable{
 	}
 
 	private void executeRequests() throws InterruptedException{
-		//declaration of the thread
+		//thread declaration
 		Thread couchDB_t = new Thread(couchDB);
 		Thread xml_t = new Thread(xml);
 		Thread sql_t = new Thread(sql);
@@ -307,6 +310,8 @@ public class Search extends Observable implements Runnable{
 				couch_b = false;
 			}
 		}else{
+			if (disease.contains("+"))
+				disease = disease.replaceAll("\\+", "\\\\+");
 			xml.setDSearch(disease);
 			txt.setDsearch(disease);
 			sql.setDsearch(disease);
@@ -320,6 +325,8 @@ public class Search extends Observable implements Runnable{
 			m = drug.replaceAll("\\*", "%");
 			sql.setMsearch(m);
 		}else{
+			if (drug.contains("+"))
+				drug = drug.replaceAll("\\+", "\\\\+");
 			xml.setMSearch(drug);
 			sql.setMsearch(drug);
 		}

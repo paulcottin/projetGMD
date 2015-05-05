@@ -9,7 +9,7 @@ public class Synonyms {
 	
 	public Synonyms() {
 		init();
-		remplissageTest();
+//		remplissageTest();
 	}
 	
 	private void init(){
@@ -30,7 +30,7 @@ public class Synonyms {
 		return false;
 	}
 	
-	public ArrayList<String> getSynonyms(String s){
+	public ArrayList<String> getSyns(String s){
 		if (name.equalsIgnoreCase(s)) {
 			return synonyms;
 		}
@@ -46,5 +46,25 @@ public class Synonyms {
 		}
 		else
 			return new ArrayList<String>();
+	}
+	
+	public String toString(){
+		return name+"\n\t"+synonyms.toString();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public ArrayList<String> getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(ArrayList<String> synonyms) {
+		this.synonyms = synonyms;
 	}
 }

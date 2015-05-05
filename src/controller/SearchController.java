@@ -28,6 +28,7 @@ public class SearchController implements ActionListener{
 			s.setDisease(r.getDiseaseName().getText());
 			r.getMode().setEnabled(false);
 			r.getSearch_button().setEnabled(false);
+			s.getSynonymsThread().interrupt();
 			try {
 				try {
 					try {

@@ -36,7 +36,7 @@ public class CouchDBSearch implements Runnable{
 	private ArrayList<Disease> dList;
 	private String clinicalSigns, disease;
 	private Merger merger;
-	private boolean joker;
+	private boolean joker, useSynonyms;
 	private ArrayList<Element> returnList;
 
 	public CouchDBSearch() { 
@@ -56,6 +56,7 @@ public class CouchDBSearch implements Runnable{
 		this.merger = new Merger();
 		this.joker = false;
 		this.returnList = new ArrayList<Element>();
+		this.useSynonyms = false;
 	}
 	
 	@Override
@@ -223,5 +224,13 @@ public class CouchDBSearch implements Runnable{
 
 	public void setReturnList(ArrayList<Element> returnList) {
 		this.returnList = returnList;
+	}
+
+	public boolean isUseSynonyms() {
+		return useSynonyms;
+	}
+
+	public void setUseSynonyms(boolean useSynonyms) {
+		this.useSynonyms = useSynonyms;
 	}
 }

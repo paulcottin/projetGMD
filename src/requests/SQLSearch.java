@@ -20,11 +20,11 @@ import exceptions.NotFoundException;
 
 public class SQLSearch implements Runnable{
 
-	static String DB_SERVER = "jdbc:mysql://neptune.telecomnancy.univ-lorraine.fr/";
-	static String DB = "gmd";
-	static String DRIVER = "com.mysql.jdbc.Driver";
-	static String USER_NAME = "gmd-read";
-	static String USER_PSWD = "esial";
+	public static String DB_SERVER = "jdbc:mysql://neptune.telecomnancy.univ-lorraine.fr/";
+	public static String DB = "gmd";
+	public static String DRIVER = "com.mysql.jdbc.Driver";
+	public static String USER_NAME = "gmd-read";
+	public static String USER_PSWD = "esial";
 
 	private Drug drug;
 	private Disease disease;
