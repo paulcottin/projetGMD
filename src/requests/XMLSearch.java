@@ -22,12 +22,7 @@ import org.xml.sax.SAXException;
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 import exceptions.NotFoundException;
-/**
- * Reste à gérer : 
- * 	plusieurs maladies traitées par un médicament
- * @author paul
- *
- */
+
 public class XMLSearch implements Runnable{
 
 	private Document dom;

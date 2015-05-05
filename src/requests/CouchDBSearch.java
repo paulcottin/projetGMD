@@ -67,10 +67,8 @@ public class CouchDBSearch implements Runnable{
 	public ArrayList<Element> search(){
 		dList.clear();
 		this.disease = getDisease();
-//		this.clinicalSigns = getClinicalSigns();
 		try {
 			getDiseaseInfos(this.disease);
-//			getClinicalInfo(this.clinicalSigns);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
@@ -88,7 +86,6 @@ public class CouchDBSearch implements Runnable{
 			}else
 				url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/diseases/_view/GetDiseasesByName?key=\""+cle_bis+"\"");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -104,7 +101,6 @@ public class CouchDBSearch implements Runnable{
 				res+=ligne;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return res;
@@ -154,7 +150,6 @@ public class CouchDBSearch implements Runnable{
 		try {
 			url = new URL("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/clinicalsigns/_view/GetDiseaseClinicalSignsNoLang");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -199,7 +194,6 @@ public class CouchDBSearch implements Runnable{
 					d.getCause().add(text_cl);
 
 					dList.add(d);
-					System.out.println("Le Nom est : " + text_name + " et le symptome est : " + text_cl);
 				}
 			}
 		} catch (NullPointerException ex) {

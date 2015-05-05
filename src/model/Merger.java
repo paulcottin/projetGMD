@@ -106,16 +106,6 @@ public class Merger implements Runnable{
 			for (int i = 1; i < items.length; i++) {
 				synonym.add(items[i]);		
 			}
-			
-			//if pls disease name -> disease synonyms
-//			if (treat.size() > 1) {
-//				String t = treat.get(0);
-//				for (int i = 1; i < treat.size(); i++) {
-//					di.getSynonyms().add(treat.get(i));
-//				}
-//				treat.clear();
-//				treat.add(t);
-//			}
 			e.add(new Element(name, treat, di.getCause(), di.getSymptoms(), synonym, di.getSynonyms(), di.getOrigin(), 0));
 		}
 		return e;
@@ -201,16 +191,8 @@ public class Merger implements Runnable{
 					list.add(e);
 				}
 				else if (names.contains(e.getName())){
-					for (int i = 0; i < diseases.size(); i++) {
-						if (sameTreat(element.getTreat(), diseases.get(i))) {
-//							list.get(names.indexOf(e.getName())).setScore(list.get(names.indexOf(e.getName())).getScore()+SAME_SOURCE_SCORE);
-						}
-					}
+					
 				}
-//				else{
-//					System.out.println("e treat : "+e.getTreat().toString()+"\n element treat : "+element.getTreat().toString());
-////					list.get(names.indexOf(e.getName())).setScore(list.get(names.indexOf(e.getName())).getScore()+SAME_SOURCE_SCORE);
-//				}
 			}
 		}
 		return list;

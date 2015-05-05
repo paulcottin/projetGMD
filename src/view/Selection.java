@@ -20,7 +20,6 @@ public class Selection extends JPanel{
 	
 	private Options options;
 	private Searcher searcher;
-	private Progress progress;
 	private SearchHandler search;
 	private Sort sort;
 	
@@ -39,12 +38,10 @@ public class Selection extends JPanel{
 		
 		options = new Options(this.search);
 		searcher = new Searcher(this.search);
-		progress = new Progress(this.search);
 		this.sort = new Sort(this.search);
 		
 		opt.add(options);
 		sear.add(searcher);
-		prog.add(progress);
 		sort.add(this.sort);
 		
 		this.add(opt);
@@ -68,13 +65,4 @@ public class Selection extends JPanel{
 	public void setSearcher(Searcher searcher) {
 		this.searcher = searcher;
 	}
-
-	public Progress getProgress() {
-		return progress;
-	}
-
-	public void setProgress(Progress progress) {
-		this.progress = progress;
-	}
-
 }

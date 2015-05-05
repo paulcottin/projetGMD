@@ -72,19 +72,19 @@ public class TextSearch implements Runnable{
 		BufferedReader br;
 		
 		br = new BufferedReader(new FileReader(new File(CSVpath)));
-		String line = "", nom = "", drugName  ="";
+		String line = "", name = "", drugName  ="";
 		ArrayList<String> syns = new ArrayList<String>();
 		syns.clear();
 		String[] tab;
 		while((line = br.readLine()) != null){
 			tab = lineTreatment(line);
 			if (tab[1].contains("&/&")) {
-				nom = tab[1].split("&/&")[0];
+				name = tab[1].split("&/&")[0];
 			}else
-				nom = tab[1];
-			if (nom.toUpperCase().matches(this.Dsearch.toUpperCase())) {
+				name = tab[1];
+			if (name.toUpperCase().matches(this.Dsearch.toUpperCase())) {
 				if (tab.length >1)
-					drugName = nom;
+					drugName = name;
 				else
 					drugName = "";
 				if(tab.length > 2)
@@ -113,10 +113,10 @@ public class TextSearch implements Runnable{
 		return temp.split(",");
 	}
 	
-	private ArrayList<String> getSynonyms(String nom, String syns){
+	private ArrayList<String> getSynonyms(String name, String syns){
 		ArrayList<String> list = new ArrayList<String>();
-		if (nom.contains("&/&")) {
-			String[] tab = nom.split("&/&");
+		if (name.contains("&/&")) {
+			String[] tab = name.split("&/&");
 			for (int i = 0; i < tab.length; i++) {
 				list.add(tab[i]);
 			}
