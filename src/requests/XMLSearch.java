@@ -32,6 +32,7 @@ public class XMLSearch implements Runnable{
 	private String Dsearch = "";
 	private Merger merger;
 	private ArrayList<Element> returnList;
+	private boolean useSynonyms;
 
 	public XMLSearch(String Msearch, String Dsearch, String path) {
 		this.Msearch = Msearch;
@@ -40,6 +41,7 @@ public class XMLSearch implements Runnable{
 		this.merger = new Merger();
 		this.list = new ArrayList<Element>();
 		this.returnList = new ArrayList<Element>();
+		this.useSynonyms = false;
 	}
 	
 	@Override
@@ -287,5 +289,13 @@ public class XMLSearch implements Runnable{
 
 	public void setReturnList(ArrayList<Element> returnList) {
 		this.returnList = returnList;
+	}
+
+	public boolean isUseSynonyms() {
+		return useSynonyms;
+	}
+
+	public void setUseSynonyms(boolean useSynonyms) {
+		this.useSynonyms = useSynonyms;
 	}
 }

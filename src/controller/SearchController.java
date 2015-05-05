@@ -2,8 +2,11 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.ConnectException;
 
 import javax.swing.JOptionPane;
+
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 import model.SearchHandler;
 import view.Searcher;
@@ -20,7 +23,6 @@ public class SearchController implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		booleanInit();
 		if (checkText(r.getDrugName().getText()) && checkText(r.getDiseaseName().getText())) {
 			s.setDrug(r.getDrugName().getText());
 			s.setDisease(r.getDiseaseName().getText());
@@ -28,31 +30,23 @@ public class SearchController implements ActionListener{
 			r.getSearch_button().setEnabled(false);
 			try {
 				try {
-					s.search();
-				} catch (NotFoundException e1) {
-					e1.execute();
+					try {
+						s.search();
+					} catch (NotFoundException e1) {
+						e1.execute();
+					}
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
 				}
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
+			} catch (CommunicationsException e1) {
+				System.out.println("coucou");
+				JOptionPane.showMessageDialog(null, "Connection error, have you enable your VPN ?", "ERROR !", JOptionPane.ERROR_MESSAGE);
 			}
 			r.getMode().setEnabled(true);
 			r.getSearch_button().setEnabled(true);
 		}else{
 			JOptionPane.showMessageDialog(null, "You have to write *' AND/OR '* !", "ERROR !", JOptionPane.ERROR_MESSAGE);
 		}
-	}
-	
-	private void booleanInit(){
-//		s.setXmlProcBegin(false);
-//		s.setXmlProcEnd(false);
-//		s.setCouchDBProcEnd(false);
-//		s.setCouchDBProcBegin(false);
-//		s.setSqlProcEnd(false);
-//		s.setSqlProcBegin(false);
-//		s.setTxtProcEnd(false);
-//		s.setTxtProcBegin(false);
-//		s.setMergeProcEnd(false);
-//		s.setMergeProcBegin(false);
 	}
 	
 	private boolean checkText(String s){

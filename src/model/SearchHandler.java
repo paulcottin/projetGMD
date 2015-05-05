@@ -1,10 +1,12 @@
 package model;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Observable;
 
 import com.mysql.jdbc.Util;
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 import com.sun.swing.internal.plaf.synth.resources.synth;
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
@@ -50,6 +52,7 @@ public class SearchHandler extends Observable {
 		this.mergeType = new ArrayList<Integer>();
 		this.sortBy = -1;
 		this.useSynonyms = false;
+		this.initSynonyms();
 	}
 	
 	private void initSearch(){
@@ -64,11 +67,12 @@ public class SearchHandler extends Observable {
 			search.setSql_b(sql_b);
 			search.setTxt_b(txt_b);
 			search.setMode(this.mode);
+			search.setUseSynonyms(useSynonyms);
 			searchList.add(search);
 		}
 	}
 	
-	public void search() throws InterruptedException, NotFoundException{
+	public void search() throws InterruptedException, NotFoundException, CommunicationsException{
 		initRequests();
 		
 		initSearch();
@@ -244,9 +248,9 @@ public class SearchHandler extends Observable {
 			}
 		}
 		else
-			System.out.println("erreur");
+			System.out.println("error");
 
-		//Si utilisation de synonym
+		//If using of synonyms
 		if (useSynonyms) {
 			ArrayList<String> dList = getSynonyms(disease);
 			ArrayList<String> mList = getSynonyms(drug);
@@ -263,6 +267,25 @@ public class SearchHandler extends Observable {
 				mergeType.add(Merger.INCLUSIVE_MERGE);
 			}
 		}
+	}
+	
+	private ArrayList<String> getSynonyms(String s){
+		ArrayList<String> list = new ArrayList<String>();
+		for (Synonyms string : synonymList) {
+			ArrayList<String> l = string.getSynonyms(s);
+			if (l.size() > 0) {
+				list.addAll(l);
+			}
+		}
+		return list;
+	}
+	
+	private void initSynonyms(){
+		initCouchDBSynonyms();
+	}
+	
+	private void initCouchDBSynonyms(){
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -324,19 +347,7 @@ public class SearchHandler extends Observable {
 		stats.execute();
 	}
 	
-	private ArrayList<String> getSynonyms(String s){
-		ArrayList<String> list = new ArrayList<String>();
-		for (Synonyms string : synonymList) {
-			ArrayList<String> l = string.getSynonyms(s);
-			
-			if (l.size() > 0) {
-				list.addAll(l);
-			}
-		}
-		return list;
-	}
-	
-	private void update(){
+	public void update(){
 		setChanged();
 		notifyObservers();
 	}

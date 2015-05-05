@@ -37,6 +37,7 @@ public class SQLSearch implements Runnable{
 	private String Adverse_effects = "";
 	private Merger merger;
 	private ArrayList<Element> returnList;
+	private boolean useSynonyms;
 
 
 	public SQLSearch(String Msearch, String Dsearch) {
@@ -49,7 +50,8 @@ public class SQLSearch implements Runnable{
 		this.drug.setName(Msearch);
 		this.disease = new Disease();
 		this.disease.setName(Dsearch);
-		returnList = new ArrayList<Element>();
+		this.returnList = new ArrayList<Element>();
+		this.useSynonyms = false;
 	}
 
 	@Override
@@ -189,5 +191,13 @@ public class SQLSearch implements Runnable{
 
 	public void setReturnList(ArrayList<Element> returnList) {
 		this.returnList = returnList;
+	}
+
+	public boolean isUseSynonyms() {
+		return useSynonyms;
+	}
+
+	public void setUseSynonyms(boolean useSynonyms) {
+		this.useSynonyms = useSynonyms;
 	}
 }

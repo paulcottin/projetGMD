@@ -28,6 +28,7 @@ public class TextSearch implements Runnable{
 	private ArrayList<Element> list;
 	private ArrayList<Disease> dList;
 	private ArrayList<Element> returnList;
+	private boolean useSynonyms;
 	
 	public TextSearch(String Dsearch, String TXTpath, String CSVpath) {
 		this.Dsearch = Dsearch;
@@ -37,6 +38,7 @@ public class TextSearch implements Runnable{
 		this.dList = new ArrayList<Disease>();
 		this.merger = new Merger();
 		this.returnList = new ArrayList<Element>();
+		this.useSynonyms = false;
 	}
 	
 	public ArrayList<Element> getInfos(){
@@ -247,5 +249,13 @@ public class TextSearch implements Runnable{
 
 	public void setReturnList(ArrayList<Element> returnList) {
 		this.returnList = returnList;
+	}
+
+	public boolean isUseSynonyms() {
+		return useSynonyms;
+	}
+
+	public void setUseSynonyms(boolean useSynonyms) {
+		this.useSynonyms = useSynonyms;
 	}
 }

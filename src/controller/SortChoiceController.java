@@ -10,19 +10,16 @@ public class SortChoiceController implements ActionListener{
 
 	private SearchHandler search;
 	private Sort panel;
-	private boolean ok;
 	
 	public SortChoiceController(SearchHandler searchHandler, Sort panel) {
 		this.search = searchHandler;
 		this.panel = panel;
-		this.ok = false;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if (!ok) {
-			search.setSortBy(panel.getChoice().getSelectedIndex());
-		}
+		search.setSortBy(panel.getChoice().getSelectedIndex());
+		search.update();
 	}
 
 }

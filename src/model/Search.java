@@ -39,6 +39,7 @@ public class Search extends Observable implements Runnable{
 	private ArrayList<Element> el;
 	private Statistics stats;
 	private int mode;
+	private boolean useSynonyms;
 
 	public Search() {
 		init();
@@ -87,6 +88,7 @@ public class Search extends Observable implements Runnable{
 		this.couchDB_array = new ArrayList<Element>();
 		this.xml_array = new ArrayList<Element>();
 		this.mode = OR;
+		this.useSynonyms = false;
 	}
 	
 	@Override
@@ -113,14 +115,7 @@ public class Search extends Observable implements Runnable{
 		executeRequests();
 
 		doMerge();
-
-//		if (el.size() == 0) {
-//			try {
-//				throw new NotFoundException();
-//			} catch (NotFoundException e) {
-//				e.execute();
-//			}
-//		}
+		
 		drug = "";
 		disease = "";
 	}
@@ -328,6 +323,11 @@ public class Search extends Observable implements Runnable{
 			xml.setMSearch(drug);
 			sql.setMsearch(drug);
 		}
+		
+		xml.setUseSynonyms(useSynonyms);
+		sql.setUseSynonyms(useSynonyms);
+		txt.setUseSynonyms(useSynonyms);
+		couchDB.setUseSynonyms(useSynonyms);
 	}
 
 	private void writer(ArrayList<Element> list, String path) throws IOException{
@@ -537,5 +537,13 @@ public class Search extends Observable implements Runnable{
 
 	public void setMode(int mode) {
 		this.mode = mode;
+	}
+
+	public boolean isUseSynonyms() {
+		return useSynonyms;
+	}
+
+	public void setUseSynonyms(boolean useSynonyms) {
+		this.useSynonyms = useSynonyms;
 	}
 }

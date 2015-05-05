@@ -101,8 +101,8 @@ public class Searcher extends JPanel {
 		mode_p.setBackground(Selection.BACKGROUND_COLOR);
 		JPanel syns = new JPanel();
 		syns.setBackground(getBackground());
-//		syns.add(useSyns);
-//		syns.add(synonyms);
+		syns.add(useSyns);
+		syns.add(synonyms);
 		mode_p.add(syns);
 		cases.add(mode_p);
 		JPanel disease_p = new JPanel();

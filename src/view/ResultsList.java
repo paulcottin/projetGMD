@@ -139,8 +139,11 @@ public class ResultsList extends JScrollPane implements Observer{
 		table.setModel(model);
 		
 		if (search.getSortBy() >= 0) {
-			
-			FiltreSortModel filtre = new FiltreSortModel(model);
+			FiltreSortModel filtre;
+			if (search.getSortBy() == 7) 
+				filtre = new FiltreSortModel(model, -1);
+			else
+				filtre = new FiltreSortModel(model, 1);
 			table = new JTable(filtre);
 			filtre.sort(search.getSortBy());
 		}
@@ -166,6 +169,7 @@ public class ResultsList extends JScrollPane implements Observer{
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		nbResults = search.getEl().size();
+		updateList();
 	}
 	
 	class JTPRenderer extends JTextPane implements TableCellRenderer {
@@ -254,9 +258,10 @@ public class ResultsList extends JScrollPane implements Observer{
 	class FiltreSortModel extends AbstractTableModel{
 		   TableModel model;
 		   Line [] lines;
-		   int columnSort;
-		   FiltreSortModel ( TableModel m){
+		   int columnSort, order;
+		   FiltreSortModel (TableModel m, int order){
 		      model = m;
+		      this.order = order;
 		      lines = new Line[model.getRowCount()];
 		      for( int i = 0; i < lines.length; ++i)
 		         lines[i] = new Line(i);
@@ -292,17 +297,11 @@ public class ResultsList extends JScrollPane implements Observer{
 	            Line otherLine = (Line)o;
 	            Object cell = model.getValueAt(index, columnSort);
 	            Object otherCell = model.getValueAt(otherLine.index, columnSort);
-	            if (cell instanceof Integer) {
-					if ((int) cell > (int) otherCell)
-						return 1;
-					else if ((int) cell < (int) otherCell)
-						return -1;
-					else
-						return 0;
-				}
-	            else {
-					return ((String) cell).compareTo((String) otherCell);
-				}
+	            if (order > 0) 
+	            	return ((String) cell).compareTo((String) otherCell);
+				else
+					return -((String) cell).compareTo((String) otherCell);
+					
 		      }
 		   }
 	}

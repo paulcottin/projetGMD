@@ -46,7 +46,6 @@ public class Selection extends JPanel{
 		
 		this.add(opt);
 		this.add(sear);
-
 		this.add(sort);
 	}
 
