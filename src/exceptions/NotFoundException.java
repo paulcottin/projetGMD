@@ -14,11 +14,11 @@ public class NotFoundException extends Exception{
 	}
 	
 	public String getMessage(){
-		return "No medic found !"+this.getStackTrace();
+		return "No drug found !"+this.getStackTrace();
 	}
 	
 	public void execute(){
-		JOptionPane.showMessageDialog(null, "Aucun résutat trouvé", "Information", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "No results found", "Information", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 }
