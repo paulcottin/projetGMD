@@ -10,10 +10,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import modele.Disease;
-import modele.Element;
-import modele.Medic;
-import modele.Merger;
+import model.Disease;
+import model.Element;
+import model.Drug;
+import model.Merger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -77,22 +77,22 @@ public class XMLSearch implements Runnable{
 	private void parseDocument(){
 		list.clear();
 		org.w3c.dom.Element docEle = dom.getDocumentElement();
-		ArrayList<Medic> med_res = new ArrayList<Medic>();
+		ArrayList<Drug> drug_res = new ArrayList<Drug>();
 		ArrayList<Disease> dis_res = new ArrayList<Disease>();
 		if (!Dsearch.equals("")) {
 			dis_res = searchByDisease(docEle);
 		}
 		if (!Msearch.equals("")) {
-			med_res = searchByMedic(docEle);
+			drug_res = searchByDrug(docEle);
 		}
-		if (!(dis_res.size() == 0 && med_res.size() == 0)) {
+		if (!(dis_res.size() == 0 && drug_res.size() == 0)) {
 			list.addAll(merger.DiseaseToElement(dis_res));
-			list.addAll(merger.MedicToElement(med_res));
+			list.addAll(merger.DrugToElement(drug_res));
 		}
 	}
 
-	private ArrayList<Medic> searchByMedic(org.w3c.dom.Element doc){
-		ArrayList<Medic> list = new ArrayList<Medic>();
+	private ArrayList<Drug> searchByDrug(org.w3c.dom.Element doc){
+		ArrayList<Drug> list = new ArrayList<Drug>();
 		String name = "";
 		ArrayList<String> synonyms = new ArrayList<String>(), treat = new ArrayList<String>(), cause = new ArrayList<String>();
 		NodeList general = doc.getChildNodes();
@@ -125,7 +125,7 @@ public class XMLSearch implements Runnable{
 											}
 										}
 									}
-									list.add(new Medic(name, treat, cause, synonyms, "DrugBank"));
+									list.add(new Drug(name, treat, cause, synonyms, "DrugBank"));
 								}
 							}
 						}
@@ -229,13 +229,13 @@ public class XMLSearch implements Runnable{
 		return l;
 	}
 
-	private void writerM(ArrayList<Medic> list) throws IOException{
+	private void writerM(ArrayList<Drug> list) throws IOException{
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("_byM.txt")));
-		for (Medic medic : list) {
-			bw.write("^"+medic.getName()+"\n");
-			bw.write("&"+medic.getTreat()+"\n");
-			bw.write("£"+medic.getCause()+"\n");
-			for (String s : medic.getSynonyms()) {
+		for (Drug drug : list) {
+			bw.write("^"+drug.getName()+"\n");
+			bw.write("&"+drug.getTreat()+"\n");
+			bw.write("£"+drug.getCause()+"\n");
+			for (String s : drug.getSynonyms()) {
 				bw.write("\\"+s+"\n");
 			}
 			bw.write("--");

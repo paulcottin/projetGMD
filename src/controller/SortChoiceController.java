@@ -3,8 +3,8 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import modele.SearchHandler;
-import vues.Sort;
+import model.SearchHandler;
+import view.Sort;
 
 public class SortChoiceController implements ActionListener{
 

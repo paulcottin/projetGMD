@@ -3,17 +3,16 @@ package controller;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import vues.Recherche;
-
-import modele.SearchHandler;
+import view.Searcher;
+import model.SearchHandler;
 
 public class SynonymController implements ItemListener{
 
 	private SearchHandler search;
-	private Recherche r;
+	private Searcher r;
 	private boolean ok;
 	
-	public SynonymController(SearchHandler s, Recherche r) {
+	public SynonymController(SearchHandler s, Searcher r) {
 		this.search = s;
 		this.r = r;
 		this.ok = false;

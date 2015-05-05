@@ -3,24 +3,18 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import exceptions.EmptyRequest;
+import model.SearchHandler;
+import view.Searcher;
 import exceptions.NotFoundException;
-
-import vues.Progress;
-import vues.Recherche;
-
-import modele.Search;
-import modele.SearchHandler;
 
 public class SearchController implements ActionListener{
 
 	private SearchHandler s;
-	private Recherche r;
+	private Searcher r;
 	
-	public SearchController(SearchHandler s, Recherche r) {
+	public SearchController(SearchHandler s, Searcher r) {
 		this.s = s;
 		this.r = r;
 	}
@@ -28,7 +22,7 @@ public class SearchController implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		booleanInit();
 		if (checkText(r.getDrugName().getText()) && checkText(r.getDiseaseName().getText())) {
-			s.setMedic(r.getDrugName().getText());
+			s.setDrug(r.getDrugName().getText());
 			s.setDisease(r.getDiseaseName().getText());
 			r.getMode().setEnabled(false);
 			r.getSearch_button().setEnabled(false);

@@ -5,9 +5,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import vues.Sort;
-
-import modele.SearchHandler;
+import view.Sort;
+import model.SearchHandler;
 
 public class SortController implements ItemListener{
 

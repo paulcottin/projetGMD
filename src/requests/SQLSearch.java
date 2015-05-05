@@ -9,10 +9,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import modele.Disease;
-import modele.Element;
-import modele.Medic;
-import modele.Merger;
+import model.Disease;
+import model.Element;
+import model.Drug;
+import model.Merger;
 
 import org.w3c.dom.Document;
 
@@ -26,7 +26,7 @@ public class SQLSearch implements Runnable{
 	static String USER_NAME = "gmd-read";
 	static String USER_PSWD = "esial";
 
-	private Medic medic;
+	private Drug drug;
 	private Disease disease;
 	private Document dom;
 	private ArrayList<Element> list;
@@ -45,8 +45,8 @@ public class SQLSearch implements Runnable{
 		this.setPath(path);
 		this.merger = new Merger();
 		this.list = new ArrayList<Element>();
-		this.medic = new Medic();
-		this.medic.setName(Msearch);
+		this.drug = new Drug();
+		this.drug.setName(Msearch);
 		this.disease = new Disease();
 		this.disease.setName(Dsearch);
 		returnList = new ArrayList<Element>();
@@ -66,15 +66,15 @@ public class SQLSearch implements Runnable{
 			}
 		}
 		if (!Msearch.equals("")) {
-			for (Element element : merger.MedicToElement(searchByDrug())) {
+			for (Element element : merger.DrugToElement(searchByDrug())) {
 				list.add(element);
 			}
 		}
 		return list;
 	}
 
-	private ArrayList<Medic> searchByDrug(){
-		ArrayList<Medic> list = new ArrayList<Medic>();
+	private ArrayList<Drug> searchByDrug(){
+		ArrayList<Drug> list = new ArrayList<Drug>();
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
@@ -92,31 +92,31 @@ public class SQLSearch implements Runnable{
 			String name1 = "", name2 = "";
 			while(res1.next()){
 				cpt++;
-				medic.getCause().add(res1.getString("se_name"));
-				medic.getTreat().add(res1.getString("i_name"));
+				drug.getCause().add(res1.getString("se_name"));
+				drug.getTreat().add(res1.getString("i_name"));
 				name1 = res1.getString("drug_name1");
 				name2 = res1.getString("drug_name2");
 				if (!name1.equals("") && ! name2.equals("")) {
-					medic.setName(name1);
-					medic.getSynonyms().add(name2);
+					drug.setName(name1);
+					drug.getSynonyms().add(name2);
 				}
 				else if (!name1.equals("") && name2.equals("")) {
-					medic.setName(name1);
+					drug.setName(name1);
 				}
 				else if (name1.equals("") && !name2.equals("")) {
-					medic.setName(name1);
+					drug.setName(name1);
 				}
 				name1 = "";
 				name2 = "";
 			}
 			res1.close();
 			
-			medic.setOrigin("Sider2");
+			drug.setOrigin("Sider2");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		if (cpt > 0) {
-			list.add(medic);
+			list.add(drug);
 		}
 		return list;
 	}

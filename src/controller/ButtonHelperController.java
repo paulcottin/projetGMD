@@ -5,13 +5,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
-import vues.Recherche;
+import view.Searcher;
 
 public class ButtonHelperController implements ActionListener{
 
-	private Recherche r;
+	private Searcher r;
 	
-	public ButtonHelperController(Recherche r) {
+	public ButtonHelperController(Searcher r) {
 		this.r = r;
 	}
 	

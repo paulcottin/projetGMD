@@ -15,10 +15,10 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 import com.sun.org.apache.xml.internal.utils.SuballocatedByteVector;
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
-import modele.Disease;
-import modele.Element;
-import modele.Medic;
-import modele.Merger;
+import model.Disease;
+import model.Element;
+import model.Drug;
+import model.Merger;
 
 
 public class TextSearch implements Runnable{
@@ -72,7 +72,7 @@ public class TextSearch implements Runnable{
 		BufferedReader br;
 		
 		br = new BufferedReader(new FileReader(new File(CSVpath)));
-		String line = "", nom = "", medicName  ="";
+		String line = "", nom = "", drugName  ="";
 		ArrayList<String> syns = new ArrayList<String>();
 		syns.clear();
 		String[] tab;
@@ -84,14 +84,14 @@ public class TextSearch implements Runnable{
 				nom = tab[1];
 			if (nom.toUpperCase().matches(this.Dsearch.toUpperCase())) {
 				if (tab.length >1)
-					medicName = nom;
+					drugName = nom;
 				else
-					medicName = "";
+					drugName = "";
 				if(tab.length > 2)
 					syns = getSynonyms(tab[1], tab[2]);
 				else
 					syns = new ArrayList<String>();
-				dList.add(new Disease(medicName, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), syns, "OMIM"));
+				dList.add(new Disease(drugName, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), syns, "OMIM"));
 			}
 		}
 		br.close();

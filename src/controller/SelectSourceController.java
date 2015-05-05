@@ -5,10 +5,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 
-import vues.Options;
-
-import modele.Search;
-import modele.SearchHandler;
+import view.Options;
+import model.Search;
+import model.SearchHandler;
 
 public class SelectSourceController implements ActionListener{
 
