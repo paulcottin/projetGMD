@@ -103,13 +103,13 @@ public class Starter implements Runnable {
 					s.getSynonyms().add(synonyms.getJSONArray("Synonym").getJSONObject(j).getString("text"));
 				}
 				s.setName(name);
-				if (!name.equals(""))
+				if (!name.equals("") && s.getSynonyms().size() > 0)
 					list.add(s);
 			}
 			else if (Integer.valueOf(synonyms.getString("count")) == 1) {
 				s.getSynonyms().add(synonyms.getJSONObject("Synonym").getString("text"));
 				s.setName(name);
-				if (!name.equals(""))
+				if (!name.equals("") && s.getSynonyms().size() > 0)
 					list.add(s);
 			}
 		}
@@ -161,7 +161,7 @@ public class Starter implements Runnable {
 								}
 								s.setName(name);
 								s.setSynonyms(syns);
-								if (!name.equals(""))
+								if (!name.equals("") && syns.size() > 0)
 									list.add(s);
 							}
 						}
@@ -192,7 +192,7 @@ public class Starter implements Runnable {
 				s.setName(name);
 				syns = getSynonyms(tab[1], tab[2]);
 				s.setSynonyms(syns);
-				if (!name.equals(""))
+				if (!name.equals("") && syns.size() > 0)
 					list.add(s);
 			}
 

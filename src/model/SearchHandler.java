@@ -297,7 +297,7 @@ public class SearchHandler extends Observable {
 				Starter couchDB = new Starter("CouchDB");
 				Thread couchDB_thread = new Thread(couchDB);
 
-//				couchDB_thread.start();
+				couchDB_thread.start();
 				xml_thread.start();
 				csv_thread.start();
 				sql_thread.start();
@@ -312,14 +312,14 @@ public class SearchHandler extends Observable {
 					csv_thread.join();
 					synonymAdvancement++;
 					update();
-//					couchDB_thread.join();
+					couchDB_thread.join();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				synonymList.addAll(xml.getSynsList());
 				synonymList.addAll(sql.getSynsList());
 				synonymList.addAll(csv.getSynsList());
-//				synonymList.addAll(couchDB.getSynsList());
+				synonymList.addAll(couchDB.getSynsList());
 				
 				synonymAdvancement++;
 				update();

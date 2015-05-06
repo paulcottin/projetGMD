@@ -79,7 +79,7 @@ public class Searcher extends JPanel implements Observer{
 		useSyns = new JLabel("Use synonyms");
 		synonyms = new Checkbox();
 		synonyms.addItemListener(new SynonymController(search, this));
-		synAdvancement = new JLabel("(0/4)");
+		synAdvancement = new JLabel("(0/4) running...");
 		numberOfDrugSyn = new JComboBox<String>();
 		numberOfDiseaseSyn = new JComboBox<String>();
 		numberOfDrugSyn.setVisible(false);
@@ -153,6 +153,8 @@ public class Searcher extends JPanel implements Observer{
 	
 	@Override
 	public void update(Observable o, Object arg) {
+		numberOfDrugSyn.removeAllItems();
+		numberOfDiseaseSyn.removeAllItems();
 		numberOfDrugSyn.setMaximumSize(new Dimension(150, 15));
 		numberOfDiseaseSyn.setMaximumSize(new Dimension(150, 15));
 		if (search.getSynonymAdvancement() < 4)

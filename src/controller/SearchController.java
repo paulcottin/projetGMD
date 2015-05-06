@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 import model.SearchHandler;
+import view.ProgressBar;
 import view.Searcher;
 import exceptions.NotFoundException;
 
@@ -16,7 +17,7 @@ public class SearchController implements ActionListener{
 
 	private SearchHandler s;
 	private Searcher r;
-	
+
 	public SearchController(SearchHandler s, Searcher r) {
 		this.s = s;
 		this.r = r;
@@ -29,6 +30,7 @@ public class SearchController implements ActionListener{
 			r.getMode().setEnabled(false);
 			r.getSearch_button().setEnabled(false);
 			s.getSynonymsThread().interrupt();
+			ProgressBar bar = new ProgressBar();
 			try {
 				try {
 					try {
@@ -40,16 +42,16 @@ public class SearchController implements ActionListener{
 					e1.printStackTrace();
 				}
 			} catch (CommunicationsException e1) {
-				System.out.println("coucou");
 				JOptionPane.showMessageDialog(null, "Connection error, have you enable your VPN ?", "ERROR !", JOptionPane.ERROR_MESSAGE);
 			}
+			bar.dispose();
 			r.getMode().setEnabled(true);
 			r.getSearch_button().setEnabled(true);
 		}else{
 			JOptionPane.showMessageDialog(null, "You have to write *' AND/OR '* !", "ERROR !", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	private boolean checkText(String s){
 		if (s.contains("AND")) {
 			if (!s.contains(" AND ")) {

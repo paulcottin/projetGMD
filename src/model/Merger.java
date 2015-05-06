@@ -205,7 +205,7 @@ public class Merger implements Runnable{
 		}
 		else {
 			for (int i = 0; i < list.size(); i++) {
-				if (e.getName() == null || list.get(i).getName() == null || e.getTreat() == null || list.get(i).getTreat() == null) {
+				if (e == null || list.get(i) == null || e.getName() == null || list.get(i).getName() == null || e.getTreat() == null || list.get(i).getTreat() == null) {
 					return new ArrayList<Element>();
 				}else{
 					if (e.getName().equalsIgnoreCase(list.get(i).getName()) && sameTreat(e.getTreat(), list.get(i).getTreat())) {
