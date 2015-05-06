@@ -58,7 +58,7 @@ public class CouchDBSearch implements Runnable{
 		this.returnList = new ArrayList<Element>();
 		this.useSynonyms = false;
 	}
-	
+
 	@Override
 	public void run() {
 		returnList.clear();
@@ -109,38 +109,40 @@ public class CouchDBSearch implements Runnable{
 
 	public void getDiseaseInfos(String rep) throws JSONException{
 		Disease d = new Disease();
-		try {
-			JSONObject jsonObject = new JSONObject(rep);
-			JSONArray rows = (JSONArray) (jsonObject).get("rows");
-			int size = rows.length();
-			for(int k=0; k<size; k++){
-				JSONObject row = (JSONObject) rows.get(k);
-				JSONObject val = (JSONObject) row.get("value");
-				JSONObject name = (JSONObject) val.get("Name");
-				String text_name =  String.valueOf(name.get("text"));
-				JSONObject synlist = (JSONObject) val.get("SynonymList");
-				String count_syn =  String.valueOf(synlist.get("count"));
-				d.setName(text_name);
-				d.setOrigin("OrphaData");
-				if (count_syn.equals("0")) {
-				} else if (count_syn.equals("1")) {
-					JSONObject syns = (JSONObject) synlist.get("Synonym");
-					String text =  String.valueOf(syns.get("text"));
-					d.getSynonyms().add(text);
-				}else{
-					JSONArray syns = (JSONArray) synlist.getJSONArray("Synonym");
-					String list="";
-					for(int i=0; i<Integer.parseInt(count_syn); i++){
-						JSONObject syn = (JSONObject) syns.getJSONObject(i);
-						String text =  String.valueOf(syn.get("text"));
+		if (!rep.equals("")) {
+			try {
+				JSONObject jsonObject = new JSONObject(rep);
+				JSONArray rows = (JSONArray) (jsonObject).get("rows");
+				int size = rows.length();
+				for(int k=0; k<size; k++){
+					JSONObject row = (JSONObject) rows.get(k);
+					JSONObject val = (JSONObject) row.get("value");
+					JSONObject name = (JSONObject) val.get("Name");
+					String text_name =  String.valueOf(name.get("text"));
+					JSONObject synlist = (JSONObject) val.get("SynonymList");
+					String count_syn =  String.valueOf(synlist.get("count"));
+					d.setName(text_name);
+					d.setOrigin("OrphaData");
+					if (count_syn.equals("0")) {
+					} else if (count_syn.equals("1")) {
+						JSONObject syns = (JSONObject) synlist.get("Synonym");
+						String text =  String.valueOf(syns.get("text"));
 						d.getSynonyms().add(text);
-						list+="\n\t"+text;
+					}else{
+						JSONArray syns = (JSONArray) synlist.getJSONArray("Synonym");
+						String list="";
+						for(int i=0; i<Integer.parseInt(count_syn); i++){
+							JSONObject syn = (JSONObject) syns.getJSONObject(i);
+							String text =  String.valueOf(syn.get("text"));
+							d.getSynonyms().add(text);
+							list+="\n\t"+text;
+						}
 					}
+					dList.add(d);
 				}
-				dList.add(d);
+			} catch (NullPointerException ex) {
+				ex.printStackTrace();
 			}
-		} catch (NullPointerException ex) {
-			ex.printStackTrace();
 		}
 	}
 

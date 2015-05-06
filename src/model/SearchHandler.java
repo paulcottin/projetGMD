@@ -11,7 +11,7 @@ public class SearchHandler extends Observable {
 
 	private ArrayList<Element> el;
 	private ArrayList<ArrayList<Element>> resultList;
-	private ArrayList<String> drugList, diseaseList;
+	private ArrayList<String> drugList, diseaseList, drugSynonyms, diseaseSynonyms;
 	private ArrayList<Synonyms> synonymList;
 	private String drug, disease;
 	private ArrayList<Search> searchList;
@@ -50,6 +50,8 @@ public class SearchHandler extends Observable {
 		this.synonymAdvancement = 0;
 		this.drugSyn = 0;
 		this.diseaseSyn = 0;
+		this.drugSynonyms = new ArrayList<String>();
+		this.diseaseSynonyms = new ArrayList<String>();
 	}
 
 	private void initSearch(){
@@ -117,6 +119,8 @@ public class SearchHandler extends Observable {
 		diseaseList.clear();
 		searchList.clear();
 		mergeType.clear();
+		drugList.clear();
+		diseaseList.clear();
 
 		// 0 - 0
 		if (!drug.contains(" AND ") && !drug.contains(" OR ")&& !disease.contains(" AND ") && !disease.contains(" OR ")) {
@@ -248,20 +252,21 @@ public class SearchHandler extends Observable {
 
 		//If using of synonyms
 		if (useSynonyms) {
-			ArrayList<String> dList = getSynonyms(disease);
-			ArrayList<String> mList = getSynonyms(drug);
-			this.drugSyn = mList.size();
-			this.diseaseSyn = dList.size();
+			diseaseSynonyms = getSynonyms(disease);
+			drugSynonyms = getSynonyms(drug);
 
-			for (int i = 0; i < dList.size(); i++) {
-				diseaseList.add(dList.get(i));
+			this.drugSyn = drugSynonyms.size();
+			this.diseaseSyn = diseaseSynonyms.size();
+
+			for (int i = 0; i < diseaseSynonyms.size(); i++) {
+				diseaseList.add(diseaseSynonyms.get(i));
 				drugList.add("");
 			}
-			for (int i = 0; i < mList.size(); i++) {
+			for (int i = 0; i < drugSynonyms.size(); i++) {
 				diseaseList.add("");
-				drugList.add(mList.get(i));
+				drugList.add(drugSynonyms.get(i));
 			}
-			for (int i = 0; i < dList.size()+mList.size()+1; i++) {
+			for (int i = 0; i < diseaseSynonyms.size()+drugSynonyms.size()+1; i++) {
 				mergeType.add(Merger.INCLUSIVE_MERGE);
 			}
 		}
@@ -348,7 +353,7 @@ public class SearchHandler extends Observable {
 
 			m.run();
 //			System.out.println("list2 : "+m.getList2().toString());
-			resultList.set(i%(resultList.size()/(2)), (ArrayList<Element>) m.getList2().clone());
+			resultList.set((resultList.size() >= 2) ? i%(resultList.size()/(2)) : 0, (ArrayList<Element>) m.getList2().clone());
 		}
 		el.addAll(resultList.get(0));
 	}
@@ -507,5 +512,29 @@ public class SearchHandler extends Observable {
 
 	public void setDiseaseSyn(int diseaseSyn) {
 		this.diseaseSyn = diseaseSyn;
+	}
+
+	public ArrayList<Synonyms> getSynonymList() {
+		return synonymList;
+	}
+
+	public void setSynonymList(ArrayList<Synonyms> synonymList) {
+		this.synonymList = synonymList;
+	}
+
+	public ArrayList<String> getDrugSynonyms() {
+		return drugSynonyms;
+	}
+
+	public void setDrugSynonyms(ArrayList<String> drugSynonyms) {
+		this.drugSynonyms = drugSynonyms;
+	}
+
+	public ArrayList<String> getDiseaseSynonyms() {
+		return diseaseSynonyms;
+	}
+
+	public void setDiseaseSynonyms(ArrayList<String> diseaseSynonyms) {
+		this.diseaseSynonyms = diseaseSynonyms;
 	}
 }

@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
@@ -30,10 +31,10 @@ public class Searcher extends JPanel implements Observer{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private JLabel name_l, disease_l, useSyns, synAdvancement, numberOfDrugSyn, numberOfDiseaseSyn;
+	private JLabel name_l, disease_l, useSyns, synAdvancement;
 	private TextField drugName, diseaseName;
 	private JButton search_button;
-	private JComboBox<String> mode;
+	private JComboBox<String> mode, numberOfDrugSyn, numberOfDiseaseSyn;
 	private Checkbox synonyms;
 	private JButton andName, orName, andDisease, orDisease, eraseDrug, eraseDisease;
 	
@@ -79,8 +80,12 @@ public class Searcher extends JPanel implements Observer{
 		synonyms = new Checkbox();
 		synonyms.addItemListener(new SynonymController(search, this));
 		synAdvancement = new JLabel("(0/4)");
-		numberOfDrugSyn = new JLabel();
-		numberOfDiseaseSyn = new JLabel();
+		numberOfDrugSyn = new JComboBox<String>();
+		numberOfDiseaseSyn = new JComboBox<String>();
+		numberOfDrugSyn.setVisible(false);
+		numberOfDiseaseSyn.setVisible(true);
+		numberOfDrugSyn.setMaximumSize(new Dimension(150, 15));
+		numberOfDiseaseSyn.setMaximumSize(new Dimension(150, 15));
 	}
 	
 	private void createSearcher(){
@@ -148,19 +153,31 @@ public class Searcher extends JPanel implements Observer{
 	
 	@Override
 	public void update(Observable o, Object arg) {
+		numberOfDrugSyn.setMaximumSize(new Dimension(150, 15));
+		numberOfDiseaseSyn.setMaximumSize(new Dimension(150, 15));
 		if (search.getSynonymAdvancement() < 4)
 			synAdvancement.setText("("+search.getSynonymAdvancement()+"/4) running...");
 		else
 			synAdvancement.setText("("+search.getSynonymAdvancement()+"/4) ok");
 		
-		if (!search.getDrug().equals("") && search.isUseSynonyms())
-			numberOfDrugSyn.setText(search.getDrugSyn()+" synonyms");
+		if (!search.getDrug().equals("") && search.isUseSynonyms()){
+			numberOfDrugSyn.setVisible(true);
+			numberOfDrugSyn.addItem(search.getDrugSyn()+" synonyms");
+			for (String s : search.getDrugSynonyms()) {
+				numberOfDrugSyn.addItem(s);
+			}
+		}
 		else 
-			numberOfDrugSyn.setText("");
-		if (!search.getDisease().equals("") && search.isUseSynonyms())
-			numberOfDiseaseSyn.setText(search.getDiseaseSyn()+" synonyms");
+			numberOfDrugSyn.setVisible(false);
+		if (!search.getDisease().equals("") && search.isUseSynonyms()){
+			numberOfDiseaseSyn.setVisible(true);
+			numberOfDiseaseSyn.addItem(search.getDiseaseSyn()+" synonyms");
+			for (String s : search.getDiseaseSynonyms()) {
+				numberOfDiseaseSyn.addItem(s);
+			}
+		}
 		else
-			numberOfDiseaseSyn.setText("");
+			numberOfDiseaseSyn.setVisible(false);
 	}
 
 	public JComboBox<String> getMode() {
